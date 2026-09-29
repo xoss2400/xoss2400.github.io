@@ -1,0 +1,710 @@
+<title>Small Weird Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@700;800&display=swap">
+
+<style>
+  :root{
+    --ink:#07060d;
+    --ink-soft:rgba(9,7,18,.70);
+    --ink-solid:#0d0b18;
+    --fg:#efeaff;
+    --muted:#a8a2bd;
+    --line:rgba(185,179,204,.18);
+    --aqua:#00f0c8;
+    --orange:#ff7a18;
+    --yellow:#ffe94a;
+    --violet:#8b5cff;
+    --lime:#63ff4a;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:"Syne","Trebuchet MS",Helvetica,sans-serif;
+    --body:"Gabarito",system-ui,-apple-system,Segoe UI,sans-serif;
+  }
+
+  body{
+    background:var(--ink);
+    color:var(--fg);
+    font-family:var(--body);
+    font-size:clamp(15px,1.05vw,17px);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ── the water ─────────────────────────────── */
+  #fluid{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+  .vignette{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(7,6,13,.72), transparent 60%),
+      linear-gradient(180deg, rgba(7,6,13,.55) 0%, transparent 18%, transparent 78%, rgba(7,6,13,.72) 100%);
+  }
+  .page{position:relative;z-index:2}
+
+  .wrap{width:min(1080px,100%);margin-inline:auto;padding-inline:clamp(16px,4vw,44px)}
+
+  /* ── type roles ────────────────────────────── */
+  .eyebrow{
+    font-family:var(--mono);font-size:.72rem;font-weight:500;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--aqua);
+    display:flex;align-items:center;gap:.7em;margin:0;
+  }
+  .eyebrow::after{content:"";flex:1;height:1px;background:var(--line);min-width:20px}
+  h2{
+    font-family:var(--disp);font-weight:800;line-height:.98;
+    font-size:clamp(2rem,5.2vw,3.5rem);letter-spacing:-.02em;
+    text-wrap:balance;margin:.5rem 0 0;
+  }
+  .sub{color:var(--muted);max-width:56ch;margin:.75rem 0 0;font-size:1rem}
+  .sec{padding-block:clamp(56px,9vw,112px)}
+
+  /* ── top bar ───────────────────────────────── */
+  .bar{
+    display:flex;flex-wrap:wrap;gap:.9rem 1.4rem;align-items:baseline;
+    justify-content:space-between;padding-block:22px 0;
+  }
+  .mark{font-family:var(--mono);font-weight:700;font-size:.95rem;letter-spacing:-.01em;color:var(--fg)}
+  .mark b{color:var(--orange);font-weight:700}
+  .bar nav{display:flex;flex-wrap:wrap;gap:.2rem .35rem;font-family:var(--mono);font-size:.78rem}
+  .bar nav a{
+    color:var(--muted);text-decoration:none;padding:.35em .6em;border-radius:999px;
+    border:1px solid transparent;transition:color .18s,border-color .18s,background .18s;
+  }
+  .bar nav a:hover,.bar nav a:focus-visible{color:var(--ink);background:var(--aqua);border-color:var(--aqua)}
+
+  /* ── hero ──────────────────────────────────── */
+  .hero{position:relative;padding-block:clamp(48px,9vw,96px) clamp(40px,7vw,80px)}
+  .hero::before{
+    content:"";position:absolute;inset:-6% -12% -10% -12%;z-index:-1;
+    background:radial-gradient(58% 60% at 34% 48%, rgba(7,6,13,.9), rgba(7,6,13,.45) 55%, transparent 76%);
+  }
+  .hero-kicker{
+    font-family:var(--mono);font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 clamp(18px,3vw,30px);
+  }
+  .hero-kicker span{color:var(--lime)}
+  h1{margin:0;font-family:var(--disp);font-weight:800;letter-spacing:-.035em;line-height:.84}
+  .l1{display:block;font-family:var(--mono);font-weight:500;letter-spacing:.01em;
+      font-size:clamp(1rem,2.4vw,1.5rem);color:var(--aqua);line-height:1.2;margin-bottom:.35em}
+  .l2{display:block;font-size:clamp(3.1rem,13.5vw,9.5rem)}
+  .l2 em{font-style:normal;color:var(--orange)}
+  .l2 i{font-style:italic;color:var(--yellow);font-size:.82em;letter-spacing:-.05em}
+  .l3{display:block;font-size:clamp(1.9rem,7vw,4.6rem);color:var(--fg);line-height:1;margin-top:.12em}
+  .l3 #cycle{color:var(--violet);transition:opacity .28s ease}
+  .l3 #cycle.swap{opacity:0}
+  .hero p.lede{
+    margin:clamp(22px,3.5vw,34px) 0 0;max-width:46ch;font-size:clamp(1.02rem,1.6vw,1.22rem);
+    color:#dcd6f0;
+  }
+  .hero-cta{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.6rem}
+  .btn{
+    font-family:var(--mono);font-size:.82rem;font-weight:500;text-decoration:none;
+    padding:.8em 1.2em;border-radius:999px;border:1px solid var(--line);color:var(--fg);
+    background:var(--ink-soft);backdrop-filter:blur(6px);
+    transition:transform .16s,background .18s,color .18s,border-color .18s;
+  }
+  .btn:hover,.btn:focus-visible{transform:translateY(-2px)}
+  .btn-a{background:var(--orange);border-color:var(--orange);color:#12040a;font-weight:700}
+  .btn-a:hover{background:var(--yellow);border-color:var(--yellow)}
+  .readout{
+    font-family:var(--mono);font-size:.7rem;color:var(--muted);margin:clamp(28px,5vw,52px) 0 0;
+    letter-spacing:.04em;font-variant-numeric:tabular-nums;
+  }
+  .readout b{color:var(--aqua);font-weight:500}
+
+  /* ── builds ────────────────────────────────── */
+  .featured{
+    margin-top:2.2rem;padding:clamp(20px,3vw,32px);border-radius:16px;
+    background:linear-gradient(140deg, rgba(255,122,24,.16), rgba(0,240,200,.08) 60%, transparent), var(--ink-soft);
+    border:1px solid rgba(255,122,24,.45);backdrop-filter:blur(8px) saturate(1.2);
+  }
+  .badge{
+    display:inline-block;font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink);background:var(--yellow);
+    padding:.35em .7em;border-radius:6px;font-weight:700;
+  }
+  .featured h3{font-family:var(--disp);font-weight:800;font-size:clamp(1.9rem,4.6vw,3rem);
+    letter-spacing:-.03em;line-height:1;margin:.7rem 0 0}
+  .featured p{margin:.7rem 0 0;max-width:52ch;color:#e4dff5}
+
+  .builds{list-style:none;margin:1.2rem 0 0;padding:0}
+  .builds li{
+    display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.6rem 1.8rem;align-items:start;
+    padding:clamp(18px,2.4vw,26px) clamp(10px,1.6vw,18px);
+    border-top:1px solid var(--line);transition:background .2s;
+  }
+  .builds li:last-child{border-bottom:1px solid var(--line)}
+  .builds li:hover{background:rgba(13,11,24,.6)}
+  .builds h3{
+    font-family:var(--disp);font-weight:700;letter-spacing:-.02em;line-height:1.05;
+    font-size:clamp(1.35rem,3.2vw,2.15rem);margin:0;transition:color .18s;
+  }
+  .builds li:hover h3{color:var(--aqua)}
+  .builds p{margin:.35rem 0 0;color:var(--muted);max-width:54ch}
+  .stack{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.7rem;font-family:var(--mono);font-size:.68rem}
+  .stack span{border:1px solid var(--line);border-radius:5px;padding:.25em .5em;color:#cdc6e3}
+  .meta{text-align:right;font-family:var(--mono);font-size:.7rem;color:var(--muted);white-space:nowrap}
+  .status{display:block;font-weight:500;letter-spacing:.04em;white-space:normal;max-width:15ch;margin-left:auto}
+  .s-live{color:var(--lime)}
+  .s-tape{color:var(--yellow)}
+  .s-quiet{color:var(--aqua)}
+  .s-rip{color:var(--muted)}
+  .s-oven{color:var(--orange)}
+  .year{display:block;margin-top:.35rem;opacity:.65;font-variant-numeric:tabular-nums}
+
+  /* ── obsessions ────────────────────────────── */
+  .legend{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin:1.1rem 0 0;letter-spacing:.05em}
+  .cloud{list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem .55rem;margin:1.4rem 0 0;padding:0}
+  .cloud li{
+    font-family:var(--disp);font-weight:700;letter-spacing:-.015em;line-height:1;
+    font-size:calc(.92rem + var(--s) * .44rem);
+    padding:.34em .6em;border-radius:999px;border:1px solid var(--line);
+    background:rgba(9,7,18,.55);backdrop-filter:blur(4px);
+    transition:transform .16s,border-color .18s,color .18s;
+  }
+  .cloud li:hover{transform:rotate(-2deg) scale(1.04)}
+  .cloud li:nth-child(5n+1){color:var(--aqua);border-color:rgba(0,240,200,.45)}
+  .cloud li:nth-child(5n+2){color:var(--orange);border-color:rgba(255,122,24,.5)}
+  .cloud li:nth-child(5n+3){color:var(--yellow);border-color:rgba(255,233,74,.45)}
+  .cloud li:nth-child(5n+4){color:var(--violet);border-color:rgba(139,92,255,.5)}
+  .cloud li:nth-child(5n+5){color:var(--lime);border-color:rgba(99,255,74,.45)}
+
+  /* ── now + ask ─────────────────────────────── */
+  .cols{display:grid;gap:clamp(18px,2.6vw,28px);margin-top:1.8rem;
+        grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .panel{
+    padding:clamp(18px,2.4vw,26px);border-radius:14px;border:1px solid var(--line);
+    background:var(--ink-soft);backdrop-filter:blur(8px) saturate(1.15);
+  }
+  .panel h3{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--aqua);margin:0 0 1rem;font-weight:500;
+  }
+  .panel.orange h3{color:var(--orange)}
+  .panel.yellow h3{color:var(--yellow)}
+  .nowlist{list-style:none;margin:0;padding:0;display:grid;gap:.85rem}
+  .nowlist div{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .nowlist li strong{font-weight:500;font-size:1.05rem;color:var(--fg);display:block;margin-top:.15rem}
+  .ticks{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+  .ticks li{display:flex;gap:.65rem;align-items:baseline}
+  .ticks li::before{font-family:var(--mono);font-size:.9rem;line-height:1.4;flex:none}
+  .ticks.yes li::before{content:"+";color:var(--lime)}
+  .ticks.no li::before{content:"\2013";color:var(--orange)}
+
+  /* ── say hi ────────────────────────────────── */
+  .hi h2{font-size:clamp(2.4rem,8vw,5.4rem)}
+  .maillink{
+    display:inline-block;margin-top:1.3rem;font-family:var(--disp);font-weight:800;
+    font-size:clamp(1.3rem,4.4vw,2.6rem);letter-spacing:-.03em;color:var(--yellow);
+    text-decoration:none;border-bottom:3px solid rgba(255,233,74,.35);line-height:1.1;
+  }
+  .maillink:hover,.maillink:focus-visible{color:var(--aqua);border-bottom-color:var(--aqua)}
+  .note{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin:.6rem 0 0}
+  .elsewhere{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.8rem;font-family:var(--mono);font-size:.78rem}
+  .elsewhere a{
+    color:var(--fg);text-decoration:none;padding:.6em 1em;border-radius:999px;
+    border:1px solid var(--line);background:rgba(9,7,18,.5);transition:background .18s,color .18s,border-color .18s;
+  }
+  .elsewhere a:hover,.elsewhere a:focus-visible{background:var(--violet);border-color:var(--violet);color:#0b0616}
+
+  /* ── console ───────────────────────────────── */
+  .console{
+    position:fixed;z-index:3;right:clamp(12px,2vw,22px);
+    bottom:calc(clamp(12px,2vw,22px) + env(safe-area-inset-bottom,0px));
+    width:246px;padding:14px;border-radius:14px;
+    background:rgba(8,6,16,.84);backdrop-filter:blur(10px) saturate(1.2);
+    border:1px solid rgba(0,240,200,.3);font-family:var(--mono);
+  }
+  .console-title{
+    margin:0 0 .9rem;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--aqua);display:flex;justify-content:space-between;align-items:center;
+  }
+  .console-title span{color:var(--muted);letter-spacing:0;text-transform:none}
+  .field{display:block;margin-bottom:.85rem}
+  .field > span{display:block;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+  #charset{
+    width:100%;box-sizing:border-box;font-family:var(--mono);font-size:.82rem;color:var(--yellow);
+    background:#08060f;border:1px solid var(--line);border-radius:7px;padding:.5em .6em;
+  }
+  #charset:focus-visible{outline:2px solid var(--aqua);outline-offset:1px}
+  .chipset{display:flex;gap:.3rem;flex-wrap:wrap}
+  .chipset button{
+    flex:1 1 auto;font-family:var(--mono);font-size:.68rem;cursor:pointer;
+    background:#08060f;color:var(--muted);border:1px solid var(--line);
+    border-radius:7px;padding:.5em .3em;transition:background .16s,color .16s,border-color .16s;
+  }
+  .chipset button:hover{color:var(--fg)}
+  .chipset button[aria-pressed="true"]{background:var(--aqua);border-color:var(--aqua);color:#04120f;font-weight:700}
+  .hint{margin:.9rem 0 0;font-size:.64rem;color:var(--muted);line-height:1.5}
+
+  /* ── footer ────────────────────────────────── */
+  footer{
+    border-top:1px solid var(--line);margin-top:clamp(40px,7vw,80px);
+    padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:.6rem 1.6rem;
+    justify-content:space-between;font-family:var(--mono);font-size:.68rem;color:var(--muted);
+  }
+  footer b{color:var(--aqua);font-weight:500;font-variant-numeric:tabular-nums}
+
+  @media (max-width:820px){
+    .console{position:static;width:auto;max-width:420px;margin:0 auto;bottom:auto;right:auto}
+    .builds li{grid-template-columns:minmax(0,1fr)}
+    .meta{text-align:left}
+    .status{margin-left:0;max-width:none}
+    .year{display:inline;margin-left:.6rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .cloud li:hover{transform:none}
+  }
+</style>
+
+<canvas id="fluid" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<div class="page">
+  <div class="wrap">
+
+    <header class="bar">
+      <p class="mark">john<b>.</b>makes<b>(</b>stuff<b>)</b></p>
+      <nav aria-label="Sections">
+        <a href="#builds">builds</a>
+        <a href="#obsessions">obsessions</a>
+        <a href="#now">what i'm up to</a>
+        <a href="#hi">say hi</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <p class="hero-kicker">software engineer <span>//</span> professionally calm, personally unhinged</p>
+      <h1>
+        <span class="l1">hi, i'm john and i build</span>
+        <span class="l2">SMALL <em>WEIRD</em> <i>little</i></span>
+        <span class="l3">&nbsp;<span id="cycle">software.</span></span>
+      </h1>
+      <p class="lede">
+        By day I ship boring reliable backends. By night I teach canvases to behave
+        like water, put IP addresses on kitchen appliances, and lose entire weekends
+        to character ramps.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-a" href="#builds">See the stuff &rarr;</a>
+        <a class="btn" href="#hi">Say hi</a>
+      </div>
+      <p class="readout">
+        this background &rarr; <b id="stat-grid">—</b> ascii grid &middot;
+        <b id="stat-chars">—</b> characters of water &middot;
+        redrawn <b id="stat-fps">—</b>&times;/sec &middot;
+        move your mouse, it ripples
+      </p>
+    </section>
+
+    <section class="sec" id="builds">
+      <p class="eyebrow">Recently made</p>
+      <h2>Stuff I built when nobody asked me to</h2>
+      <p class="sub">Five of roughly forty. The other thirty-five are private, and that is a
+        kindness I am doing for you.</p>
+
+      <div class="featured">
+        <p class="badge">You're looking at it</p>
+        <h3>Ripplekit</h3>
+        <p>
+          A tiny renderer that turns any page into a sheet of ASCII water &mdash; ambient
+          interference waves, expanding ripple rings on every pointer move, run-length
+          batched draws so it doesn't cook your fan. It's the background of this whole site.
+          It is also mid-refactor, forever.
+        </p>
+        <div class="stack">
+          <span>TypeScript</span><span>Canvas 2D</span><span>no dependencies</span><span>~4kb</span>
+        </div>
+      </div>
+
+      <ul class="builds">
+        <li>
+          <div>
+            <h3>Tabnado</h3>
+            <p>Closes forty of your browser tabs, then quizzes you a week later on which
+              ones you actually missed. Average score: two.</p>
+            <div class="stack"><span>TypeScript</span><span>Chrome APIs</span><span>IndexedDB</span></div>
+          </div>
+          <p class="meta"><span class="status s-live">live &amp; strangely loved</span><span class="year">2026</span></p>
+        </li>
+        <li>
+          <div>
+            <h3>standup.wav</h3>
+            <p>Turns my written daily standup into a twelve-second lo-fi jingle. The team
+              voted to keep it. The team was not asked twice.</p>
+            <div class="stack"><span>Rust</span><span>WASM</span><span>Web Audio</span></div>
+          </div>
+          <p class="meta"><span class="status s-quiet">quietly running</span><span class="year">2025</span></p>
+        </li>
+        <li>
+          <div>
+            <h3>Fridge Oracle</h3>
+            <p>A Raspberry Pi photographs my fridge at 6pm and predicts dinner. Correct
+              31% of the time, which is 31% more than me.</p>
+            <div class="stack"><span>Python</span><span>Pi Zero 2</span><span>CLIP</span><span>duct tape</span></div>
+          </div>
+          <p class="meta"><span class="status s-tape">held together with duct tape</span><span class="year">2025</span></p>
+        </li>
+        <li>
+          <div>
+            <h3>git blame-me</h3>
+            <p>CLI that finds the exact commit where I ruined everything and drafts a
+              proportionate apology. Ships with three tones: sheepish, formal, unhinged.</p>
+            <div class="stack"><span>Go</span><span>libgit2</span><span>regret</span></div>
+          </div>
+          <p class="meta"><span class="status s-rip">abandoned with honor</span><span class="year">2024</span></p>
+        </li>
+        <li>
+          <div>
+            <h3>Sourdough Telemetry</h3>
+            <p>Grafana dashboard for a jar of flour. Tracks rise height, ambient temp and
+              hydration. Has better observability than most production services I've met.</p>
+            <div class="stack"><span>ESP32</span><span>Prometheus</span><span>Grafana</span></div>
+          </div>
+          <p class="meta"><span class="status s-oven">literally in the oven</span><span class="year">2026</span></p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="sec" id="obsessions">
+      <p class="eyebrow">Interests</p>
+      <h2>Currently renting space in my brain</h2>
+      <p class="legend">size = how much of the lease it holds &rarr; big ones are the reason
+        I'm up at 2am</p>
+      <ul class="cloud">
+        <li style="--s:5">ascii art</li>
+        <li style="--s:4">shaders</li>
+        <li style="--s:2">mechanical keyboards</li>
+        <li style="--s:4">sourdough</li>
+        <li style="--s:1">shell aliases</li>
+        <li style="--s:3">bouldering</li>
+        <li style="--s:2">emulator internals</li>
+        <li style="--s:5">generative music</li>
+        <li style="--s:1">tiny CLIs</li>
+        <li style="--s:3">secondhand synths</li>
+        <li style="--s:2">typography</li>
+        <li style="--s:4">dithering</li>
+        <li style="--s:1">coffee ratios</li>
+        <li style="--s:3">bad sci-fi paperbacks</li>
+        <li style="--s:2">game jams</li>
+        <li style="--s:1">my cat's opinions</li>
+      </ul>
+    </section>
+
+    <section class="sec" id="now">
+      <p class="eyebrow">What I'm up to</p>
+      <h2>This month, specifically</h2>
+      <p class="sub">Updated when I remember. Last touched September 2026.</p>
+      <div class="cols">
+        <div class="panel">
+          <h3>Right now</h3>
+          <ul class="nowlist">
+            <li><div>building</div><strong>Ripplekit v3 &mdash; prism pass</strong></li>
+            <li><div>reading</div><strong>The Nature of Code</strong></li>
+            <li><div>listening</div><strong>dub techno, one album on loop</strong></li>
+            <li><div>avoiding</div><strong>my review queue (12 PRs, sorry)</strong></li>
+          </ul>
+        </div>
+        <div class="panel orange">
+          <h3>Ask me about</h3>
+          <ul class="ticks yes">
+            <li>Why ASCII art is really a compression story</li>
+            <li>Canvas perf tricks that feel like cheating</li>
+            <li>Hydration percentages, at length</li>
+            <li>The one keyboard switch that is correct</li>
+            <li>Naming things badly, then well</li>
+          </ul>
+        </div>
+        <div class="panel yellow">
+          <h3>Please don't ask about</h3>
+          <ul class="ticks no">
+            <li>My editor config (I will show you anyway)</li>
+            <li>Tabs vs spaces &mdash; settled, moving on</li>
+            <li>Why the fridge has an IP address</li>
+            <li>Whether the cat has a Grafana dashboard</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec hi" id="hi">
+      <p class="eyebrow">Say hi</p>
+      <h2>I reply to almost everything</h2>
+      <p class="sub">Cold emails welcome, especially the weird ones. Recruiters: I'm curious
+        but hard to impress with ping-pong tables.</p>
+      <a class="maillink" href="mailto:hi@example.com">hi@example.com</a>
+      <p class="note">^ placeholder &mdash; swap in your real address before you ship this</p>
+      <div class="elsewhere">
+        <a href="#">github</a>
+        <a href="#">bluesky</a>
+        <a href="#">itch.io</a>
+        <a href="#">rss</a>
+      </div>
+    </section>
+
+    <section class="console" aria-label="Background controls">
+      <p class="console-title">poke the water <span id="pal-name">hi-vis</span></p>
+      <label class="field" for="charset">
+        <span>characters</span>
+        <input id="charset" type="text" maxlength="14" spellcheck="false"
+               autocomplete="off" value=" .:-=+*#%@" aria-describedby="charset-hint">
+      </label>
+      <div class="field">
+        <span id="pal-label">palette</span>
+        <div class="chipset" role="group" aria-labelledby="pal-label">
+          <button type="button" id="pal-0" data-pal="0" aria-pressed="true">hi-vis</button>
+          <button type="button" id="pal-1" data-pal="1" aria-pressed="false">ultraviolet</button>
+          <button type="button" id="pal-2" data-pal="2" aria-pressed="false">toxic</button>
+        </div>
+      </div>
+      <div class="field">
+        <span id="spd-label">tempo</span>
+        <div class="chipset" role="group" aria-labelledby="spd-label">
+          <button type="button" id="spd-0" data-spd="0.45" aria-pressed="false">chill</button>
+          <button type="button" id="spd-1" data-spd="1" aria-pressed="true">normal</button>
+          <button type="button" id="spd-2" data-spd="2.1" aria-pressed="false">espresso</button>
+        </div>
+      </div>
+      <p class="hint" id="charset-hint">Type any characters &mdash; first one is the empty
+        trough, last one is the bright crest. Click anywhere to drop a ripple.</p>
+    </section>
+
+    <footer>
+      <p>Hand-written HTML, one canvas, zero frameworks. <b id="foot-chars">—</b> characters, no images.</p>
+      <p>Background: Ripplekit &middot; inspired by asciify's fluid</p>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  var canvas = document.getElementById('fluid');
+  var ctx = canvas.getContext('2d', { alpha: false });
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  var PALETTES = [
+    { name: 'hi-vis',    stops: [[12,34,104], [0,240,200], [255,122,24], [255,233,74]] },
+    { name: 'ultraviolet', stops: [[26,10,72], [124,88,255], [0,182,255], [198,255,222]] },
+    { name: 'toxic',     stops: [[8,52,34],   [99,255,74],  [0,240,255],  [255,255,150]] }
+  ];
+  var INK = '#07060d';
+  var LEVELS = 28;
+
+  var pal = 0, speed = 1, ramp = ' .:-=+*#%@'.split('');
+  var colors = [], cols = 0, rows = 0, cw = 8, chh = 15, vw = 0, vh = 0;
+  var line = [], bkt = [];
+  var mx = -9999, my = -9999, ripples = [], T = 0, last = 0, acc = 0;
+  var frames = 0, fpsMark = 0, nextAuto = 1.4;
+
+  function buildColors() {
+    var stops = PALETTES[pal].stops;
+    colors = [];
+    for (var i = 0; i < LEVELS; i++) {
+      var m = i / (LEVELS - 1);
+      var f = m * (stops.length - 1);
+      var a = stops[Math.floor(f)], b = stops[Math.min(stops.length - 1, Math.floor(f) + 1)];
+      var k = f - Math.floor(f);
+      var r = Math.round(a[0] + (b[0] - a[0]) * k);
+      var g = Math.round(a[1] + (b[1] - a[1]) * k);
+      var bl = Math.round(a[2] + (b[2] - a[2]) * k);
+      var al = (0.10 + 0.90 * Math.pow(m, 1.35)).toFixed(3);
+      colors.push('rgba(' + r + ',' + g + ',' + bl + ',' + al + ')');
+    }
+  }
+
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+    vw = window.innerWidth; vh = window.innerHeight;
+    canvas.width = Math.floor(vw * dpr);
+    canvas.height = Math.floor(vh * dpr);
+    canvas.style.width = vw + 'px';
+    canvas.style.height = vh + 'px';
+    var size = vw < 560 ? 11 : vw < 1000 ? 12.5 : 14;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.font = '500 ' + size + 'px "JetBrains Mono", ui-monospace, monospace';
+    ctx.textBaseline = 'top';
+    cw = ctx.measureText('M').width || size * 0.6;
+    chh = size * 1.16;
+    cols = Math.ceil(vw / cw) + 1;
+    rows = Math.ceil(vh / chh) + 1;
+    line = new Array(cols);
+    bkt = new Uint8Array(cols);
+    var total = cols * rows;
+    document.getElementById('stat-grid').textContent = cols + '×' + rows;
+    document.getElementById('stat-chars').textContent = total.toLocaleString();
+    document.getElementById('foot-chars').textContent = total.toLocaleString();
+  }
+
+  function addRipple(x, y, strength) {
+    if (ripples.length > 9) ripples.shift();
+    ripples.push({ x: x, y: y, t: T, s: strength });
+  }
+
+  function draw() {
+    ctx.fillStyle = INK;
+    ctx.fillRect(0, 0, vw, vh);
+
+    var stir = (window.pageYOffset || 0) * 0.0035;
+    var nr = ramp.length;
+    var live = [];
+    for (var i = 0; i < ripples.length; i++) {
+      var age = T - ripples[i].t;
+      if (age < 3.4) {
+        live.push({
+          x: ripples[i].x, y: ripples[i].y,
+          front: age * 270,
+          amp: ripples[i].s * Math.exp(-age * 0.95)
+        });
+      }
+    }
+    ripples = ripples.filter(function (r) { return T - r.t < 3.4; });
+
+    for (var r2 = 0; r2 < rows; r2++) {
+      var py = r2 * chh;
+      var wy = py * 0.0165 + stir;
+      for (var c = 0; c < cols; c++) {
+        var px = c * cw;
+        var wx = px * 0.0125;
+
+        // ambient fluid: three traveling waves with domain warp
+        var v = Math.sin(wx * 1.6 + T * 0.55 + Math.sin(wy * 1.15 - T * 0.31) * 1.7)
+              + Math.sin(wy * 2.1 - T * 0.42 + Math.sin(wx * 0.9 + T * 0.23) * 1.4)
+              + 0.75 * Math.sin((wx + wy) * 1.45 + T * 0.72);
+        v *= 0.34;
+
+        // expanding ripple rings from pointer events
+        for (var k = 0; k < live.length; k++) {
+          var L = live[k];
+          var dx = px - L.x, dy = py - L.y;
+          var d = Math.sqrt(dx * dx + dy * dy);
+          var off = d - L.front;
+          if (off > -300 && off < 300) {
+            var g = Math.exp(-(off * off) / 14000);
+            v += Math.sin(off * 0.075) * g * L.amp;
+          }
+        }
+
+        // cursor glow — the surface lifts toward you
+        var gx = px - mx, gy = py - my;
+        var g2 = gx * gx + gy * gy;
+        if (g2 < 78000) v += 0.6 * (1 - Math.sqrt(g2) / 279);
+
+        var m = v * 0.5 + 0.5;
+        if (m < 0) m = 0; else if (m > 0.9999) m = 0.9999;
+        var ch = ramp[(m * nr) | 0];
+        line[c] = ch;
+        bkt[c] = (ch === ' ' || ch === undefined) ? 0 : 1 + ((m * (LEVELS - 1)) | 0);
+      }
+
+      // run-length batches: one fillText per run of same color
+      var start = 0;
+      for (var c2 = 1; c2 <= cols; c2++) {
+        if (c2 === cols || bkt[c2] !== bkt[start]) {
+          if (bkt[start] !== 0) {
+            ctx.fillStyle = colors[bkt[start] - 1];
+            ctx.fillText(line.slice(start, c2).join(''), start * cw, py);
+          }
+          start = c2;
+        }
+      }
+    }
+  }
+
+  function frame(now) {
+    var dt = Math.min(0.05, (now - last) / 1000 || 0);
+    last = now;
+    T += dt * speed;
+    acc += dt;
+
+    nextAuto -= dt * speed;
+    if (nextAuto <= 0) {
+      nextAuto = 2.2 + Math.random() * 3;
+      addRipple(Math.random() * vw, Math.random() * vh, 0.55);
+    }
+
+    if (acc >= 0.031) {
+      acc = 0;
+      draw();
+      frames++;
+      if (now - fpsMark > 1000) {
+        document.getElementById('stat-fps').textContent =
+          Math.round(frames * 1000 / (now - fpsMark));
+        frames = 0; fpsMark = now;
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ── input ───────────────────────────────────
+  var lastMove = 0;
+  window.addEventListener('pointermove', function (e) {
+    mx = e.clientX; my = e.clientY;
+    var n = performance.now();
+    if (n - lastMove > 110) { lastMove = n; addRipple(mx, my, 0.7); }
+    if (reduce.matches) draw();
+  }, { passive: true });
+
+  window.addEventListener('pointerdown', function (e) {
+    addRipple(e.clientX, e.clientY, 2.1);
+    if (reduce.matches) draw();
+  }, { passive: true });
+
+  window.addEventListener('resize', function () { resize(); draw(); });
+
+  document.getElementById('charset').addEventListener('input', function (e) {
+    var v = e.target.value;
+    ramp = (v.length > 1 ? v : ' .:-=+*#%@').split('');
+    if (reduce.matches) draw();
+  });
+
+  function group(sel, fn) {
+    var btns = document.querySelectorAll(sel);
+    Array.prototype.forEach.call(btns, function (b) {
+      b.addEventListener('click', function () {
+        Array.prototype.forEach.call(btns, function (o) { o.setAttribute('aria-pressed', 'false'); });
+        b.setAttribute('aria-pressed', 'true');
+        fn(b);
+      });
+    });
+  }
+  group('[data-pal]', function (b) {
+    pal = +b.dataset.pal;
+    buildColors();
+    document.getElementById('pal-name').textContent = PALETTES[pal].name;
+    if (reduce.matches) draw();
+  });
+  group('[data-spd]', function (b) { speed = +b.dataset.spd; });
+
+  // ── hero word cycler ────────────────────────
+  var words = ['software.', 'machines.', 'creatures.', 'excuses.', 'toys.'];
+  var wi = 0, cycle = document.getElementById('cycle');
+  if (!reduce.matches) {
+    setInterval(function () {
+      cycle.classList.add('swap');
+      setTimeout(function () {
+        wi = (wi + 1) % words.length;
+        cycle.textContent = words[wi];
+        cycle.classList.remove('swap');
+      }, 300);
+    }, 3200);
+  }
+
+  // ── boot ────────────────────────────────────
+  buildColors();
+  resize();
+  addRipple(vw * 0.34, vh * 0.55, 1.5);
+  T = 1.1;
+  draw();
+  if (reduce.matches) {
+    document.getElementById('stat-fps').textContent = '0 (motion off)';
+  } else {
+    fpsMark = performance.now();
+    last = fpsMark;
+    requestAnimationFrame(frame);
+  }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { resize(); draw(); });
+  }
+})();
+</script>
