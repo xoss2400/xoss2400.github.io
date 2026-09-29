@@ -53,11 +53,14 @@ The pill at bottom-left is collapsed by default. Open it for:
 - **palette** — pool / riso / chlorine
 - **feedback** — calm / wet / choppy (scales every ripple and the cursor well)
 
+Chlorine and calm are the defaults.
+
 ## Editing
 
-All in `index.html`. Copy lives in the five `<section class="station">` blocks; obsession
-size is `style="--s:1..5"` where bigger means it rents more brain space; each station's
-`data-accent` is the RGB the water shifts to at that depth. Colours are custom properties
+All in `index.html`. Copy lives in the five `<section class="station">` blocks. Level 3 holds two
+lists you'll want to keep adding to — `.shelf` for books (a `<cite>`, a `<small>` author
+and a one-line take) and `.pins` for sites worth keeping (one `<li><a>` each). Each
+station's `data-accent` is the RGB the water shifts to at that depth. Colours are custom properties
 at the top of `<style>`; water palettes are the `PAL` array in the script.
 
 Swap the placeholder `hi@example.com` and the four `#` links on level 5 before showing

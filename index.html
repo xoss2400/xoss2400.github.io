@@ -122,17 +122,17 @@
   .rows{list-style:none;margin:0;padding:0}
   .rows li{
     display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.35rem 1.6rem;align-items:baseline;
-    padding:.85rem .8rem;border-radius:10px;
+    padding:1.15rem .85rem;border-radius:10px;
     transition:background .22s,padding-left .22s var(--ease);
   }
   .rows li + li{border-top:1px solid var(--hair)}
   .rows li:hover{background:var(--paper);padding-left:1.25rem}
   .rows h3{
-    font-family:var(--disp);font-size:clamp(1.12rem,2.3vw,1.55rem);letter-spacing:-.025em;
+    font-family:var(--disp);font-size:clamp(1.22rem,2.7vw,1.8rem);letter-spacing:-.028em;
     margin:0;line-height:1.08;font-weight:400;
   }
   .rows li:hover h3{color:var(--tang-ink)}
-  .rows p{margin:.3rem 0 0;color:var(--read);font-size:.95rem;max-width:64ch;line-height:1.5}
+  .rows p{margin:.38rem 0 0;color:var(--read);font-size:1rem;max-width:64ch;line-height:1.55}
   .rows .st{
     font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-align:right;
     white-space:nowrap;grid-row:span 2;align-self:center;line-height:1.7;color:var(--slate);
@@ -146,22 +146,22 @@
   }
   .drawer i{font-style:normal;color:var(--ink)}
 
-  .stack2{display:grid;gap:.85rem;margin-top:.95rem;grid-template-columns:repeat(auto-fit,minmax(272px,1fr))}
+  .stack2{display:grid;gap:1rem;margin-top:1.1rem;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
   .sheet h3.hd{
     font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
     margin:.25rem .3rem .7rem;font-weight:500;color:var(--tang-ink);
   }
   .sheet.b h3.hd{color:var(--lime-ink)}
-  .shelf{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
+  .shelf{list-style:none;margin:0;padding:0;display:grid;gap:.85rem}
   .shelf li{padding:0 .3rem}
-  .shelf cite{font-style:normal;font-weight:700;font-size:.92rem;line-height:1.2;display:block}
+  .shelf cite{font-style:normal;font-weight:700;font-size:1.02rem;line-height:1.22;display:block}
   .shelf small{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate)}
-  .shelf p{margin:.12rem 0 0;font-size:.82rem;color:var(--read);line-height:1.4}
-  .pins{list-style:none;margin:0;padding:0;display:grid;gap:.2rem}
+  .shelf p{margin:.18rem 0 0;font-size:.88rem;color:var(--read);line-height:1.45}
+  .pins{list-style:none;margin:0;padding:0;display:grid;gap:.28rem}
   .pins a{
     display:flex;justify-content:space-between;gap:.7rem;align-items:baseline;
-    text-decoration:none;color:var(--ink);font-weight:500;font-size:.9rem;
-    padding:.42em .5em;border-radius:8px;border:1px solid transparent;
+    text-decoration:none;color:var(--ink);font-weight:500;font-size:.98rem;
+    padding:.5em .55em;border-radius:8px;border:1px solid transparent;
     transition:background .16s,border-color .16s;
   }
   .pins a:hover{background:var(--paper);border-color:var(--hair)}
@@ -176,18 +176,6 @@
   }
 
   /* ── station 3 · obsessions ──────────────── */
-  .cloud{list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:.35rem .38rem;margin:.9rem .2rem 0;padding:0}
-  .cloud li{
-    font-family:var(--disp);font-weight:400;letter-spacing:-.02em;line-height:1;
-    font-size:calc(.76rem + var(--s) * .25rem);
-    padding:.32em .55em;border-radius:999px;border:1.5px solid var(--hair);
-    background:var(--scrim);transition:transform .18s var(--ease),color .18s,border-color .18s,background .18s;
-  }
-  .cloud li:hover{transform:translateY(-3px) rotate(-1.5deg)}
-  .cloud li:nth-child(4n+1){color:var(--ink);border-color:rgba(14,42,140,.35)}
-  .cloud li:nth-child(4n+2){color:var(--tang-ink);border-color:rgba(255,90,31,.45)}
-  .cloud li:nth-child(4n+3){color:var(--aqua-ink);border-color:rgba(18,198,192,.55)}
-  .cloud li:nth-child(4n+4){color:var(--lime-ink);border-color:rgba(123,221,46,.6)}
 
   /* ── station 4 · right now ───────────────── */
   .kv{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
@@ -310,7 +298,7 @@
   @media (prefers-reduced-motion:reduce){
     .station{transition:opacity .001s,visibility 0s}
     .station[data-state="behind"],.station[data-state="ahead"]{--s:1}
-    .cloud li:hover,.rows li:hover,.godeep:hover{transform:none}
+    .rows li:hover,.godeep:hover{transform:none}
   }
 </style>
 </head>
@@ -337,37 +325,12 @@
       <ul class="rows">
         <li>
           <div>
-            <h3><span class="flag">this page</span>~john</h3>
-            <p>One HTML file, one canvas, no frameworks. It doesn't scroll, it zooms, and the
-               background is ASCII water that reacts to you.</p>
-          </div>
-          <p class="st"><b>HTML · Canvas</b>2026</p>
-        </li>
-        <li>
-          <div>
             <h3>nmf</h3>
             <p>An album log. Pull a record from your streaming history, rate it out of five in
                half-star steps, keep one favourite track, and see what the people you follow
                have been hearing.</p>
           </div>
           <p class="st"><b>TypeScript · SQLite</b>2026</p>
-        </li>
-        <li>
-          <div>
-            <h3>Casualty Tracker</h3>
-            <p>A static memorial site that checks official <code>war.gov</code> casualty releases
-               every five minutes. Confirmed entries publish automatically; anything ambiguous
-               waits for review first.</p>
-          </div>
-          <p class="st"><b>Python · Playwright</b>2026</p>
-        </li>
-        <li>
-          <div>
-            <h3>PWM</h3>
-            <p>A password manager that lives in the terminal. Argon2 for the master key, encrypted
-               at rest, msgpack on disk, and nothing leaves the machine.</p>
-          </div>
-          <p class="st"><b>Python · Typer</b>2025</p>
         </li>
         <li>
           <div>
@@ -395,21 +358,6 @@
   <section class="station" id="st-2" data-accent="123,221,46" aria-label="As of late">
     <p class="tag">level 3 <b>//</b> what's got me lately</p>
     <h2>As of late</h2>
-    <ul class="cloud">
-      <li style="--s:5">ascii rendering</li>
-      <li style="--s:4">half-star rating scales</li>
-      <li style="--s:2">argon2</li>
-      <li style="--s:4">new music friday</li>
-      <li style="--s:1">typer CLIs</li>
-      <li style="--s:3">playwright at 3am</li>
-      <li style="--s:2">OCaml pattern matching</li>
-      <li style="--s:5">canvas perf</li>
-      <li style="--s:1">sqlite fixtures</li>
-      <li style="--s:3">gallery-label typography</li>
-      <li style="--s:2">pot odds</li>
-      <li style="--s:4">dithering</li>
-      <li style="--s:1">github actions cron</li>
-    </ul>
     <div class="stack2">
       <div class="sheet b">
         <h3 class="hd">on the shelf</h3>
@@ -791,7 +739,7 @@
   addEventListener('pointerleave', function () { px_ = -9999; py_ = -9999; }, { passive: true });
 
   document.addEventListener('pointerover', function (e) {
-    var el = e.target.closest && e.target.closest('.rows li,.cloud li,.links a,.seg button,.rail button,.godeep,.mail');
+    var el = e.target.closest && e.target.closest('.rows li,.pins a,.shelf li,.links a,.seg button,.rail button,.godeep,.mail');
     if (!el) return;
     var r = el.getBoundingClientRect();
     splash(r.left + r.width / 2, r.top + r.height / 2, 1.5);
