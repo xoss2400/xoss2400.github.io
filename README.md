@@ -1,4 +1,4 @@
-# Small Weird Software
+# Small Software
 
 A personal portfolio site. One HTML file, one canvas, zero frameworks, no images.
 
