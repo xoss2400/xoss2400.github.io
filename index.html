@@ -9,7 +9,7 @@
 <meta property="og:title" content="~john">
 <meta property="og:description" content="Five levels deep, one sheet of ASCII water. Zoom in for more detail.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%23EAF7F4%27/%3E%3Ctext x=%2716%27 y=%2726%27 font-family=%27monospace%27 font-size=%2730%27 font-weight=%27700%27 fill=%27%23FF5A1F%27 text-anchor=%27middle%27%3E~%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%23EEFAF0%27/%3E%3Ctext x=%2716%27 y=%2726%27 font-family=%27monospace%27 font-size=%2730%27 font-weight=%27700%27 fill=%27%23FF5A1F%27 text-anchor=%27middle%27%3E~%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@300;400;500&family=Hanken+Grotesk:wght@400;500;700&display=swap">
@@ -20,7 +20,7 @@
     padding-bottom:env(safe-area-inset-bottom,0px);
 
     /* Tilde — brand tokens */
-    --pool:#eaf7f4;
+    --pool:#eefaf0;
     --paper:#fdfdfb;
     --ink:#0e2a8c;
     --tang:#ff5a1f;
@@ -29,7 +29,8 @@
     --lime:#7bdd2e;
     --slate:#5a6a87;
     --hair:rgba(14,42,140,.18);
-    --scrim:rgba(253,253,251,.82);
+    --scrim:rgba(253,253,251,.86);
+    --read:#41506e;
 
     --disp:"Archivo Black","Arial Black",Helvetica,sans-serif;
     --body:"Hanken Grotesk",system-ui,-apple-system,Segoe UI,sans-serif;
@@ -55,7 +56,7 @@
   #water{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
   .haze{
     position:fixed;inset:0;z-index:1;pointer-events:none;
-    background:radial-gradient(68% 62% at 50% 50%, rgba(234,247,244,.58) 0%, rgba(234,247,244,.12) 46%, transparent 70%);
+    background:radial-gradient(68% 62% at 50% 50%, rgba(238,250,240,.62) 0%, rgba(238,250,240,.14) 46%, transparent 70%);
   }
 
   /* ── zoom stage ──────────────────────────── */
@@ -82,7 +83,7 @@
   .tag::after{content:"";flex:1;height:1px;background:var(--hair)}
   h1,h2{font-family:var(--disp);font-weight:400;letter-spacing:-.035em;line-height:.95;margin:0;text-wrap:balance}
   h2{font-size:clamp(1.9rem,4.6vw,3.1rem)}
-  .said{color:var(--slate);max-width:60ch;margin:.55rem 0 0;font-size:.95rem}
+  .said{color:var(--read);max-width:60ch;margin:.55rem 0 0;font-size:.95rem}
 
   /* ── station 1 · home ────────────────────── */
   .home{text-align:left}
@@ -108,23 +109,60 @@
   .godeep b{font-weight:500}
 
   /* ── station 2 · builds ──────────────────── */
-  .rows{list-style:none;margin:1.1rem 0 0;padding:0;border-top:1px solid var(--hair)}
+  .sheet{
+    background:var(--scrim);border:1.5px solid var(--hair);border-radius:16px;
+    padding:clamp(6px,1.2vw,14px);margin-top:1rem;
+  }
+  .rows{list-style:none;margin:0;padding:0}
   .rows li{
-    display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.2rem 1.2rem;align-items:center;
-    padding:.72rem .55rem;border-bottom:1px solid var(--hair);
+    display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.35rem 1.6rem;align-items:baseline;
+    padding:.85rem .8rem;border-radius:10px;
     transition:background .22s,padding-left .22s var(--ease);
   }
-  .rows li:hover{background:var(--scrim);padding-left:1.1rem}
+  .rows li + li{border-top:1px solid var(--hair)}
+  .rows li:hover{background:var(--paper);padding-left:1.25rem}
   .rows h3{
-    font-family:var(--disp);font-size:clamp(1.02rem,2.1vw,1.42rem);letter-spacing:-.025em;
-    margin:0;line-height:1.05;font-weight:400;
+    font-family:var(--disp);font-size:clamp(1.12rem,2.3vw,1.55rem);letter-spacing:-.025em;
+    margin:0;line-height:1.08;font-weight:400;
   }
   .rows li:hover h3{color:var(--tang)}
-  .rows p{margin:.14rem 0 0;color:var(--slate);font-size:.86rem;max-width:62ch;line-height:1.35}
+  .rows p{margin:.3rem 0 0;color:var(--read);font-size:.95rem;max-width:64ch;line-height:1.5}
   .rows .st{
-    font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;text-align:right;
-    white-space:nowrap;grid-row:span 2;align-self:center;
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-align:right;
+    white-space:nowrap;grid-row:span 2;align-self:center;line-height:1.7;color:var(--slate);
   }
+  .rows .st b{display:block;font-weight:500}
+  .rows code{font-family:var(--mono);font-size:.86em;background:var(--pool);
+    border:1px solid var(--hair);border-radius:4px;padding:.02em .3em}
+  .drawer{
+    font-family:var(--mono);font-size:.64rem;color:var(--slate);letter-spacing:.04em;
+    margin:.75rem .3rem 0;line-height:1.7;
+  }
+  .drawer i{font-style:normal;color:var(--ink)}
+
+  .stack2{display:grid;gap:.85rem;margin-top:.95rem;grid-template-columns:repeat(auto-fit,minmax(272px,1fr))}
+  .sheet h3.hd{
+    font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
+    margin:.25rem .3rem .7rem;font-weight:500;color:var(--tang);
+  }
+  .sheet.b h3.hd{color:#4f9c18}
+  .shelf{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
+  .shelf li{padding:0 .3rem}
+  .shelf cite{font-style:normal;font-weight:700;font-size:.92rem;line-height:1.2;display:block}
+  .shelf small{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate)}
+  .shelf p{margin:.12rem 0 0;font-size:.82rem;color:var(--read);line-height:1.4}
+  .pins{list-style:none;margin:0;padding:0;display:grid;gap:.2rem}
+  .pins a{
+    display:flex;justify-content:space-between;gap:.7rem;align-items:baseline;
+    text-decoration:none;color:var(--ink);font-weight:500;font-size:.9rem;
+    padding:.42em .5em;border-radius:8px;border:1px solid transparent;
+    transition:background .16s,border-color .16s;
+  }
+  .pins a:hover{background:var(--paper);border-color:var(--hair)}
+  .pins a:hover strong{color:var(--tang)}
+  .pins strong{font-weight:500}
+  .pins span{font-family:var(--mono);font-size:.62rem;color:var(--slate);text-align:right;flex:none}
+  .swap{font-family:var(--mono);font-size:.57rem;color:var(--slate);letter-spacing:.06em;margin:.6rem .3rem 0}
   .st-live{color:var(--lime)}
   .st-tape{color:var(--chrome)}
   .st-quiet{color:var(--aqua)}
@@ -137,10 +175,10 @@
   }
 
   /* ── station 3 · obsessions ──────────────── */
-  .cloud{list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:.42rem .46rem;margin:1.2rem 0 0;padding:0}
+  .cloud{list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:.35rem .38rem;margin:.9rem .2rem 0;padding:0}
   .cloud li{
     font-family:var(--disp);font-weight:400;letter-spacing:-.02em;line-height:1;
-    font-size:calc(.82rem + var(--s) * .36rem);
+    font-size:calc(.76rem + var(--s) * .25rem);
     padding:.32em .55em;border-radius:999px;border:1.5px solid var(--hair);
     background:var(--scrim);transition:transform .18s var(--ease),color .18s,border-color .18s,background .18s;
   }
@@ -151,14 +189,6 @@
   .cloud li:nth-child(4n+4){color:#4f9c18;border-color:rgba(123,221,46,.6)}
 
   /* ── station 4 · right now ───────────────── */
-  .trio{display:grid;gap:.85rem;margin-top:1.1rem;grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
-  .card{background:var(--scrim);border:1.5px solid var(--hair);border-radius:12px;padding:1rem}
-  .card h3{
-    font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;
-    margin:0 0 .8rem;font-weight:500;color:var(--tang);
-  }
-  .card.b h3{color:var(--aqua)}
-  .card.c h3{color:#b88400}
   .kv{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
   .kv small{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate)}
   .kv strong{display:block;font-weight:500;font-size:.95rem;line-height:1.25}
@@ -293,108 +323,149 @@
     <div class="home">
       <p class="kick">software engineer <i>//</i> off the clock</p>
       <h1><span>~</span>john</h1>
-      <p class="lede">I write boring reliable backends for money and <em>teach canvases to behave like water</em> for free.</p>
+      <p class="lede">I'm a software engineer <em>trying desperately to figure out what is going on</em>.</p>
       <button class="godeep" type="button" data-next>zoom in <b>&darr;</b></button>
     </div>
   </section>
 
   <section class="station" id="st-1" data-accent="14,42,140" aria-label="Builds">
-    <p class="tag">level 2 <b>//</b> things I made when nobody asked</p>
+    <p class="tag">level 2 <b>//</b> what I'm actually working on</p>
     <h2>Builds</h2>
-    <p class="said">Five of about forty. The other thirty-five stay private, which is a favour I'm doing for you.</p>
-    <ul class="rows">
-      <li>
-        <div>
-          <h3><span class="flag">this page</span>Ripplekit</h3>
-          <p>The ASCII water behind everything here. Ambient interference waves, ripple rings on every
-             move and hover, run-length batched draws so it doesn't cook a fan.</p>
-        </div>
-        <p class="st st-live">live &amp; loved</p>
-      </li>
-      <li>
-        <div>
-          <h3>Tabnado</h3>
-          <p>Closes forty of your tabs, then quizzes you a week later on which you actually missed. Average score: two.</p>
-        </div>
-        <p class="st st-live">900 users</p>
-      </li>
-      <li>
-        <div>
-          <h3>standup.wav</h3>
-          <p>Turns my written standup into a twelve-second lo-fi jingle. The team voted to keep it. They were not asked twice.</p>
-        </div>
-        <p class="st st-quiet">quietly running</p>
-      </li>
-      <li>
-        <div>
-          <h3>Fridge Oracle</h3>
-          <p>A Pi photographs my fridge at 6pm and predicts dinner. Correct 31% of the time, which is 31% more than me.</p>
-        </div>
-        <p class="st st-tape">held together with tape</p>
-      </li>
-      <li>
-        <div>
-          <h3>git blame-me</h3>
-          <p>Finds the commit where I ruined everything and drafts a proportionate apology. Three tones: sheepish, formal, unhinged.</p>
-        </div>
-        <p class="st st-gone">abandoned with honour</p>
-      </li>
-    </ul>
+    <div class="sheet">
+      <ul class="rows">
+        <li>
+          <div>
+            <h3><span class="flag">this page</span>~john</h3>
+            <p>One HTML file, one canvas, no frameworks. It doesn't scroll, it zooms, and the
+               background is ASCII water that reacts to you.</p>
+          </div>
+          <p class="st"><b>HTML · Canvas</b>2026</p>
+        </li>
+        <li>
+          <div>
+            <h3>nmf</h3>
+            <p>An album log. Pull a record from your streaming history, rate it out of five in
+               half-star steps, keep one favourite track, and see what the people you follow
+               have been hearing.</p>
+          </div>
+          <p class="st"><b>TypeScript · SQLite</b>2026</p>
+        </li>
+        <li>
+          <div>
+            <h3>Casualty Tracker</h3>
+            <p>A static memorial site that checks official <code>war.gov</code> casualty releases
+               every five minutes. Confirmed entries publish automatically; anything ambiguous
+               waits for review first.</p>
+          </div>
+          <p class="st"><b>Python · Playwright</b>2026</p>
+        </li>
+        <li>
+          <div>
+            <h3>PWM</h3>
+            <p>A password manager that lives in the terminal. Argon2 for the master key, encrypted
+               at rest, msgpack on disk, and nothing leaves the machine.</p>
+          </div>
+          <p class="st"><b>Python · Typer</b>2025</p>
+        </li>
+        <li>
+          <div>
+            <h3>Sharp</h3>
+            <p>A Chinese-to-English translation teaching aid. Built for one specific person, which
+               turns out to be the best spec I've ever had.</p>
+          </div>
+          <p class="st"><b>CSS · public</b>2025</p>
+        </li>
+        <li>
+          <div>
+            <h3>Poker-2-Go</h3>
+            <p>Poker coaching written in OCaml, because at some point I decided pattern matching
+               and pot odds belonged together.</p>
+          </div>
+          <p class="st"><b>OCaml · public</b>2025</p>
+        </li>
+      </ul>
+    </div>
+    <p class="drawer">also in the drawer: <i>small_learning</i> (notebooks I think with),
+      <i>winter-ml-mocroprojects</i> (the typo is load-bearing now), <i>Nryl</i> (network
+      training, documented badly)</p>
   </section>
 
-  <section class="station" id="st-2" data-accent="123,221,46" aria-label="Obsessions">
-    <p class="tag">level 3 <b>//</b> size = how much of the lease it holds</p>
-    <h2>Obsessions</h2>
-    <p class="said">The big ones are why I'm awake at 2am. The small ones are why my shell config is 400 lines.</p>
+  <section class="station" id="st-2" data-accent="123,221,46" aria-label="As of late">
+    <p class="tag">level 3 <b>//</b> what's got me lately</p>
+    <h2>As of late</h2>
     <ul class="cloud">
-      <li style="--s:5">ascii art</li>
-      <li style="--s:4">shaders</li>
-      <li style="--s:2">mechanical keyboards</li>
-      <li style="--s:4">sourdough</li>
-      <li style="--s:1">shell aliases</li>
-      <li style="--s:3">bouldering</li>
-      <li style="--s:2">emulator internals</li>
-      <li style="--s:5">generative music</li>
-      <li style="--s:1">tiny CLIs</li>
-      <li style="--s:3">secondhand synths</li>
-      <li style="--s:2">typography</li>
+      <li style="--s:5">ascii rendering</li>
+      <li style="--s:4">half-star rating scales</li>
+      <li style="--s:2">argon2</li>
+      <li style="--s:4">new music friday</li>
+      <li style="--s:1">typer CLIs</li>
+      <li style="--s:3">playwright at 3am</li>
+      <li style="--s:2">OCaml pattern matching</li>
+      <li style="--s:5">canvas perf</li>
+      <li style="--s:1">sqlite fixtures</li>
+      <li style="--s:3">gallery-label typography</li>
+      <li style="--s:2">pot odds</li>
       <li style="--s:4">dithering</li>
-      <li style="--s:1">coffee ratios</li>
-      <li style="--s:3">bad sci-fi paperbacks</li>
-      <li style="--s:2">game jams</li>
-      <li style="--s:1">my cat's opinions</li>
+      <li style="--s:1">github actions cron</li>
     </ul>
+    <div class="stack2">
+      <div class="sheet b">
+        <h3 class="hd">on the shelf</h3>
+        <ul class="shelf">
+          <li><cite>The Biggest Bluff</cite><small>Maria Konnikova</small>
+            <p>Poker as a way to think about luck. Ruined my excuses.</p></li>
+          <li><cite>Thinking in Systems</cite><small>Donella Meadows</small>
+            <p>Why the fix you shipped made it worse.</p></li>
+          <li><cite>The Art of Doing Science and Engineering</cite><small>Richard Hamming</small>
+            <p>Read one chapter a month, on purpose.</p></li>
+          <li><cite>G&ouml;del, Escher, Bach</cite><small>Douglas Hofstadter</small>
+            <p>Still unfinished. Will be forever. Fine with it.</p></li>
+        </ul>
+        <p class="swap">// swap these for yours</p>
+      </div>
+      <div class="sheet">
+        <h3 class="hd">pinned tabs</h3>
+        <ul class="pins">
+          <li><a href="https://ciechanow.ski" target="_blank" rel="noopener noreferrer">
+            <strong>ciechanow.ski</strong><span>interactive essays</span></a></li>
+          <li><a href="https://tixy.land" target="_blank" rel="noopener noreferrer">
+            <strong>tixy.land</strong><span>16&times;16, one expression</span></a></li>
+          <li><a href="https://asciify.org" target="_blank" rel="noopener noreferrer">
+            <strong>asciify.org</strong><span>where the water came from</span></a></li>
+          <li><a href="https://www.shadertoy.com" target="_blank" rel="noopener noreferrer">
+            <strong>shadertoy</strong><span>GPU show-off cave</span></a></li>
+          <li><a href="https://neal.fun" target="_blank" rel="noopener noreferrer">
+            <strong>neal.fun</strong><span>fun on purpose</span></a></li>
+          <li><a href="https://wiby.me" target="_blank" rel="noopener noreferrer">
+            <strong>wiby.me</strong><span>search the old web</span></a></li>
+        </ul>
+        <p class="swap">// add a line per site you want to keep</p>
+      </div>
+    </div>
   </section>
 
   <section class="station" id="st-3" data-accent="255,201,60" aria-label="Right now">
-    <p class="tag">level 4 <b>//</b> september 2026, specifically</p>
+    <p class="tag">level 4 <b>//</b> as of 29 september 2026</p>
     <h2>Right now</h2>
-    <div class="trio">
-      <div class="card">
-        <h3>This month</h3>
+    <div class="stack2">
+      <div class="sheet">
+        <h3 class="hd">status</h3>
         <ul class="kv">
-          <li><small>building</small><strong>Ripplekit v3 &mdash; prism pass</strong></li>
-          <li><small>reading</small><strong>The Nature of Code</strong></li>
-          <li><small>listening</small><strong>one dub techno album, on loop</strong></li>
-          <li><small>avoiding</small><strong>my review queue (12 PRs, sorry)</strong></li>
+          <li><small>shipping</small><strong>nmf &mdash; friend feeds, then half-stars on mobile</strong></li>
+          <li><small>keeping alive</small><strong>the casualty tracker, every five minutes</strong></li>
+          <li><small>learning</small><strong>Playwright, and how Actions lies about time</strong></li>
+          <li><small>stuck on</small><strong>naming things &mdash; still, always</strong></li>
         </ul>
       </div>
-      <div class="card b">
-        <h3>Ask me about</h3>
+      <div class="sheet b">
+        <h3 class="hd">open to</h3>
         <ul class="lines y">
-          <li>Why ASCII art is really a compression story</li>
-          <li>Canvas tricks that feel like cheating</li>
-          <li>Hydration percentages, at length</li>
-          <li>The one keyboard switch that is correct</li>
+          <li>Anyone who wants to log albums with me &mdash; nmf needs friends to work</li>
+          <li>Weird datasets, especially badly formatted ones</li>
+          <li>Being told my canvas maths is wrong, with receipts</li>
+          <li>Coffee, if you're nearby and patient</li>
         </ul>
-      </div>
-      <div class="card c">
-        <h3>Please don't</h3>
-        <ul class="lines n">
-          <li>My editor config (I'll show you anyway)</li>
-          <li>Tabs vs spaces &mdash; settled, moving on</li>
-          <li>Why the fridge has an IP address</li>
-        </ul>
+        <p class="swap">// this level is the one to keep current</p>
       </div>
     </div>
   </section>
@@ -417,7 +488,7 @@
   <ol id="rail-list">
     <li><button type="button" data-go="0" aria-current="true">~ home</button></li>
     <li><button type="button" data-go="1" aria-current="false">builds</button></li>
-    <li><button type="button" data-go="2" aria-current="false">obsessions</button></li>
+    <li><button type="button" data-go="2" aria-current="false">as of late</button></li>
     <li><button type="button" data-go="3" aria-current="false">right now</button></li>
     <li><button type="button" data-go="4" aria-current="false">say hi</button></li>
   </ol>
@@ -439,16 +510,16 @@
     <div class="fld">
       <span id="l-pal">palette</span>
       <div class="seg" role="group" aria-labelledby="l-pal">
-        <button type="button" data-pal="0" aria-pressed="true">pool</button>
+        <button type="button" data-pal="0" aria-pressed="false">pool</button>
         <button type="button" data-pal="1" aria-pressed="false">riso</button>
-        <button type="button" data-pal="2" aria-pressed="false">chlorine</button>
+        <button type="button" data-pal="2" aria-pressed="true">chlorine</button>
       </div>
     </div>
     <div class="fld">
       <span id="l-feel">feedback</span>
       <div class="seg" role="group" aria-labelledby="l-feel">
-        <button type="button" data-gain="0.6" aria-pressed="false">calm</button>
-        <button type="button" data-gain="1" aria-pressed="true">wet</button>
+        <button type="button" data-gain="0.6" aria-pressed="true">calm</button>
+        <button type="button" data-gain="1" aria-pressed="false">wet</button>
         <button type="button" data-gain="1.85" aria-pressed="false">choppy</button>
       </div>
     </div>
@@ -468,9 +539,9 @@
   var PAL = [
     { g: [234,247,244], s: [[196,235,230], [18,198,192], null, [14,42,140]] },
     { g: [253,252,246], s: [[255,235,185], [255,201,60],  null, [75,31,214]] },
-    { g: [238,250,240], s: [[208,242,206], [123,221,46],  null, [14,90,120]] }
+    { g: [238,250,240], s: [[206,242,214], [123,221,46],  null, [14,60,120]] }
   ];
-  var LV = 30, pal = 0, gainSet = 1;
+  var LV = 30, pal = 2, gainSet = 0.6;
   var ramp = ' .:-=+*#%@'.split('');
   var cols = 0, rows = 0, cw = 8, chh = 15, vw = 0, vh = 0;
   var line = [], bkt = [], cache = [], ground = '#eaf7f4';
@@ -617,7 +688,7 @@
   /* ── zoom navigation: no scrolling, five depths ── */
   var stations = [].slice.call(document.querySelectorAll('.station'));
   var railBtns = [].slice.call(document.querySelectorAll('[data-go]'));
-  var names = ['home', 'builds', 'obsessions', 'right now', 'say hi'];
+  var names = ['home', 'builds', 'as of late', 'right now', 'say hi'];
   var at = 0, busy = 0, hint = document.getElementById('hint');
 
   function paint() {
