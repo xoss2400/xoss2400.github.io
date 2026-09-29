@@ -1,28 +1,64 @@
-# Small Software
+# ~john
 
-A personal portfolio site. One HTML file, one canvas, zero frameworks, no images.
+A personal site that doesn't scroll. It zooms.
 
-The background is **Ripplekit**: an ASCII fluid field rendered on a 2D canvas.
-Ambient interference waves keep the surface moving, pointer movement and clicks
-drop expanding ripple rings, and draws are run-length batched per row so a
-~7,000-character grid redraws ~30x/second without cooking a fan.
+Brand: **Tilde** — the mark is `~`, which means both "home directory" and "a wave."
+One hand-written `index.html`, one canvas, no frameworks, no build step, no images.
 
-Inspired by [asciify's fluid background](https://asciify.org/docs/backgrounds/fluid).
+## Two ideas hold it up
 
-## Play with it
+**Depth equals specificity.** Five levels, each a full viewport. Level 1 is the widest
+statement (the wordmark); each zoom in is something more particular — what I built, what
+I'm obsessed with, what I'm doing this month, how to reach me. Magnification is shown as
+a real readout (`1.00×`, `1.90×`, `3.61×`, `6.86×`, `13.0×`).
 
-The console in the bottom-right is live:
+Navigate by wheel, trackpad pinch, swipe, `↑`/`↓`, `+`/`−`, `Home`/`End`, or the depth
+rail. Nothing scrolls; a station that overflows on a short screen keeps its own scroll
+and only zooms once you hit its edge.
 
-- **characters** — type any ramp. First character is the empty trough, last is the bright crest.
-- **palette** — hi-vis / ultraviolet / toxic
-- **tempo** — chill / normal / espresso
+**Everything is water.** The background is a live ASCII fluid field — three domain-warped
+travelling waves for the ambient churn, plus expanding ripple rings from every pointer
+move (strength scaled by cursor velocity), every click, and every hover over an
+interactive element. A smoothed "well" follows the cursor and visibly deforms the
+surface. Changing depth fires a double shockwave from the centre, surges the amplitude,
+stretches the wavelength, and lerps the crest colour to that section's accent.
 
-Click anywhere to drop a ripple. `prefers-reduced-motion` renders a still frame instead.
+Draws are run-length batched per row — one `fillText` per run of same-coloured characters
+— so a ~10,000-cell grid holds ~30fps. `prefers-reduced-motion` renders a still frame
+that redraws on interaction instead of animating.
+
+## Palette
+
+Light, high-key, chlorinated. No pink, ever.
+
+| token | hex | role |
+| --- | --- | --- |
+| Pool | `#EAF7F4` | the ground |
+| Paper | `#FDFDFB` | raised surfaces, scrims |
+| Ultramarine | `#0E2A8C` | ink, and the crest of the water |
+| Tangerine | `#FF5A1F` | primary accent, the tilde |
+| Chrome | `#FFC93C` | highlights |
+| Aqua | `#12C6C0` | mid-water, links |
+| Lime | `#7BDD2E` | live states |
+| Slate | `#5A6A87` | the only neutral, blue-biased |
+
+Type: Archivo Black (display), Hanken Grotesk (body), DM Mono (labels, data, and the
+ASCII field itself).
+
+## Poke the water
+
+The pill at bottom-left is collapsed by default. Open it for:
+
+- **characters** — type any ramp; first character is the empty trough, last is the crest
+- **palette** — pool / riso / chlorine
+- **feedback** — calm / wet / choppy (scales every ripple and the cursor well)
 
 ## Editing
 
-Everything is in `index.html`:
+All in `index.html`. Copy lives in the five `<section class="station">` blocks; obsession
+size is `style="--s:1..5"` where bigger means it rents more brain space; each station's
+`data-accent` is the RGB the water shifts to at that depth. Colours are custom properties
+at the top of `<style>`; water palettes are the `PAL` array in the script.
 
-- Copy, projects and interests live in the markup. Interest size is `style="--s:1..5"` — bigger means it rents more brain space.
-- Colors are CSS custom properties at the top of `<style>`; canvas palettes are the `PALETTES` array in the script.
-- Swap the placeholder `hi@example.com` and the `#` links in "Say hi" for real ones.
+Swap the placeholder `hi@example.com` and the four `#` links on level 5 before showing
+anybody.
