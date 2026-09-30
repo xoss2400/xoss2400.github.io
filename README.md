@@ -24,7 +24,8 @@ surface. Changing depth fires a double shockwave from the centre, surges the amp
 stretches the wavelength, and lerps the crest colour to that section's accent.
 
 Draws are run-length batched per row — one `fillText` per run of same-coloured characters
-— so a ~10,000-cell grid holds ~30fps. `prefers-reduced-motion` renders a still frame
+— so a ~100,000-cell grid (characters set to about a third the size, ten times the
+count) holds ~30fps. `prefers-reduced-motion` renders a still frame
 that redraws on interaction instead of animating.
 
 ## Palette
@@ -55,26 +56,7 @@ The pill at bottom-left is collapsed by default. Open it for:
 
 Chlorine and calm are the defaults.
 
-## Editing in the browser
-
-The dashed **✎ edit text** pill at bottom-left unlocks inline editing. Passphrase is
-`tilde`; change it by running `tildeHash('your new one')` in the console and pasting the
-number into `PASS_HASH` in the script.
-
-The gate is local, not security — the page is public and anyone can bypass it in devtools.
-It protects nothing because nothing lives on a server: edits are held in this browser's
-`localStorage` and are invisible to every other visitor until you publish them. Drafts
-survive a reload and the pill shows how many you have.
-
-To publish: **copy index.html** or **download**. Either one re-fetches the published
-source, applies your edits to it with `DOMParser`, and hands back a clean file — so the
-result has none of the runtime attributes the live DOM carries. Paste or move it over
-`index.html`, commit, push. **discard drafts** clears them and reloads.
-
-Drafts are keyed by the position of each field in the `EDITABLE` selector list, so clear
-them before restructuring the markup.
-
-## Editing the source
+## Editing
 
 All in `index.html`. Copy lives in the five `<section class="station">` blocks. Level 3 holds two
 lists you'll want to keep adding to — `.shelf` for books (a `<cite>`, a `<small>` author

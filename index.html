@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>~john</title>
-<meta name="description" content="The personal site of John, a software engineer. It doesn't scroll — it zooms. The background is ASCII water and it reacts to you.">
+<meta name="description" content="Watching the world burn down and writing code for fun.">
 <meta property="og:title" content="~john">
-<meta property="og:description" content="Five levels deep, one sheet of ASCII water. Zoom in for more detail.">
+<meta property="og:description" content="Watching the world burn down and writing code for fun.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%23EEFAF0%27/%3E%3Ctext x=%2716%27 y=%2726%27 font-family=%27monospace%27 font-size=%2730%27 font-weight=%27700%27 fill=%27%23FF5A1F%27 text-anchor=%27middle%27%3E~%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -240,7 +240,6 @@
     position:fixed;z-index:5;left:clamp(12px,2vw,26px);
     bottom:calc(clamp(12px,2vw,26px) + env(safe-area-inset-bottom,0px));
     font-family:var(--mono);width:min(252px,calc(100vw - 24px));
-    display:flex;flex-direction:column;gap:.4rem;
   }
   #poke{
     width:100%;display:flex;align-items:center;justify-content:space-between;gap:.6em;
@@ -252,36 +251,10 @@
   #poke i{font-style:normal;color:var(--aqua-ink);font-size:.9rem;line-height:1}
   #poke:hover i{color:var(--chrome)}
   #poke b{font-weight:400;opacity:.6;font-size:.62rem}
-  #panel,#devpanel{
+  #panel{
     background:var(--paper);border:1.5px solid var(--hair);
     border-radius:14px;padding:.85rem;
   }
-  #dev{
-    width:100%;display:flex;align-items:center;justify-content:space-between;gap:.6em;
-    font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;cursor:pointer;
-    background:transparent;color:var(--slate);border:1.5px dashed var(--hair);
-    border-radius:999px;padding:.5em 1em;transition:background .18s,color .18s,border-color .18s;
-  }
-  #dev:hover{background:var(--paper);color:var(--ink);border-color:var(--slate)}
-  #dev b{font-weight:400;color:var(--tang-ink)}
-  #devpanel p.why{margin:0 0 .7rem;font-size:.58rem;line-height:1.6;color:var(--slate);letter-spacing:.02em}
-  #pass{
-    width:100%;font-family:var(--mono);font-size:.78rem;color:var(--ink);
-    background:var(--pool);border:1.5px solid var(--hair);border-radius:7px;padding:.45em .6em;
-  }
-  .devrow{display:flex;gap:.25rem;margin-top:.45rem}
-  .devrow button{
-    flex:1;font-family:var(--mono);font-size:.62rem;cursor:pointer;color:var(--ink);
-    background:var(--pool);border:1.5px solid var(--hair);border-radius:7px;padding:.5em .3em;
-    transition:background .16s,color .16s,border-color .16s;
-  }
-  .devrow button:hover{background:var(--ink);color:var(--pool);border-color:var(--ink)}
-  .devrow button.warn:hover{background:var(--tang-ink);border-color:var(--tang-ink)}
-  #devsay{margin:.55rem 0 0;font-size:.58rem;color:var(--slate);letter-spacing:.04em;line-height:1.5}
-  [contenteditable="true"]{
-    outline:1.5px dashed rgba(14,42,140,.4);outline-offset:4px;border-radius:3px;cursor:text;
-  }
-  [contenteditable="true"]:focus{outline:2.5px solid var(--tang-ink);outline-style:solid}
   .fld{display:block;margin-bottom:.7rem}
   .fld > span{display:block;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);margin-bottom:.35rem}
   #ramp{
@@ -355,7 +328,7 @@
                half-star steps, keep one favourite track, and see what the people you follow
                have been hearing.</p>
           </div>
-          <p class="st"><b>TypeScript · SQLite</b><span>2026</span></p>
+          <p class="st"><b>TypeScript · SQLite</b>2026</p>
         </li>
         <li>
           <div>
@@ -363,7 +336,7 @@
             <p>A Chinese-to-English translation teaching aid. Built for one specific person, which
                turns out to be the best spec I've ever had.</p>
           </div>
-          <p class="st"><b>CSS · public</b><span>2025</span></p>
+          <p class="st"><b>CSS · public</b>2025</p>
         </li>
         <li>
           <div>
@@ -371,7 +344,7 @@
             <p>Poker coaching written in OCaml, because at some point I decided pattern matching
                and pot odds belonged together.</p>
           </div>
-          <p class="st"><b>OCaml · public</b><span>2025</span></p>
+          <p class="st"><b>OCaml · public</b>2025</p>
         </li>
       </ul>
     </div>
@@ -501,34 +474,6 @@
     <p class="meter"><span id="m-grid">—</span> &middot; <span id="m-fps">—</span> fps</p>
   </div>
 
-  <button type="button" id="dev" aria-expanded="false" aria-controls="devpanel">
-    <span>&#9998; edit text</span><b id="devcount"></b>
-  </button>
-  <div id="devpanel" hidden>
-    <div id="devlocked">
-      <label class="fld" for="pass">
-        <span>passphrase</span>
-        <input id="pass" type="password" autocomplete="current-password" placeholder="&bull;&bull;&bull;&bull;&bull;">
-      </label>
-      <div class="devrow"><button type="button" id="unlock">unlock</button></div>
-      <p class="why">Local gate, not real security &mdash; the page is public and anyone
-        can bypass this in devtools. It protects nothing because nothing is stored on a
-        server: your edits stay in this browser until you export them.</p>
-    </div>
-    <div id="devopen" hidden>
-      <p class="why">Click any text to edit it. Drafts save as you type and survive a
-        reload. Nothing is published until you export and commit.</p>
-      <div class="devrow">
-        <button type="button" id="copyhtml">copy index.html</button>
-        <button type="button" id="dlhtml">download</button>
-      </div>
-      <div class="devrow">
-        <button type="button" id="discard" class="warn">discard drafts</button>
-        <button type="button" id="lock">lock</button>
-      </div>
-      <p id="devsay"></p>
-    </div>
-  </div>
 </div>
 
 <p class="hint" id="hint">scroll &middot; swipe &middot; &uarr;&darr; to zoom</p>
@@ -581,7 +526,9 @@
     vw = innerWidth; vh = innerHeight;
     canvas.width = Math.floor(vw * dpr); canvas.height = Math.floor(vh * dpr);
     canvas.style.width = vw + 'px'; canvas.style.height = vh + 'px';
-    var fs = vw < 560 ? 10.5 : vw < 1000 ? 11.5 : 12.5;
+    /* font-size drives cell size, and cell count scales as 1/fs^2 — shrinking
+       by sqrt(10) packs roughly 10x as many characters into the same page */
+    var fs = vw < 560 ? 3.3 : vw < 1000 ? 3.6 : 4.0;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.font = '400 ' + fs + 'px "DM Mono", ui-monospace, monospace';
     ctx.textBaseline = 'top';
@@ -780,8 +727,7 @@
   }, { passive: true });
 
   addEventListener('keydown', function (e) {
-    var ae = document.activeElement;
-    if (ae && (ae.isContentEditable || ae.tagName === 'INPUT')) return;
+    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
     var k = e.key;
     if (/^(ArrowDown|PageDown)$/.test(k) || k === ' ') { e.preventDefault(); step(1); }
     else if (/^(ArrowUp|PageUp)$/.test(k)) { e.preventDefault(); step(-1); }
@@ -859,163 +805,6 @@
   }
   seg('[data-pal]', function (b) { pal = +b.dataset.pal; mixColors(); surge = 1.2; splash(vw / 2, vh / 2, 2.4); if (reduce.matches) draw(); });
   seg('[data-gain]', function (b) { gainSet = +b.dataset.gain; surge = gainSet * 0.8; });
-
-  /* ── dev mode: passphrase-gated inline text editing ──────────────
-     Change the passphrase by running tildeHash('your new one') in the
-     console and pasting the number into PASS_HASH below. */
-  var PASS_HASH = 4279247785;                       // 'tilde'
-  var EDITABLE = '.home .lede,.tag,h2,.said,.rows h3,.rows p,.rows .st b,.rows .st span,' +
-                 '.drawer,.sheet h3.hd,.shelf cite,.shelf small,.shelf p,.pins strong,' +
-                 '.pins span,.kv small,.kv strong,.lines li,.mail,.fine,.links a,.swap';
-  var STORE = 'tilde.edits';
-  var dev = document.getElementById('dev'), devpanel = document.getElementById('devpanel');
-  var devlocked = document.getElementById('devlocked'), devopen = document.getElementById('devopen');
-  var devsay = document.getElementById('devsay'), devcount = document.getElementById('devcount');
-  var fields = [].slice.call(document.querySelectorAll(EDITABLE));
-
-  window.tildeHash = function (str) {
-    var h = 0x811c9dc5;
-    for (var i = 0; i < str.length; i++) {
-      h ^= str.charCodeAt(i) & 0xff;
-      h = Math.imul(h, 0x01000193) >>> 0;
-    }
-    return h;
-  };
-
-  function drafts() {
-    try { return JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { return {}; }
-  }
-  function saveDrafts(d) {
-    try { localStorage.setItem(STORE, JSON.stringify(d)); } catch (e) {}
-  }
-  function badge() {
-    var n = Object.keys(drafts()).length;
-    devcount.textContent = n ? n + ' draft' + (n > 1 ? 's' : '') : '';
-  }
-  function applyDrafts() {
-    var d = drafts();
-    Object.keys(d).forEach(function (i) {
-      if (fields[i]) {
-        fields[i].innerHTML = d[i];
-        if (fields[i].dataset.txt) fields[i].dataset.txt = fields[i].textContent;
-      }
-    });
-    badge();
-  }
-
-  var editing = false;
-  function setEditing(on) {
-    editing = on;
-    devopen.hidden = !on; devlocked.hidden = on;
-    fields.forEach(function (f, i) {
-      if (on) {
-        f.setAttribute('contenteditable', 'true');
-        f.dataset.ed = i;
-      } else {
-        f.removeAttribute('contenteditable');
-      }
-    });
-    document.body.classList.toggle('editing', on);
-  }
-
-  dev.addEventListener('click', function () {
-    var open = devpanel.hidden;
-    devpanel.hidden = !open;
-    dev.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open && !editing) document.getElementById('pass').focus();
-  });
-
-  function tryUnlock() {
-    var f = document.getElementById('pass');
-    if (window.tildeHash(f.value) === PASS_HASH) {
-      f.value = '';
-      try { sessionStorage.setItem('tilde.dev', '1'); } catch (e) {}
-      setEditing(true);
-      devsay.textContent = fields.length + ' text fields unlocked.';
-    } else {
-      f.value = '';
-      f.placeholder = 'nope — try again';
-      splash(vw * 0.5, vh * 0.5, 2.2);
-    }
-  }
-  document.getElementById('unlock').addEventListener('click', tryUnlock);
-  document.getElementById('pass').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') { e.preventDefault(); tryUnlock(); }
-  });
-  document.getElementById('lock').addEventListener('click', function () {
-    try { sessionStorage.removeItem('tilde.dev'); } catch (e) {}
-    setEditing(false);
-  });
-
-  document.addEventListener('input', function (e) {
-    var f = e.target;
-    if (!editing || !f.dataset || f.dataset.ed === undefined) return;
-    var d = drafts();
-    d[f.dataset.ed] = f.innerHTML;
-    saveDrafts(d);
-    if (f.dataset.txt) f.dataset.txt = f.textContent;   // keep the ramp resolve honest
-    badge();
-    devsay.textContent = 'saved locally.';
-  });
-
-  /* while editing, clicking a link places the cursor instead of navigating */
-  document.addEventListener('click', function (e) {
-    if (!editing) return;
-    var a = e.target.closest && e.target.closest('#stage a');
-    if (a) { e.preventDefault(); }
-  }, true);
-
-  /* paste as plain text so no markup sneaks into the file */
-  document.addEventListener('paste', function (e) {
-    if (!editing || !e.target.isContentEditable) return;
-    e.preventDefault();
-    var t = (e.clipboardData || window.clipboardData).getData('text');
-    document.execCommand('insertText', false, t.replace(/\s+/g, ' '));
-  });
-
-  document.getElementById('discard').addEventListener('click', function () {
-    try { localStorage.removeItem(STORE); } catch (e) {}
-    devsay.textContent = 'drafts cleared — reloading.';
-    setTimeout(function () { location.reload(); }, 400);
-  });
-
-  /* export: patch the published source, not the live DOM, so the file
-     comes back clean of runtime attributes */
-  function buildFile() {
-    return fetch('index.html', { cache: 'no-store' }).then(function (r) {
-      if (!r.ok) throw new Error('could not read index.html (' + r.status + ')');
-      return r.text();
-    }).then(function (src) {
-      var doc = new DOMParser().parseFromString(src, 'text/html');
-      var theirs = [].slice.call(doc.querySelectorAll(EDITABLE));
-      if (theirs.length !== fields.length) throw new Error('source and page disagree — reload first');
-      var d = drafts(), n = 0;
-      Object.keys(d).forEach(function (i) { if (theirs[i]) { theirs[i].innerHTML = d[i]; n++; } });
-      return { text: '<!doctype html>\n' + doc.documentElement.outerHTML + '\n', n: n };
-    });
-  }
-  document.getElementById('copyhtml').addEventListener('click', function () {
-    buildFile().then(function (o) {
-      return navigator.clipboard.writeText(o.text).then(function () {
-        devsay.textContent = o.n + ' edit' + (o.n === 1 ? '' : 's') + ' baked in — paste over index.html and commit.';
-      });
-    }).catch(function (err) { devsay.textContent = err.message; });
-  });
-  document.getElementById('dlhtml').addEventListener('click', function () {
-    buildFile().then(function (o) {
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([o.text], { type: 'text/html' }));
-      a.download = 'index.html';
-      a.click();
-      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
-      devsay.textContent = 'downloaded with ' + o.n + ' edit' + (o.n === 1 ? '' : 's') + '.';
-    }).catch(function (err) { devsay.textContent = err.message; });
-  });
-
-  applyDrafts();
-  try {
-    if (sessionStorage.getItem('tilde.dev') === '1') { setEditing(true); devpanel.hidden = false; dev.setAttribute('aria-expanded', 'true'); }
-  } catch (e) {}
 
   /* ── boot ── */
   mixColors(); resize(); paint();
