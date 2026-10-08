@@ -1,0 +1,226 @@
+
+
+<style>
+  /* the design panel: a lab bench bolted onto the live page. It keeps to
+     the site's own light look (paper, ink, hairlines, DM Mono labels) on
+     purpose, so the controls don't fight the page they're tuning. */
+  .lab{
+    --lab-bg:#fdfdfb; --lab-ink:#0e2a8c; --lab-mute:#5a6a87; --lab-line:rgba(14,42,140,.16);
+    --lab-field:#eefaf0; --lab-on:#0e2a8c; --lab-on-ink:#eefaf0; --lab-hot:#ad3d00;
+    position:fixed;z-index:20;right:16px;top:calc(16px + env(safe-area-inset-top,0px));
+    width:min(300px,calc(100vw - 32px));font-family:"DM Mono",ui-monospace,Menlo,monospace;
+    color:var(--lab-ink);font-size:12px;
+  }
+  .lab-tog{
+    margin-left:auto;display:flex;align-items:center;gap:.6em;cursor:pointer;
+    font:inherit;letter-spacing:.08em;color:var(--lab-ink);background:var(--lab-bg);
+    border:1.5px solid var(--lab-line);border-radius:999px;padding:.55em 1em;
+  }
+  .lab-tog:hover{background:var(--lab-ink);color:var(--lab-bg)}
+  .lab-tog i{font-style:normal;color:var(--lab-hot)}
+  .lab-body{
+    margin-top:8px;background:var(--lab-bg);border:1.5px solid var(--lab-line);border-radius:14px;
+    max-height:calc(100vh - 90px);overflow-y:auto;padding:4px 14px 14px;
+    box-shadow:0 10px 30px rgba(14,42,140,.10);
+  }
+  .lab fieldset{border:0;margin:0;padding:12px 0 2px;display:grid;gap:9px}
+  .lab fieldset + fieldset{border-top:1px solid var(--lab-line)}
+  .lab legend{
+    padding:0;margin-bottom:2px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--lab-hot);
+  }
+  .lab .row{display:grid;grid-template-columns:7.2em minmax(0,1fr) 3.6em;align-items:center;gap:8px}
+  .lab .row label{color:var(--lab-mute);font-size:11px}
+  .lab output{text-align:right;font-variant-numeric:tabular-nums;font-size:11px}
+  .lab input[type=range]{width:100%;accent-color:var(--lab-ink);min-width:0}
+  .lab input[type=text]{
+    grid-column:2 / -1;min-width:0;font:inherit;color:var(--lab-ink);background:var(--lab-field);
+    border:1.5px solid var(--lab-line);border-radius:7px;padding:.4em .55em;
+  }
+  .lab input[type=color]{
+    grid-column:2 / -1;width:100%;height:26px;padding:0 2px;border:1.5px solid var(--lab-line);
+    border-radius:7px;background:var(--lab-field);cursor:pointer;
+  }
+  .lab .seg{grid-column:2 / -1;display:flex;gap:4px}
+  .lab .seg button{
+    flex:1;font:inherit;font-size:11px;cursor:pointer;color:var(--lab-mute);background:var(--lab-field);
+    border:1.5px solid var(--lab-line);border-radius:7px;padding:.4em 0;
+  }
+  .lab .seg button[aria-pressed="true"]{background:var(--lab-on);border-color:var(--lab-on);color:var(--lab-on-ink)}
+  .lab .acts{display:flex;gap:6px;padding-top:12px;border-top:1px solid var(--lab-line);margin-top:10px}
+  .lab .acts button{
+    flex:1;font:inherit;cursor:pointer;border-radius:8px;padding:.6em 0;
+    border:1.5px solid var(--lab-ink);background:var(--lab-bg);color:var(--lab-ink);
+  }
+  .lab .acts button.go{background:var(--lab-ink);color:var(--lab-bg)}
+  .lab .acts button:hover{background:var(--lab-hot);border-color:var(--lab-hot);color:var(--lab-bg)}
+  .lab textarea{
+    width:100%;margin-top:8px;min-height:7.5em;font:inherit;font-size:10.5px;color:var(--lab-ink);
+    background:var(--lab-field);border:1.5px solid var(--lab-line);border-radius:7px;padding:.5em;resize:vertical;
+  }
+  .lab .note{margin:6px 0 0;font-size:10.5px;color:var(--lab-mute);min-height:1.3em}
+  .lab :focus-visible{outline:2px solid var(--lab-hot);outline-offset:2px}
+  @media (max-width:560px){
+    .lab{top:auto;bottom:calc(64px + env(safe-area-inset-bottom,0px));right:16px}
+    .lab-body{max-height:55vh}
+  }
+</style>
+
+<aside class="lab" id="lab" aria-label="Design controls">
+  <button type="button" class="lab-tog" id="lab-tog" aria-expanded="true" aria-controls="lab-body"><i>&#9673;</i> design <b id="lab-tog-b">hide</b></button>
+  <div class="lab-body" id="lab-body">
+    <fieldset>
+      <legend>landing line</legend>
+      <div class="row"><label for="l-text">text</label><input id="l-text" type="text" value="I Write Code for monkeys"></div>
+      <div class="row"><label for="l-size">size</label><input id="l-size" type="range" min="2" max="10" step="0.1"><output for="l-size"></output></div>
+      <div class="row"><label for="l-x">left</label><input id="l-x" type="range" min="0" max="70" step="0.5"><output for="l-x"></output></div>
+      <div class="row"><label for="l-y">top</label><input id="l-y" type="range" min="5" max="80" step="0.5"><output for="l-y"></output></div>
+      <div class="row"><label for="l-color">colour</label><input id="l-color" type="color"></div>
+    </fieldset>
+    <fieldset>
+      <legend>judoka</legend>
+      <div class="row"><label for="j-size">size</label><input id="j-size" type="range" min="0.12" max="0.7" step="0.01"><output for="j-size"></output></div>
+      <div class="row"><label for="j-x">across</label><input id="j-x" type="range" min="0.15" max="0.85" step="0.005"><output for="j-x"></output></div>
+      <div class="row"><label for="j-y">down</label><input id="j-y" type="range" min="0.25" max="0.8" step="0.005"><output for="j-y"></output></div>
+      <div class="row"><label for="j-banker">banker gi</label><input id="j-banker" type="color"></div>
+      <div class="row"><label for="j-player">player gi</label><input id="j-player" type="color"></div>
+    </fieldset>
+    <fieldset>
+      <legend>mat</legend>
+      <div class="row"><label for="m-w">width</label><input id="m-w" type="range" min="150" max="1100" step="10"><output for="m-w"></output></div>
+      <div class="row"><label for="m-d">depth</label><input id="m-d" type="range" min="40" max="340" step="5"><output for="m-d"></output></div>
+      <div class="row"><label for="m-color">colour</label><input id="m-color" type="color"></div>
+    </fieldset>
+    <fieldset>
+      <legend>ascii &amp; camera</legend>
+      <div class="row"><label for="a-font">font</label><input id="a-font" type="range" min="6" max="24" step="0.5"><output for="a-font"></output></div>
+      <div class="row"><label for="a-strip">strip</label><input id="a-strip" type="range" min="0.12" max="0.5" step="0.01"><output for="a-strip"></output></div>
+      <div class="row"><label for="a-tilt">tilt</label><input id="a-tilt" type="range" min="0" max="30" step="0.5"><output for="a-tilt"></output></div>
+      <div class="row"><label for="a-turn">turn</label><input id="a-turn" type="range" min="-45" max="45" step="0.5"><output for="a-turn"></output></div>
+      <div class="row"><span class="lbl" id="a-pal-l">water</span>
+        <div class="seg" role="group" aria-labelledby="a-pal-l">
+          <button type="button" data-lab-pal="0" aria-pressed="false">pool</button>
+          <button type="button" data-lab-pal="1" aria-pressed="false">riso</button>
+          <button type="button" data-lab-pal="2" aria-pressed="false">chlorine</button>
+        </div></div>
+      <div class="row"><span class="lbl" id="a-spd-l">bout</span>
+        <div class="seg" role="group" aria-labelledby="a-spd-l">
+          <button type="button" data-lab-spd="1" aria-pressed="false">1&times;</button>
+          <button type="button" data-lab-spd="10" aria-pressed="false">10&times;</button>
+          <button type="button" data-lab-spd="100" aria-pressed="false">100&times;</button>
+          <button type="button" data-lab-spd="1000" aria-pressed="false">1k&times;</button>
+        </div></div>
+    </fieldset>
+    <div class="acts">
+      <button type="button" id="lab-reset">Reset</button>
+      <button type="button" class="go" id="lab-copy">Copy settings</button>
+    </div>
+    <p class="note" id="lab-note" role="status"></p>
+    <textarea id="lab-out" readonly aria-label="Current settings" hidden></textarea>
+  </div>
+</aside>
+
+<script>
+(function () {
+  'use strict';
+  /* what the page ships with today; Reset comes back here */
+  var BASE = {
+    heroText: 'I Write Code for monkeys', heroSize: 5.2, heroX: 20, heroY: 33, heroColor: '#0b0b10',
+    judokaSize: 0.32, judokaX: 0.47, judokaY: 0.53, bankerGi: '#2254d6', playerGi: '#d63026',
+    matWidth: 560, matDepth: 150, matColor: '#c42c24',
+    asciiFont: 10, stripHeight: 0.26, tilt: 7, turn: 14, water: 2, speed: 1
+  };
+  var KEY = 'zob-design-lab';
+  var cfg = {};
+  try { cfg = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { cfg = {}; }
+  for (var k in BASE) if (!(k in cfg)) cfg[k] = BASE[k];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var hero = $('hero');
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(cfg)); } catch (e) {} }
+
+  /* each control: its element, the setting it drives, how to show it */
+  var sliders = [
+    ['l-size', 'heroSize', function (v) { return v.toFixed(1) + 'vw'; }],
+    ['l-x', 'heroX', function (v) { return v.toFixed(1) + '%'; }],
+    ['l-y', 'heroY', function (v) { return v.toFixed(1) + '%'; }],
+    ['j-size', 'judokaSize', function (v) { return Math.round(v * 100) + '%'; }],
+    ['j-x', 'judokaX', function (v) { return (v * 100).toFixed(1) + '%'; }],
+    ['j-y', 'judokaY', function (v) { return (v * 100).toFixed(1) + '%'; }],
+    ['m-w', 'matWidth', function (v) { return String(v); }],
+    ['m-d', 'matDepth', function (v) { return String(v); }],
+    ['a-font', 'asciiFont', function (v) { return v.toFixed(1) + 'px'; }],
+    ['a-strip', 'stripHeight', function (v) { return Math.round(v * 100) + '%'; }],
+    ['a-tilt', 'tilt', function (v) { return v.toFixed(1) + '°'; }],
+    ['a-turn', 'turn', function (v) { return v.toFixed(1) + '°'; }]
+  ];
+  var colors = [['l-color', 'heroColor'], ['j-banker', 'bankerGi'], ['j-player', 'playerGi'], ['m-color', 'matColor']];
+
+  function applyAll() {
+    hero.textContent = cfg.heroText;
+    hero.style.fontSize = cfg.heroSize + 'vw';
+    hero.style.left = cfg.heroX + 'vw';
+    hero.style.top = cfg.heroY + 'vh';
+    hero.style.color = cfg.heroColor;
+    var L = window.__lab;
+    if (!L) return;
+    L.set({
+      heroH: cfg.judokaSize, landX: cfg.judokaX, landY: cfg.judokaY,
+      banker: cfg.bankerGi, player: cfg.playerGi,
+      matW: cfg.matWidth, matD: cfg.matDepth, matColor: cfg.matColor,
+      font: cfg.asciiFont, strip: cfg.stripHeight, pitch: cfg.tilt, yaw: cfg.turn,
+      pal: cfg.water, speed: cfg.speed
+    });
+  }
+  function sync() {
+    $('l-text').value = cfg.heroText;
+    sliders.forEach(function (s) {
+      var el = $(s[0]); el.value = cfg[s[1]];
+      el.nextElementSibling.textContent = s[2](+cfg[s[1]]);
+    });
+    colors.forEach(function (c) { $(c[0]).value = cfg[c[1]]; });
+    [].forEach.call(document.querySelectorAll('[data-lab-pal]'), function (b) {
+      b.setAttribute('aria-pressed', +b.dataset.labPal === cfg.water ? 'true' : 'false');
+    });
+    [].forEach.call(document.querySelectorAll('[data-lab-spd]'), function (b) {
+      b.setAttribute('aria-pressed', +b.dataset.labSpd === cfg.speed ? 'true' : 'false');
+    });
+  }
+  function change(k, v) { cfg[k] = v; save(); sync(); applyAll(); $('lab-out').hidden = true; $('lab-note').textContent = ''; }
+
+  $('l-text').addEventListener('input', function (e) { change('heroText', e.target.value || ' '); });
+  sliders.forEach(function (s) { $(s[0]).addEventListener('input', function (e) { change(s[1], +e.target.value); }); });
+  colors.forEach(function (c) { $(c[0]).addEventListener('input', function (e) { change(c[1], e.target.value); }); });
+  [].forEach.call(document.querySelectorAll('[data-lab-pal]'), function (b) {
+    b.addEventListener('click', function () { change('water', +b.dataset.labPal); });
+  });
+  [].forEach.call(document.querySelectorAll('[data-lab-spd]'), function (b) {
+    b.addEventListener('click', function () { change('speed', +b.dataset.labSpd); });
+  });
+
+  $('lab-reset').addEventListener('click', function () {
+    cfg = {}; for (var k in BASE) cfg[k] = BASE[k];
+    save(); sync(); applyAll();
+    $('lab-out').hidden = true; $('lab-note').textContent = 'Back to what the site ships with.';
+  });
+  $('lab-copy').addEventListener('click', function () {
+    var text = JSON.stringify(cfg, null, 2), out = $('lab-out'), note = $('lab-note');
+    out.value = text; out.hidden = false;
+    function fallback() { out.focus(); out.select(); note.textContent = 'Selected below: copy it and paste it to Claude.'; }
+    try {
+      navigator.clipboard.writeText(text).then(function () {
+        note.textContent = 'Copied. Paste it to Claude to apply it to the site.';
+      }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  var tog = $('lab-tog'), body = $('lab-body');
+  tog.addEventListener('click', function () {
+    var open = body.hidden;
+    body.hidden = !open;
+    tog.setAttribute('aria-expanded', open ? 'true' : 'false');
+    $('lab-tog-b').textContent = open ? 'hide' : 'show';
+  });
+
+  sync(); applyAll();
+})();
+</script>
