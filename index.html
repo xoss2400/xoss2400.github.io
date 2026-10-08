@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
+<meta name="theme-color" content="#eefaf0">
 <title>~john</title>
 <meta name="description" content="Watching the world burn down and writing code for fun.">
 <meta property="og:title" content="~john">
@@ -43,11 +44,13 @@
   }
 
   *,*::before,*::after{box-sizing:border-box}
-  html{color-scheme:light}
-  html,body{height:100%}
+  /* the document itself never scrolls: Safari 26 draws whatever the root
+     scroller has under its translucent toolbar, so the site scrolls inside
+     #scroller instead, and all the toolbar can ever show is this colour */
+  html{color-scheme:light;height:100%;overflow:hidden;background:var(--ground,#eefaf0)}
   body{
-    margin:0;overflow:hidden;
-    background:var(--pool);color:var(--ink);
+    margin:0;height:100%;overflow:hidden;
+    background:var(--ground,#eefaf0);color:var(--ink);
     font-family:var(--body);font-size:clamp(14px,1vw,16px);line-height:1.5;
     -webkit-font-smoothing:antialiased;
   }
@@ -55,38 +58,35 @@
   :focus-visible{outline:2.5px solid var(--tang);outline-offset:3px;border-radius:2px}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 
-  /* ── the water ───────────────────────────── */
-  #water{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
-  .haze{
-    position:fixed;inset:0;z-index:1;pointer-events:none;
-    background:radial-gradient(68% 62% at 50% 50%, rgba(238,250,240,.62) 0%, rgba(238,250,240,.14) 46%, transparent 70%);
+  /* ── the water: full screen at the top of the page, shrinking to a
+       strip pinned there as you scroll (the clip is set from the script) ── */
+  /* the canvas takes no pointer events, so a wheel or a swipe over it
+     reaches the scroller underneath; the ripples listen on the window */
+  #water{position:fixed;top:0;left:0;width:100%;height:100%;display:block;z-index:3;pointer-events:none;background:var(--ground,#eefaf0)}
+  #scroller{position:fixed;inset:0;z-index:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  #scroller:focus{outline:none}
+  #intro{display:block}
+
+  /* ── the landing line: part of the intro, scrolling up and away with it.
+       It can't live inside #intro itself — the water canvas sits above the
+       scroller — so it stays fixed and the script moves it with the scroll. ── */
+  .hero{
+    position:fixed;z-index:4;left:20vw;top:33vh;margin:0;pointer-events:none;
+    font-family:var(--body);font-weight:700;font-size:clamp(2.6rem,5.2vw,5.6rem);
+    line-height:1.02;letter-spacing:-.025em;color:#0b0b10;max-width:9ch;
+    will-change:transform;
+  }
+  @media (max-width:720px){
+    .hero{left:16px;top:14vh}
   }
 
-  /* ── zoom stage ──────────────────────────── */
-  #stage{position:fixed;inset:0;z-index:2;display:grid;place-items:center;padding:clamp(16px,3vw,32px)}
+  /* ── the site: ordinary sections on white, scrolling under the strip ── */
+  #site{position:relative;z-index:1;background:#fff}
   .station{
-    position:absolute;width:min(940px,94vw);max-height:min(82vh,760px);
-    overflow:auto;overscroll-behavior:contain;
-    padding:clamp(4px,1vw,10px);
-    transform:scale(var(--s,1));transform-origin:50% 50%;
-    visibility:hidden;pointer-events:none;
-    transition:transform 1s var(--ease),visibility 0s linear 1s;
+    width:min(940px,100%);margin:0 auto;
+    padding:clamp(56px,9vw,112px) clamp(16px,4vw,32px) 0;
   }
-  .station[data-state="here"]{--s:1;visibility:visible;pointer-events:auto;transition-delay:0s}
-  .station[data-state="behind"]{--s:3.1}
-  .station[data-state="ahead"]{--s:.34}
-
-  /* content dissolves on its own clock, staggered top-down, so the type
-     softens into the water instead of the whole block snapping off */
-  .station > *{
-    opacity:0;filter:blur(12px);transform:translateY(4px) scale(.99);
-    transition:opacity .62s ease var(--dr,0s),filter .68s ease var(--dr,0s),
-               transform .8s var(--ease) var(--dr,0s);
-  }
-  .station[data-state="here"] > *{
-    opacity:1;filter:blur(0);transform:none;
-    transition-delay:var(--d,0s);
-  }
+  .station:last-child{padding-bottom:clamp(96px,14vw,160px)}
 
   /* ── shared type roles ───────────────────── */
   .tag{
@@ -97,53 +97,75 @@
   .tag b{color:var(--tang-ink);font-weight:500}
   .tag::after{content:"";flex:1;height:1px;background:var(--hair)}
   h1,h2{font-family:var(--disp);font-weight:400;letter-spacing:-.035em;line-height:.95;margin:0;text-wrap:balance}
-  h1,h2,.tag,.said,.home .lede,.drawer{
-    text-shadow:0 0 7px var(--pool),0 0 16px var(--pool),0 0 28px var(--pool);
-  }
   h2{font-size:clamp(1.9rem,4.6vw,3.1rem)}
   .said{color:var(--read);max-width:60ch;margin:.55rem 0 0;font-size:.95rem}
 
-  /* ── station 1 · home ────────────────────── */
-  .home{text-align:left}
-  .home h1{font-size:clamp(3.4rem,15vw,10.5rem);line-height:.8;letter-spacing:-.055em}
-  .home h1 span{color:var(--tang)}
-  .home .lede{
-    font-size:clamp(1.05rem,2.3vw,1.6rem);max-width:32ch;margin:clamp(18px,3vw,30px) 0 0;
-    font-weight:500;line-height:1.28;
-  }
-  .home .lede em{font-style:normal;background:var(--chrome);padding:0 .18em;box-decoration-break:clone}
-
-  /* ── station 2 · builds ──────────────────── */
+  /* ── station 2 · projects ────────────────── */
   .sheet{
     background:var(--paper);border:1.5px solid var(--hair);border-radius:16px;
     padding:clamp(6px,1.2vw,14px);margin-top:1rem;
   }
-  .rows{list-style:none;margin:0;padding:0}
-  .rows li{
-    display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.35rem 1.6rem;align-items:baseline;
-    padding:1.15rem .85rem;border-radius:10px;
-    transition:background .22s,padding-left .22s var(--ease);
+  /* a project is just its name and what it is, set large straight onto
+     the water, with whatever it needs underneath */
+  .proj{margin-top:clamp(1.2rem,3vw,2.2rem);container-type:inline-size}
+  .proj + .proj{margin-top:clamp(2.4rem,6vw,4rem)}
+  .proj h3{
+    font-family:var(--disp);font-size:clamp(2.6rem,8vw,5.4rem);letter-spacing:-.045em;
+    margin:0;line-height:.9;font-weight:400;color:var(--ink);
   }
-  .rows li + li{border-top:1px solid var(--hair)}
-  .rows li:hover{background:var(--paper);padding-left:1.25rem}
-  .rows h3{
-    font-family:var(--disp);font-size:clamp(1.22rem,2.7vw,1.8rem);letter-spacing:-.028em;
-    margin:0;line-height:1.08;font-weight:400;
+  .proj > p{
+    margin:clamp(.7rem,1.6vw,1.1rem) 0 0;max-width:38ch;
+    font-size:clamp(1.12rem,2.3vw,1.62rem);line-height:1.38;font-weight:500;color:var(--ink);
   }
-  .rows li:hover h3{color:var(--tang-ink)}
-  .rows p{margin:.38rem 0 0;color:var(--read);font-size:1rem;max-width:64ch;line-height:1.55}
-  .rows .st{
-    font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-align:right;
-    white-space:nowrap;grid-row:span 2;align-self:center;line-height:1.7;color:var(--slate);
+
+  /* ── zob: a green-screen terminal inside the project ─ */
+  .term{
+    --g:#39ff6a; --gd:#23a54a; --gl:rgba(57,255,106,.3); --bg:#050a06;
+    position:relative;overflow:hidden;margin-top:1.1rem;
+    background:var(--bg);color:var(--g);border:1.5px solid var(--gl);border-radius:10px;
+    font-family:var(--mono);font-size:.72rem;line-height:1.35;font-variant-numeric:tabular-nums;
+    text-shadow:0 0 6px rgba(57,255,106,.45);
   }
-  .rows .st b{display:block;font-weight:500}
-  .rows code{font-family:var(--mono);font-size:.86em;background:var(--pool);
-    border:1px solid var(--hair);border-radius:4px;padding:.02em .3em}
-  .drawer{
-    font-family:var(--mono);font-size:.64rem;color:var(--slate);letter-spacing:.04em;
-    margin:.75rem .3rem 0;line-height:1.7;
+  /* scanlines, over everything and under nothing interactive */
+  .term::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.24) 0 1px,transparent 1px 3px);
   }
-  .drawer i{font-style:normal;color:var(--ink)}
+  .term button{
+    font:inherit;color:var(--g);background:transparent;border:0;cursor:pointer;
+    padding:.1em .4em;border-radius:2px;text-shadow:inherit;
+  }
+  .term button:hover{background:rgba(57,255,106,.16)}
+  .term button[aria-pressed="true"],.term button[aria-expanded="true"]{background:var(--g);color:var(--bg);text-shadow:none}
+  .term .k{color:var(--gd);font-size:.62rem;letter-spacing:.14em}
+  .tbar{
+    display:flex;justify-content:space-between;align-items:center;gap:1em;
+    padding:.45em .8em;border-bottom:1px solid var(--gl);color:var(--gd);
+  }
+  .tbar > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tbar button{flex:none}
+  .tgrid{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);border-bottom:1px solid var(--gl)}
+  .zart{
+    grid-row:1 / span 4;margin:0;padding:.8em 1.2em;border-right:1px solid var(--gl);
+    font:inherit;line-height:1.2;white-space:pre;display:flex;align-items:center;
+  }
+  .tc{display:flex;flex-direction:column;gap:.1em;min-width:0;padding:.45em .8em;border-bottom:1px solid var(--gl)}
+  .tc.l{border-right:1px solid var(--gl)}
+  .tc.end{border-bottom:0}
+  .tc .v{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tc .big{font-size:2.3rem;line-height:1.05}
+  .tc[data-won="false"] .v{opacity:.35}
+  .tctl{display:flex;flex-wrap:wrap;gap:.35em 1.4em;padding:.5em .8em}
+  .tctl .k{margin-right:.5em}
+  .zenv{border-top:1px solid var(--gl);padding:.6em .8em .8em}
+  .zh{display:flex;justify-content:space-between;gap:1em;margin:0 0 .4em;color:var(--gd)}
+  #z-chart{display:block;width:100%;height:120px}
+  .zkey{margin:.4em 0 .5em;color:var(--gd);font-size:.62rem}
+  .zlog{margin:0;padding-top:.5em;border-top:1px dashed var(--gl);font:inherit;white-space:pre;overflow-x:auto;min-height:8.2em}
+  @container (max-width:520px){
+    .tgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+    .zart{grid-row:auto;grid-column:1 / -1;justify-content:center;border-right:0;border-bottom:1px solid var(--gl)}
+  }
 
   .stack2{display:grid;gap:1rem;margin-top:1.1rem;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
   .sheet h3.hd{
@@ -151,22 +173,6 @@
     margin:.25rem .3rem .7rem;font-weight:500;color:var(--tang-ink);
   }
   .sheet.b h3.hd{color:var(--lime-ink)}
-  .shelf{list-style:none;margin:0;padding:0;display:grid;gap:.85rem}
-  .shelf li{padding:0 .3rem}
-  .shelf cite{font-style:normal;font-weight:700;font-size:1.02rem;line-height:1.22;display:block}
-  .shelf small{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate)}
-  .shelf p{margin:.18rem 0 0;font-size:.88rem;color:var(--read);line-height:1.45}
-  .pins{list-style:none;margin:0;padding:0;display:grid;gap:.28rem}
-  .pins a{
-    display:flex;justify-content:space-between;gap:.7rem;align-items:baseline;
-    text-decoration:none;color:var(--ink);font-weight:500;font-size:.98rem;
-    padding:.5em .55em;border-radius:8px;border:1px solid transparent;
-    transition:background .16s,border-color .16s;
-  }
-  .pins a:hover{background:var(--paper);border-color:var(--hair)}
-  .pins a:hover strong{color:var(--tang-ink)}
-  .pins strong{font-weight:500}
-  .pins span{font-family:var(--mono);font-size:.62rem;color:var(--slate);text-align:right;flex:none}
   .swap{font-family:var(--mono);font-size:.57rem;color:var(--slate);letter-spacing:.06em;margin:.6rem .3rem 0}
   .flag{
     display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
@@ -174,7 +180,16 @@
     padding:.2em .45em;border-radius:3px;margin-right:.5em;vertical-align:2px;
   }
 
-  /* ── station 3 · obsessions ──────────────── */
+  /* ── station 3 · as of late ──────────────── */
+  .late{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.9rem clamp(1rem,4vw,2.6rem);margin-top:clamp(1.2rem,3vw,2rem);align-items:baseline}
+  .lk{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--slate);margin:0}
+  .ul{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
+  .ul li{font-size:clamp(1.05rem,2.1vw,1.4rem);line-height:1.35;color:var(--read)}
+  .ul u{
+    color:var(--ink);font-weight:500;text-decoration-line:underline;text-decoration-thickness:1px;
+    text-underline-offset:.24em;text-decoration-color:var(--slate);
+  }
+  @media (max-width:520px){ .late{grid-template-columns:1fr;gap:.45rem} .ul + .lk{margin-top:.9rem} }
 
   /* ── station 4 · right now ───────────────── */
   .kv{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
@@ -201,39 +216,6 @@
     transition:background .18s,color .18s,border-color .18s;
   }
   .links a:hover{background:var(--ink);border-color:var(--ink);color:var(--pool)}
-
-  /* ── zoom rail ───────────────────────────── */
-  .rail{
-    position:fixed;z-index:4;right:clamp(12px,2vw,26px);top:50%;transform:translateY(-50%);
-    display:flex;flex-direction:column;align-items:flex-end;gap:.32rem;
-    font-family:var(--mono);font-size:.7rem;
-  }
-  .depth{
-    font-size:.62rem;letter-spacing:.1em;color:var(--slate);
-    text-shadow:0 0 6px var(--pool),0 0 14px var(--pool);
-    font-variant-numeric:tabular-nums;margin-bottom:.35rem;
-  }
-  .depth b{color:var(--tang-ink);font-weight:500}
-  .rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.18rem;align-items:flex-end}
-  .rail button{
-    font-family:var(--mono);font-size:.7rem;letter-spacing:.04em;cursor:pointer;
-    background:transparent;border:0;color:var(--slate);padding:.3em .55em;border-radius:999px;
-    display:flex;align-items:center;gap:.5em;transition:color .18s,background .18s;
-  }
-  .rail button::before{content:"";width:14px;height:1.5px;background:currentColor;opacity:.5;transition:width .25s var(--ease)}
-  .rail button:hover{color:var(--ink)}
-  .rail button[aria-current="true"]{color:var(--tang-ink);background:var(--scrim)}
-  .rail button[aria-current="true"]::before{width:26px;opacity:1}
-  .zbtn{
-    display:flex;gap:.25rem;margin-top:.5rem;
-  }
-  .zbtn button{
-    border:1.5px solid var(--hair);background:var(--scrim);color:var(--ink);
-    width:28px;height:28px;padding:0;justify-content:center;border-radius:8px;font-size:.9rem;
-  }
-  .zbtn button::before{display:none}
-  .zbtn button:hover{background:var(--ink);color:var(--pool);border-color:var(--ink)}
-  .zbtn button:disabled{opacity:.35;cursor:default}
 
   /* ── console (collapsed by default) ──────── */
   .console{
@@ -271,129 +253,86 @@
   .seg button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--pool)}
   .meter{margin:.15rem 0 0;font-size:.58rem;color:var(--slate);letter-spacing:.06em;font-variant-numeric:tabular-nums}
 
-  /* ── first-run hint ──────────────────────── */
-  .hint{
-    position:fixed;z-index:4;left:50%;transform:translateX(-50%);
-    bottom:calc(clamp(14px,2.4vw,28px) + env(safe-area-inset-bottom,0px));
-    font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--slate);background:var(--scrim);border:1.5px solid var(--hair);
-    border-radius:999px;padding:.5em 1em;transition:opacity .5s ease;pointer-events:none;
-  }
-  .hint.gone{opacity:0}
-
   @media (max-width:780px){
-    .rail{top:auto;bottom:calc(58px + env(safe-area-inset-bottom,0px));right:50%;transform:translateX(50%);
-          align-items:center;flex-direction:column-reverse}
-    .rail ol{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:.1rem}
-    .rail button::before{display:none}
-    .rail button{font-size:.64rem;padding:.3em .5em}
-    .depth{margin:.3rem 0 0}
-    .zbtn{margin:0 0 .35rem}
     .console{width:calc(100vw - 24px);left:12px}
-    .hint{display:none}
-    .rows li{grid-template-columns:minmax(0,1fr)}
-    .rows .st{text-align:left;grid-row:auto;margin-top:.2rem}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .station{transition:visibility 0s}
-    .station[data-state="behind"],.station[data-state="ahead"]{--s:1}
-    .station > *,.station[data-state="here"] > *{transition:none}
-    .rows li:hover{transform:none}
   }
 </style>
 </head>
 <body>
 
 <canvas id="water" aria-hidden="true"></canvas>
-<div class="haze" aria-hidden="true"></div>
 
-<main id="stage">
+<p class="hero" id="hero">I Write Code for monkeys</p>
+<div id="scroller" tabindex="-1">
+<div id="intro" aria-hidden="true"></div>
+<main id="site">
 
-  <section class="station" id="st-0" data-accent="255,90,31" aria-label="Home">
-    <div class="home">
-      <h1><span>~</span>john</h1>
-      <p class="lede">I'm a software engineer <em>trying desperately to figure out what is going on</em>.</p>
-    </div>
-  </section>
+  <section class="station" id="st-1" data-accent="14,42,140" aria-label="Projects">
+    <h2>Projects</h2>
 
-  <section class="station" id="st-1" data-accent="14,42,140" aria-label="Builds">
-    <p class="tag">level 2 <b>//</b> what I'm actually working on</p>
-    <h2>Builds</h2>
-    <div class="sheet">
-      <ul class="rows">
-        <li>
-          <div>
-            <h3>nmf</h3>
-            <p>An album log. Pull a record from your streaming history, rate it out of five in
-               half-star steps, keep one favourite track, and see what the people you follow
-               have been hearing.</p>
+    <article class="proj">
+      <h3>Zob</h3>
+      <p>How long could you give Zob $1000 and leave him at a baccarat table?</p>
+      <div class="term">
+          <div class="tbar">
+            <span>zob@dojo:~$ ./punto-banco --no-commission --bet banker</span>
+            <button type="button" id="bac-open" aria-expanded="false" aria-controls="zob-env">[ job ]</button>
           </div>
-          <p class="st"><b>TypeScript · SQLite</b>2026</p>
-        </li>
-        <li>
-          <div>
-            <h3>Sharp</h3>
-            <p>A Chinese-to-English translation teaching aid. Built for one specific person, which
-               turns out to be the best spec I've ever had.</p>
+          <div class="tgrid">
+<pre class="zart" aria-hidden="true">    .--.
+   ( oo )
+    )--(
+ .-'\  /'-.
+/ /  \/  \ \
+\ \ =##= / /
+ `-|    |-'
+   | /\ |
+   |/  \|
+  _/    \_
+    ZOB</pre>
+            <div class="tc l" id="s-b"><span class="k">BANKER</span><span class="v big" id="b-tot">&ndash;</span><span class="v" id="b-cards">&nbsp;</span></div>
+            <div class="tc" id="s-p"><span class="k">PLAYER</span><span class="v big" id="p-tot">&ndash;</span><span class="v" id="p-cards">&nbsp;</span></div>
+            <div class="tc l"><span class="k">ROLLS</span><span class="v" id="n-rolls">0</span></div>
+            <div class="tc"><span class="k">BAL</span><span class="v" id="n-bal">$1,000.00</span></div>
+            <div class="tc l"><span class="k">DIST.</span><span class="v" id="n-dist">0</span></div>
+            <div class="tc"><span class="k">EST.</span><span class="v" id="n-est">0</span></div>
+            <div class="tc l end"><span class="k">BET</span><span class="v" id="b-stake">$1 on BANKER</span></div>
+            <div class="tc end"><span class="k">LAST</span><span class="v" id="z-last">&mdash;</span></div>
           </div>
-          <p class="st"><b>CSS · public</b>2025</p>
-        </li>
-        <li>
-          <div>
-            <h3>Poker-2-Go</h3>
-            <p>Poker coaching written in OCaml, because at some point I decided pattern matching
-               and pot odds belonged together.</p>
+          <div class="tctl">
+            <span role="group" aria-label="Speed"><span class="k">speed</span>
+              <button type="button" data-spd="1" aria-pressed="true">1&times;</button><button type="button" data-spd="10" aria-pressed="false">10&times;</button><button type="button" data-spd="100" aria-pressed="false">100&times;</button><button type="button" data-spd="1000" aria-pressed="false">1k&times;</button></span>
+            <span role="group" aria-label="Bet size"><span class="k">bet</span>
+              <button type="button" data-bet="100" aria-pressed="true">$1</button><button type="button" data-bet="500" aria-pressed="false">$5</button><button type="button" data-bet="2500" aria-pressed="false">$25</button><button type="button" data-bet="10000" aria-pressed="false">$100</button></span>
           </div>
-          <p class="st"><b>OCaml · public</b>2025</p>
-        </li>
-      </ul>
-    </div>
-    <p class="drawer">also in the drawer: <i>small_learning</i> (notebooks I think with),
-      <i>winter-ml-mocroprojects</i> (the typo is load-bearing now), <i>Nryl</i> (network
-      training, documented badly)</p>
+          <div class="zenv" id="zob-env" hidden>
+            <p class="zh"><span>&gt; the job</span><span id="z-state">dealing</span></p>
+            <canvas id="z-chart" height="120" aria-label="Distance against the expected drift, over every hand so far" role="img"></canvas>
+            <p class="zkey">&mdash; DIST. where the bout is &middot; - - EST. where it should be: 0, the game is even</p>
+            <pre class="zlog" id="z-log" aria-live="off"></pre>
+          </div>
+        </div>
+    </article>
   </section>
 
   <section class="station" id="st-2" data-accent="123,221,46" aria-label="As of late">
-    <p class="tag">level 3 <b>//</b> what's got me lately</p>
     <h2>As of late</h2>
-    <div class="stack2">
-      <div class="sheet b">
-        <h3 class="hd">on the shelf</h3>
-        <ul class="shelf">
-          <li><cite>The Biggest Bluff</cite><small>Maria Konnikova</small>
-            <p>Poker as a way to think about luck. Ruined my excuses.</p></li>
-          <li><cite>Thinking in Systems</cite><small>Donella Meadows</small>
-            <p>Why the fix you shipped made it worse.</p></li>
-          <li><cite>The Art of Doing Science and Engineering</cite><small>Richard Hamming</small>
-            <p>Read one chapter a month, on purpose.</p></li>
-          <li><cite>G&ouml;del, Escher, Bach</cite><small>Douglas Hofstadter</small>
-            <p>Still unfinished. Will be forever. Fine with it.</p></li>
-        </ul>
-        <p class="swap">// swap these for yours</p>
-      </div>
-      <div class="sheet">
-        <h3 class="hd">pinned tabs</h3>
-        <ul class="pins">
-          <li><a href="https://ciechanow.ski" target="_blank" rel="noopener noreferrer">
-            <strong>ciechanow.ski</strong><span>interactive essays</span></a></li>
-          <li><a href="https://tixy.land" target="_blank" rel="noopener noreferrer">
-            <strong>tixy.land</strong><span>16&times;16, one expression</span></a></li>
-          <li><a href="https://asciify.org" target="_blank" rel="noopener noreferrer">
-            <strong>asciify.org</strong><span>where the water came from</span></a></li>
-          <li><a href="https://www.shadertoy.com" target="_blank" rel="noopener noreferrer">
-            <strong>shadertoy</strong><span>GPU show-off cave</span></a></li>
-          <li><a href="https://neal.fun" target="_blank" rel="noopener noreferrer">
-            <strong>neal.fun</strong><span>fun on purpose</span></a></li>
-          <li><a href="https://wiby.me" target="_blank" rel="noopener noreferrer">
-            <strong>wiby.me</strong><span>search the old web</span></a></li>
-        </ul>
-        <p class="swap">// add a line per site you want to keep</p>
-      </div>
+    <!-- one <li> per item; swap the placeholders for the real ones -->
+    <div class="late">
+      <p class="lk">reading</p>
+      <ul class="ul">
+        <li><u>The Biggest Bluff</u>, Maria Konnikova</li>
+        <li><u>Thinking in Systems</u>, Donella Meadows</li>
+      </ul>
+      <p class="lk">up to</p>
+      <ul class="ul">
+        <li><u>Teaching Zob to throw</u></li>
+        <li><u>Something worth writing here</u></li>
+      </ul>
     </div>
   </section>
 
   <section class="station" id="st-3" data-accent="255,201,60" aria-label="Right now">
-    <p class="tag">level 4 <b>//</b> as of 29 september 2026</p>
     <h2>Right now</h2>
     <div class="stack2">
       <div class="sheet">
@@ -419,7 +358,6 @@
   </section>
 
   <section class="station" id="st-4" data-accent="18,198,192" aria-label="Say hi">
-    <p class="tag">level 5 <b>//</b> the bottom of the pool</p>
     <h2>I reply to almost everything</h2>
     <p class="said">Cold emails welcome, the strange ones especially. Recruiters: curious, but hard to impress with a ping-pong table.</p>
     <a class="mail" href="mailto:hi@example.com">hi@example.com</a>
@@ -430,21 +368,8 @@
   </section>
 
 </main>
+</div>
 
-<nav class="rail" aria-label="Zoom depth">
-  <p class="depth">depth <b id="mag">1.00&times;</b></p>
-  <ol id="rail-list">
-    <li><button type="button" data-go="0" aria-current="true">~ home</button></li>
-    <li><button type="button" data-go="1" aria-current="false">builds</button></li>
-    <li><button type="button" data-go="2" aria-current="false">as of late</button></li>
-    <li><button type="button" data-go="3" aria-current="false">right now</button></li>
-    <li><button type="button" data-go="4" aria-current="false">say hi</button></li>
-  </ol>
-  <div class="zbtn">
-    <button type="button" id="zout" aria-label="Zoom out" disabled>&minus;</button>
-    <button type="button" id="zin" aria-label="Zoom in">+</button>
-  </div>
-</nav>
 
 <div class="console">
   <button type="button" id="poke" aria-expanded="false" aria-controls="panel">
@@ -476,8 +401,7 @@
 
 </div>
 
-<p class="hint" id="hint">scroll &middot; swipe &middot; &uarr;&darr; to zoom</p>
-<p class="sr" role="status" aria-live="polite" id="say"></p>
+
 
 <script>
 (function () {
@@ -490,22 +414,29 @@
     { g: [253,252,246], s: [[255,235,185], [255,201,60],  null, [75,31,214]] },
     { g: [238,250,240], s: [[206,242,214], [123,221,46],  null, [14,60,120]] }
   ];
-  var LV = 30, pal = 2, gainSet = 0.6;
+  var LV = 192, CEIL = 124, pal = 2, gainSet = 0.6;
   var ramp = ' .:-=+*#%@'.split('');
   var cols = 0, rows = 0, cw = 8, chh = 15, vw = 0, vh = 0;
-  var line = [], bkt = [], cache = [], ground = '#eaf7f4';
+  var ground = '#eaf7f4', groundSet = '', PACK = new Uint32Array(LV);
 
   /* live state the water reacts to */
   var acc = [255, 90, 31], accT = [255, 90, 31];   // section accent, lerped
-  var zoom = 1, zoomT = 1;                          // wavelength stretch per depth
+  var zoom = 1, zoomT = 1;                          // wavelength stretch (held at 1)
   var surge = 0;                                    // transient amplitude boost
-  var px_ = -9999, py_ = -9999, mx = -9999, my = -9999, speed = 0;
-  var ripples = [], T = 0, last = 0, tick = 0, frames = 0, fpsAt = 0, auto = 1.2;
+  var px_ = -9999, py_ = -9999, mx = -9999, my = -9999;
+  var ripples = [], T = 0, last = 0, frames = 0, fpsAt = 0, auto = 1.2;
 
   function mixColors() {
     var stops = PAL[pal].s, g = PAL[pal].g;
     ground = 'rgb(' + g[0] + ',' + g[1] + ',' + g[2] + ')';
-    cache = [];
+    /* the toolbar cap and the browser's own tint follow the palette (only
+       on a palette change: this runs every frame while an accent eases) */
+    if (ground !== groundSet) {
+      groundSet = ground;
+      document.documentElement.style.setProperty('--ground', ground);
+      var tc = document.querySelector('meta[name="theme-color"]');
+      if (tc) tc.setAttribute('content', ground);
+    }
     for (var i = 0; i < LV; i++) {
       var m = i / (LV - 1), f = m * 3;
       var lo = Math.min(3, Math.floor(f)), hi = Math.min(3, lo + 1), k = f - lo;
@@ -513,102 +444,1343 @@
       var r = Math.round(A[0] + (B[0] - A[0]) * k);
       var gg = Math.round(A[1] + (B[1] - A[1]) * k);
       var b = Math.round(A[2] + (B[2] - A[2]) * k);
-      var a = (0.05 + 0.95 * Math.pow(m, 1.08)).toFixed(3);
-      cache.push('rgba(' + r + ',' + gg + ',' + b + ',' + a + ')');
+      /* most of the range should read as calm ground and only the crests
+         earn real ink — that curve is what keeps the copy legible over it */
+      var a = Math.round(255 * (0.02 + 0.98 * Math.pow(m, 1.18)));
+      PACK[i] = (a << 24) | (b << 16) | (gg << 8) | r;
     }
   }
 
   var canvas = document.getElementById('water');
   var ctx = canvas.getContext('2d', { alpha: false });
 
+  /* ══════════════════════════════════════════════════════════════════════
+     WATER
+
+     A directional wave spectrum rather than a noise field. Five plane
+     waves ride at deep-water speeds (w = sqrt(g k), so long swells outrun
+     short chop) and beat against each other without ever repeating.
+
+     What makes 60fps affordable is that a plane wave is separable:
+
+         sin(kx*x + ky*y - wt) = sin(A)cos(B) + cos(A)sin(B)
+         A = kx*x - wt   (column only)        B = ky*y   (row only)
+
+     So the per-frame trig collapses to one table of `cols` entries per
+     wave plus one scalar pair per row — about 5k calls, where evaluating
+     nested sines per cell cost half a million. Each cell is then two
+     multiplies and an add per wave.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  var NW = 5;                          // plane waves in the spectrum
+  var WK = new Float64Array(NW),       // wavenumber, rad/px
+      WD = new Float64Array(NW * 2),   // unit heading
+      WA = new Float64Array(NW),       // amplitude
+      WW = new Float64Array(NW),       // angular speed
+      RS = new Float64Array(NW * 2);   // per-row sin/cos scratch
+  var WSUM = 0;
+  (function spectrum() {
+    /* wavelengths in a geometric run, headings spread either side of the
+       swell, amplitude falling with k the way a real sea's spectrum does */
+    var len = [430, 268, 166, 103, 64];        // px
+    var deg = [9, -44, 63, 124, -78];          // heading
+    var amp = [0.86, 0.78, 0.60, 0.42, 0.28];
+    for (var i = 0; i < NW; i++) {
+      var k = 2 * Math.PI / len[i], a = deg[i] * Math.PI / 180;
+      WK[i] = k;
+      WD[i * 2] = Math.cos(a); WD[i * 2 + 1] = Math.sin(a);
+      WA[i] = amp[i]; WSUM += amp[i];
+      WW[i] = 5.4 * Math.sqrt(k);              // deep-water dispersion
+    }
+  })();
+
+  var H = new Float32Array(0),     // the height field this frame wants
+      F = new Float32Array(0),     // the field on screen, eased toward H
+      CT = new Float32Array(0),    // per-column sin/cos table
+      GLY = new Uint16Array(0);    // one row of character codes
+  var snap = 1;                    // first frame after a resize: don't ease
+  var eK = 0.34;                   // this frame's easing coefficient
+  var slopeN = 0.02;               // running mean |grad|, normalises contours
+
+  /* ── ripple profile ──────────────────────────────────────────────────
+     One fixed shape in u = (d - R)/W, so it can be baked once: a quartic
+     bump that reaches zero with zero slope at both ends (the ring fades
+     out instead of ending at a visible cut) carrying a chirped wave,
+     crowded behind the front and stretched ahead of it, which is how a
+     real ripple's wake disperses. ── */
+  var PN = 512, PROF = new Float32Array(PN + 1);
+  (function profile() {
+    for (var i = 0; i <= PN; i++) {
+      var u = i / PN * 2 - 1, e = 1 - u * u;
+      PROF[i] = e * e * Math.sin(5.1 * u * (1 + 0.34 * u * u));
+    }
+  })();
+  var RLIFE = 2.6, RMAX = 9;
+
+  /* cursor wake, rebuilt per frame because it breathes */
+  var WN = 192, WLUT = new Float32Array(WN + 1), WR = 300;
+
+  /* ── glyph table ─────────────────────────────────────────────────────
+     Alex Harri's point (alexharri.com/blog/ascii-rendering) is that a
+     cell is not a pixel: pick the character whose *shape* matches what
+     the field does there, not merely how bright it is. He matches 6D
+     shape vectors by nearest neighbour and caches the lookups against
+     quantised keys. A height field is a kinder problem than an arbitrary
+     image, because the only shape that matters is the local iso-contour —
+     so we quantise (height, slope, contour orientation) and bake the
+     answer for every combination up front.
+
+     Flat water reads as density off the ramp; where the surface tilts
+     hard the cell takes a stroke lying *along* the contour, so crest
+     lines and ripple rings draw their own outlines. Crests and troughs
+     are extrema, where slope falls to zero, so they keep their density
+     characters without needing a special case.
+     ── */
+  var HQ = 48, GT = new Uint16Array(HQ * 16);
+  var DIR1 = '-/|\\';                   // moderate slope: a thin contour
+  var DIR2 = '~/|\\';                   // steep: the water character
+  function glyphs() {
+    var nr = ramp.length;
+    for (var h = 0; h < HQ; h++) {
+      var ri = (h / HQ * nr) | 0; if (ri > nr - 1) ri = nr - 1;
+      var dense = (ramp[ri] || ' ').charCodeAt(0);
+      /* contours belong on the flanks — troughs stay empty and crests stay
+         solid, or the whole field turns into a thicket of strokes */
+      var flank = ri > 1 && ri < nr - 1;
+      for (var m = 0; m < 4; m++)
+        for (var o = 0; o < 4; o++)
+          GT[(h * 4 + m) * 4 + o] =
+            (m === 3 && flank) ? DIR2.charCodeAt(o) :
+            (m === 2 && flank) ? DIR1.charCodeAt(o) : dense;
+    }
+  }
+
+  /* ── the two surfaces the water is composited from ───────────────────
+     Painting each run of same-coloured characters with its own fillText
+     cost ~23k calls a frame, which is what pinned the old field near
+     30fps. Instead the glyphs go down as one string per row in flat ink
+     on `mask`, and the colour arrives as a cols x rows image stretched
+     over it through source-in. The mask keeps the font's own antialiasing
+     as its alpha, and the tint gets bilinearly smoothed on the way up, so
+     the colour is now continuous rather than stepped through 30 bands —
+     smoother and about ten times faster than what it replaced. ── */
+  var mask = document.createElement('canvas'), mctx = mask.getContext('2d');
+  var tint = document.createElement('canvas'), tctx = tint.getContext('2d');
+  var timg = null, t32 = null, dpr = 1;
+
+  /* ══════════════════════════════════════════════════════════════════════
+     THE BOUT
+
+     Two judoka, red and blue, raycast straight into the ASCII grid. Each
+     is a few dozen ellipsoids, boxes and cylinders hung off a joint rig —
+     hips, knees, a waist that bends, shoulders, elbows, neck — and every
+     cell fires one orthographic ray: nearest hit wins, and the hit normal
+     is lit and turned into a character and a colour.
+
+     Rays are affine in the cell's screen position, so each primitive's
+     inverse matrix is folded into an origin plus two per-axis steps once
+     per frame, and a cell costs a handful of multiply-adds per primitive
+     whose screen rectangle it falls inside.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  var D2R = Math.PI / 180;
+  var ZH = 330;          // tallest the frame needs, model units
+  var ZHW = 330;         // half the bout's width: a thrown judoka lies long
+  var ZCY = 150;         // the model height that sits on the canvas's centre
+  var STEP = 48;         // one step of drift across the mat, model units
+  var HIP = 146;         // hip height standing; thigh and shin are 66 each
+  var PITCH = 7, CAMYAW = 14;   // camera a touch above and off the side
+  var Z0 = 4000;         // ray origin depth, well in front of everything
+  var LX = -0.42, LY = 0.62, LZ = 0.66;   // key light, view space
+
+  /* cx/tx: the bout's centre on the mat and where the tally says it
+     should be · side: which side of centre each judoka stands on ·
+     th: the throw in progress · party: seconds into the celebration ·
+     f: this frame's pose for red [0] and blue [1] */
+  var bout = { cx: 0, tx: 0, side: [-1, 1], th: null, next: null, wait: 0.8, party: -1,
+               f: [{}, {}] };
+  var cam = { S: 1, S0: 1, D: 1 };      // px per model unit; landing scale; drift scale
+  var HERO_H = 0.32;                     // the bout's share of the screen height on landing
+  var PAD = 10;                          // px kept clear above and below the bout
+
+  /* on landing the camera sits on the canvas's centre and never pans. Two
+     things can make it pull back: the canvas getting shorter as the page
+     scrolls (the bout always fits its height, so that one is instant), and
+     the bout drifting from the start (each step widens the view by the
+     step times 1.25 so it stays in frame; that one eases). As the strip
+     shrinks the camera hands over to following the bout instead, so in
+     the strip the fight stays centred and the drift stops pulling back. */
+  function fitH(h) { return Math.max(0.05, (h - 2 * PAD) / ZH); }
+  function camGoal() {
+    return Math.min(cam.S0, (vw * 0.5) / (1.25 * (Math.abs(bout.cx) * (1 - stripP) + ZHW)));
+  }
+  function camFit() {
+    cam.S0 = Math.min(HERO_H * vh / ZH, fitH(vh), (vw * 0.5) / (1.25 * ZHW));
+    cam.D = camGoal();
+    cam.S = Math.min(cam.D, fitH(viewH));
+  }
+
+  /* materials: colour, and 0 = shaded ramp, else a fixed character */
+  var MAT = [
+    [214, 48, 38, 0],    // 0 red judogi
+    [22, 22, 28, 0],     // 1 black belt
+    [226, 176, 134, 0],  // 2 skin
+    [44, 30, 22, 0],     // 3 hair
+    [34, 84, 214, 0]     // 4 blue judogi
+  ];
+  /* dense glyphs only: a figure drawn in '*' and '+' falls apart into the
+     water. The light and shade live in the colour instead. */
+  var ZRAMP = [64, 64, 37, 35, 35];     // '@@%##', shadow to light
+
+  /* [parent, type, x, y, z, w, h, d, rx, ry, rz, material]
+     joints per judoka: 0 root · 1 hip L · 2 hip R · 3 shoulder L
+       4 shoulder R · 5 neck · 6 knee L · 7 knee R · 8 elbow L · 9 elbow R
+       10 waist — red's are 0-10, blue's 11-21
+     types 0 ellipsoid · 1 box · 2 cylinder (axis y)                        */
+  var NJ = 11, PR = [];
+  function part(par, ty, x, y, z, w, h, d, rx, ry, rz, mat) {
+    PR.push([par, ty, x, y, z, w, h, d, rx || 0, ry || 0, rz || 0, mat || 0]);
+  }
+  function judoka(o, gi) {
+    function p(j, ty, x, y, z, w, h, d, rx, ry, rz, mat) {
+      part(o + j, ty, x, y, z, w, h, d, rx, ry, rz, mat === undefined ? gi : mat);
+    }
+    function pr(jl, jr, ty, x, y, z, w, h, d, rx, ry, rz, mat) {   // mirrored pair
+      p(jl, ty, -x, y, z, w, h, d, rx, -(ry || 0), -(rz || 0), mat);
+      p(jr, ty, x, y, z, w, h, d, rx, ry, rz, mat);
+    }
+    // hips and the jacket skirt hang off the root
+    p(0, 0, 0, 146, 0, 46, 34, 32);                    // pelvis and skirt
+    p(0, 2, 0, 160, 1, 47, 8, 33, 0, 0, 0, 1);         // belt
+    pr(0, 0, 1, 7, 150, 17, 5, 18, 3, 0, 0, 8, 1);     // belt ends
+    // the jacket bends at the waist
+    p(10, 0, 0, 14, 1, 42, 38, 28);                    // abdomen
+    p(10, 0, 0, 44, 0, 54, 54, 33);                    // chest
+    pr(10, 10, 0, 25, 62, 0, 24, 22, 26);              // shoulders
+    p(10, 2, 0, 72, 0, 15, 14, 15, 0, 0, 0, 2);        // neck
+    p(5, 0, 0, 20, 2, 28, 32, 30, 0, 0, 0, 2);         // head
+    p(5, 0, 0, 27, -3, 30, 24, 30, 0, 0, 0, 3);        // hair
+    // arms: wide sleeves to the forearm, then bare
+    pr(3, 4, 0, 0, -25, 0, 17, 54, 18);                // upper sleeve
+    pr(8, 9, 0, 0, -16, 0, 15, 34, 16);                // lower sleeve
+    pr(8, 9, 0, 0, -38, 0, 11, 20, 11, 0, 0, 0, 2);    // forearm
+    pr(8, 9, 0, 0, -52, 1, 12, 14, 10, 0, 0, 0, 2);    // hand
+    // legs: trousers to the ankle, bare feet
+    pr(1, 2, 0, 0, -33, 0, 22, 74, 24);                // thigh
+    pr(6, 7, 0, 0, -28, 0, 19, 56, 20);                // shin
+    pr(6, 7, 0, 0, -62, 0, 10, 14, 10, 0, 0, 0, 2);    // ankle
+    pr(6, 7, 1, 0, -75, 8, 13, 10, 28, 0, 0, 0, 2);    // foot
+  }
+  judoka(0, 0);
+  judoka(NJ, 4);
+
+  var NP = PR.length;
+  var PMk = [], PIk = [];
+  for (var pk = 0; pk < NP; pk++) { PMk.push(new Float64Array(12)); PIk.push(new Float64Array(12)); }
+  var RC = new Int32Array(NP * 4), RK = new Float64Array(NP * 7), CAND = new Int32Array(NP);
+  var PAR = [], VIEW = new Float64Array(12);
+  var MA = new Float64Array(12), MB = new Float64Array(12), MC = new Float64Array(12);
+  for (pk = 0; pk < NJ * 2; pk++) PAR.push(new Float64Array(12));
+
+  /* affine 3x4, row-major. Rotation is three.js's XYZ Euler order. */
+  function trs(o, px, py, pz, rx, ry, rz, sx, sy, sz) {
+    var a = Math.cos(rx * D2R), b = Math.sin(rx * D2R), c = Math.cos(ry * D2R),
+        d = Math.sin(ry * D2R), e = Math.cos(rz * D2R), f = Math.sin(rz * D2R);
+    var ae = a * e, af = a * f, be = b * e, bf = b * f;
+    o[0] = c * e * sx;          o[1] = -c * f * sy;         o[2] = d * sz;      o[3] = px;
+    o[4] = (af + be * d) * sx;  o[5] = (ae - bf * d) * sy;  o[6] = -b * c * sz; o[7] = py;
+    o[8] = (bf - ae * d) * sx;  o[9] = (be + af * d) * sy;  o[10] = a * c * sz; o[11] = pz;
+    return o;
+  }
+  function mul(o, A, B) {
+    for (var i = 0; i < 12; i += 4) {
+      var a0 = A[i], a1 = A[i + 1], a2 = A[i + 2];
+      o[i]     = a0 * B[0] + a1 * B[4] + a2 * B[8];
+      o[i + 1] = a0 * B[1] + a1 * B[5] + a2 * B[9];
+      o[i + 2] = a0 * B[2] + a1 * B[6] + a2 * B[10];
+      o[i + 3] = a0 * B[3] + a1 * B[7] + a2 * B[11] + A[i + 3];
+    }
+    return o;
+  }
+  function inv(o, m) {
+    var a = m[0], b = m[1], c = m[2], d = m[4], e = m[5], f = m[6], g = m[8], h = m[9], i = m[10];
+    var A = e * i - f * h, B = f * g - d * i, C = d * h - e * g;
+    var k = 1 / (a * A + b * B + c * C);
+    o[0] = A * k; o[1] = (c * h - b * i) * k; o[2] = (b * f - c * e) * k;
+    o[4] = B * k; o[5] = (a * i - c * g) * k; o[6] = (c * d - a * f) * k;
+    o[8] = C * k; o[9] = (b * g - a * h) * k; o[10] = (a * e - b * d) * k;
+    var tx = m[3], ty = m[7], tz = m[11];
+    o[3] = -(o[0] * tx + o[1] * ty + o[2] * tz);
+    o[7] = -(o[4] * tx + o[5] * ty + o[6] * tz);
+    o[11] = -(o[8] * tx + o[9] * ty + o[10] * tz);
+    return o;
+  }
+
+  /* the rig. Whole-body turns (a judoka going over) pivot about the
+     middle of the body, y 150, not the feet. */
+  function pose() {
+    mul(MA, trs(MB, 0, 0, 0, PITCH, CAMYAW, 0, 1, 1, 1), trs(MC, 0, -ZCY, 0, 0, 0, 0, 1, 1, 1));
+    VIEW.set(MA);
+    for (var j = 0; j < 2; j++) {
+      var f = bout.f[j], o = j * NJ;
+      mul(MA, VIEW, trs(MB, f.x, f.y + 150, f.z, 0, f.yaw, 0, 1, 1, 1));
+      mul(MC, MA, trs(MB, 0, 0, 0, f.pitch, 0, 0, 1, 1, 1));
+      mul(PAR[o], MC, trs(MB, 0, -150, 0, 0, 0, 0, 1, 1, 1));
+      joint(o + 1, o, -11, HIP, 0, f.hl, 0, -2);
+      joint(o + 2, o, 11, HIP, 0, f.hr, 0, 2);
+      joint(o + 6, o + 1, 0, -66, 0, f.kl, 0, 0);
+      joint(o + 7, o + 2, 0, -66, 0, f.kr, 0, 0);
+      joint(o + 10, o, 0, 160, 0, f.bend, 0, 0);
+      joint(o + 3, o + 10, -27, 62, 0, f.sl, 0, -6 - f.sz);
+      joint(o + 4, o + 10, 27, 62, 0, f.sr, 0, 6 + f.sz);
+      joint(o + 8, o + 3, 0, -50, 0, f.el, 0, 0);
+      joint(o + 9, o + 4, 0, -50, 0, f.er, 0, 0);
+      joint(o + 5, o + 10, 0, 76, 0, f.nx, 0, 0);
+    }
+  }
+  function joint(i, p, x, y, z, rx, ry, rz) {
+    mul(PAR[i], PAR[p], trs(MB, x, y, z, rx, ry, rz, 1, 1, 1));
+  }
+
+  /* ── the throws ──────────────────────────────────────────────────────
+     Every exchange is one of four techniques, each keyed as poses on its
+     own real timeline with tori (the thrower) starting on the right:
+
+     harai goshi — sweeping hip throw, from judoinfo.com's eight frames:
+       grips, kuzushi, tori turns in, hip loaded, the sweep, uke over the
+       hip and upside down, impact, follow-through, uke back up. uke lands
+       past tori, so the pair swap sides.
+     seoi nage — the same entry dropped low: tori's knees go deep, no leg
+       sweep, and uke goes over the shoulder on a higher, tighter arc.
+     o-soto-gari — tori steps beside uke and reaps his leg away; uke goes
+       straight over backwards and lands behind where he stood. No swap.
+     a blocked attempt — what a tie looks like: tori turns in, uke drops
+       his hips and stuffs it, tori spins back out to grips.
+
+     No two exchanges match: each one picks its own pace, arc height and
+     landing spot. A pose is [x, y, yaw, pitch, waist bend, hip L, knee L,
+     hip R, knee R, shoulder L, elbow L, shoulder R, elbow R, neck,
+     grounded]. Positive hip/knee/shoulder/elbow angles swing a limb
+     backward, negative forward; bend and pitch tip the body forward.
+     Grounded poses stand on the lower sole; the rest float at their y.
+     Thrown to the left, the whole technique is mirrored. ── */
+  var HARAI_T = [
+    [ 40, 0, -90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1],
+    [ 30, 0, -90, 0,  6,  -22, 14,  14, 14,  -80, -95, -70,-100,   4, 1],
+    [ 12, 0,   0, 0, 14,  -20, 28,   4, 26,  -74, -70, -62, -78,   0, 1],
+    [  4, 0,  90, 0, 30,  -28, 42, -22, 40,  -78, -72, -40, -88,  -8, 1],
+    [  6, 0,  90, 0, 52,  -14, 22,  55,  8,  -45, -82, -14,-100, -14, 1],
+    [  8, 0,  90, 0, 68,   -8, 16,  98,  2,  -32, -90,  -2,-110, -20, 1],
+    [  8, 0,  90, 0, 66,   -8, 16,  92,  6,  -36, -86,  -6,-106, -18, 1],
+    [  8, 0,  90, 0, 54,   -8, 16,  50, 14,  -44, -72, -20, -92, -10, 1],
+    [  9, 0,  90, 0, 42,   -8, 18,  16, 16,  -52, -58, -32, -78,  -4, 1],
+    [ 10, 0,  90, 0, 26,   -6, 12,   6, 12,  -56, -40, -36, -60,   0, 1],
+    [-14, 0,  90, 0, 14,  -10, 10,   8, 12,  -58, -48, -46, -60,   0, 1],
+    [-34, 0,  90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1],
+    [-40, 0,  90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1]
+  ];
+  var HARAI_U = [
+    [-40,    0, 90,   0, 12,  -10,  10,  10,  12,  -60, -50, -50, -60,  0, 1],
+    [-34,    6, 90,   0, 20,  -14,   8,   4,  10,  -70, -40, -58, -50,  0, 1],
+    [-32,    8, 90,   0, 24,  -16,  12,   2,  14,  -68, -42, -64, -46,  0, 1],
+    [-24,    8, 90,   0, 32,  -18,  14,   0,  10,  -72, -40, -82, -30,  0, 1],
+    [ -6,   50, 90,  55, 20,  -25,  12,  22,  16,  -92, -30, -60, -60,  0, 0],
+    [ 22,   40, 90, 100, 14,  -34,  16,  16,  22, -100, -20, -30, -80,  0, 0],
+    [ 60,   10, 90, 165, 10,  -30,  20,  32,  12, -110, -20, -40, -60,  0, 0],
+    [110,  -72, 90, 225, 10,  -40,  30,  22,  40,  -80, -30, -60, -40,  0, 0],
+    [150, -134, 90, 270,  4,  -30,  20, -10,  30,  -60, -30,-130,  -5,  0, 0],
+    [150, -134, 90, 270,  2,  -26,  16,  -6,  24,  -58, -28,-120,  -8,  6, 0],
+    [110,  -70, 90, 320, 40,  -80, 110, -70, 105,  -30, -40, -30, -40,  0, 0.3],
+    [ 52,    0, 90, 360, 14,  -10,  10,  10,  12,  -60, -50, -50, -60,  0, 1],
+    [ 40,    0,-90, 360, 12,  -10,  10,  10,  12,  -60, -50, -50, -60,  0, 1]
+  ];
+
+  /* seoi nage: harai goshi's entry with tori's knees driven deep and his
+     chest down over them instead of a leg sweep (rows 3–8 of tori) */
+  function derive(tab, edits) {
+    var out = tab.map(function (r) { return r.slice(); });
+    for (var row in edits) for (var col in edits[row]) out[row][col] = edits[row][col];
+    return out;
+  }
+  var SEOI_T = derive(HARAI_T, {
+    3: { 4: 40, 5: -45, 6: 70, 7: -40, 8: 68, 9: -95, 10: -100, 11: -70, 12: -60 },
+    4: { 4: 70, 5: -40, 6: 75, 7: -38, 8: 72, 9: -60, 10: -110 },
+    5: { 4: 86, 5: -30, 6: 50, 7: -28, 8: 48 },
+    6: { 4: 80, 5: -20, 6: 30, 7: -18, 8: 28 },
+    7: { 4: 60, 5: -12, 6: 20, 7: -10, 8: 18 },
+    8: { 4: 45, 5: -8, 6: 18, 7: 8, 8: 16 }
+  });
+
+  var OSOTO_T = [
+    [ 40, 0, -90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1],
+    [  6, 0, -90, 0,  8,  -14, 16,   6, 14,  -82, -80, -62, -90,   2, 1],
+    [ -4, 0, -90, 0, 18,   -6, 14, -70, 30,  -70, -70, -30, -95,   0, 1],
+    [ -8, 0, -90, 0, 45,   -4, 14,  55, 10,  -50, -40, -20, -80,  -6, 1],
+    [-10, 0, -90, 0, 58,   -2, 16,  85,  4,  -45, -30, -10, -70, -10, 1],
+    [-10, 0, -90, 0, 50,   -4, 18,  40, 14,  -50, -40, -20, -70,  -6, 1],
+    [ -6, 0, -90, 0, 24,   -8, 12,  10, 12,  -56, -46, -40, -60,   0, 1],
+    [ 20, 0, -90, 0, 14,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1],
+    [ 36, 0, -90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1],
+    [ 40, 0, -90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1]
+  ];
+  var OSOTO_U = [
+    [ -40,    0, 90,   0, 12,  -10,  10,  10,  12,  -60, -50, -50, -60,  0, 1],
+    [ -34,    4, 90,   0,  6,   -8,  10,   6,  12,  -64, -46, -56, -56,  0, 1],
+    [ -36,    0, 90,   0,-14,    4,   6,  -8,  10,  -40, -40, -70, -30, -6, 1],
+    [ -40,    0, 90, -25,-10,  -40,  10, -70,   8,  -30, -20, -90, -20,-10, 0],
+    [ -70,    0, 90, -60, -6,  -60,  12, -80,  10,  -40, -30,-110, -10, -8, 0],
+    [-120, -134, 90, -90, -4,  -40,  20, -30,  30,  -60, -30,-130,  -5,  0, 0],
+    [-120, -134, 90, -90, -2,  -36,  16, -26,  24,  -58, -28,-120,  -8,  6, 0],
+    [ -90,  -70, 90, -40, 40,  -80, 110, -70, 105,  -30, -40, -30, -40,  0, 0.3],
+    [ -50,    0, 90,   0, 14,  -10,  10,  10,  12,  -60, -50, -50, -60,  0, 1],
+    [ -40,    0, 90,   0, 12,  -10,  10,  10,  12,  -60, -50, -50, -60,  0, 1]
+  ];
+
+  var BLOCK_T = [
+    [ 40, 0, -90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1],
+    [ 14, 0,   0, 0, 16,  -20, 26,   6, 24,  -70, -60, -62, -70,   0, 1],
+    [  6, 0,  80, 0, 26,  -26, 38, -20, 36,  -76, -70, -40, -86,  -6, 1],
+    [ 12, 0,  40, 0, 16,  -18, 24,   4, 20,  -70, -60, -58, -74,   0, 1],
+    [ 30, 0, -60, 0, 12,  -12, 14,   8, 14,  -62, -52, -52, -62,   0, 1],
+    [ 40, 0, -90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1]
+  ];
+  var BLOCK_U = [
+    [-40, 0, 90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,  0, 1],
+    [-36, 0, 90, 0, 16,  -12, 12,   4, 14,  -66, -46, -56, -52,  0, 1],
+    [-46, 0, 90, 0, 30,  -40, 55, -30, 50,  -50, -60, -45, -60,  4, 1],
+    [-48, 0, 90, 0, 26,  -36, 48, -26, 44,  -55, -55, -50, -58,  0, 1],
+    [-42, 0, 90, 0, 16,  -16, 18,   6, 16,  -60, -50, -50, -60,  0, 1],
+    [-40, 0, 90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,  0, 1]
+  ];
+
+  /* each technique: its key times, both tables, uke's flight (when it
+     starts and lands, the arc's two control points and landing spot, how
+     far he turns over, how hard the clock accelerates), and whether the
+     pair end up on swapped sides */
+  var HARAI_K = [0, 0.55, 0.85, 1.10, 1.35, 1.55, 1.72, 1.90, 2.05, 2.45, 3.05, 3.45, 3.90];
+  var TECH = {
+    harai: { kt: HARAI_K, t: HARAI_T, u: HARAI_U, swap: true,
+             fly: { a: 1.10, b: 2.05, c1: [0, 250], c2: [115, 235], end: [150, 16], turn: 270, acc: 1.55 } },
+    seoi:  { kt: HARAI_K, t: SEOI_T, u: HARAI_U, swap: true,
+             fly: { a: 1.10, b: 1.95, c1: [-10, 305], c2: [90, 285], end: [135, 16], turn: 270, acc: 1.7 } },
+    osoto: { kt: [0, 0.40, 0.70, 0.95, 1.15, 1.30, 1.70, 2.30, 2.80, 3.20], t: OSOTO_T, u: OSOTO_U, swap: false,
+             fly: { a: 0.95, b: 1.30, c1: [-50, 175], c2: [-100, 110], end: [-120, 16], turn: -90, acc: 1.4 } },
+    block: { kt: [0, 0.45, 0.75, 1.0, 1.3, 1.75], t: BLOCK_T, u: BLOCK_U, swap: false, fly: null }
+  };
+  var KEYS = ['x', 'y', 'yaw', 'pitch', 'bend', 'hl', 'kl', 'hr', 'kr', 'sl', 'el', 'sr', 'er', 'nx', 'g'];
+  var LEGS = [5, 6, 7, 8], ARMS = [9, 10, 11, 12], HEAD = [13];
+
+  function reach(a, k) {      // how far below the hip the sole is
+    return 66 * Math.cos(a * D2R) + 66 * Math.cos((a + k) * D2R) + 14;
+  }
+  /* a cubic Hermite spline through the keys on their real timeline. The
+     tangents are finite differences over the actual time between keys, so
+     speed carries smoothly across uneven key spacing, and a channel that
+     peaks or reverses at a key gets a flat tangent there, so it eases into
+     the extreme instead of overshooting it. */
+  var TMP = {};
+  function chan(kt, tab, i, k, u) {
+    var n = tab.length, p0 = tab[i][k], p1 = tab[i + 1][k], h = kt[i + 1] - kt[i];
+    function tan(j) {
+      if (j <= 0 || j >= n - 1) return 0;
+      var a = tab[j - 1][k], b = tab[j][k], c = tab[j + 1][k];
+      if ((b - a) * (c - b) <= 0) return 0;        // an extreme: ease through it
+      return (c - a) / (kt[j + 1] - kt[j - 1]);
+    }
+    var u2 = u * u, u3 = u2 * u;
+    return (2 * u3 - 3 * u2 + 1) * p0 + (u3 - 2 * u2 + u) * h * tan(i)
+         + (3 * u2 - 2 * u3) * p1 + (u3 - u2) * h * tan(i + 1);
+  }
+  function key(kt, tab, t, out, only) {
+    var end = kt[kt.length - 1];
+    t = t < 0 ? 0 : t > end ? end : t;
+    var i = 0;
+    while (i < kt.length - 2 && t > kt[i + 1]) i++;
+    var u = (t - kt[i]) / (kt[i + 1] - kt[i]);
+    var n = only ? only.length : KEYS.length;
+    for (var q = 0; q < n; q++) {
+      var k = only ? only[q] : q;
+      out[KEYS[k]] = chan(kt, tab, i, k, u);
+    }
+    return out;
+  }
+  /* overlapping action: the body leads and the limbs follow a beat behind
+     (or, for tori's pulling arms, a beat ahead), which is most of the
+     difference between a throw and a diagram of one */
+  function layered(kt, tab, t, out, legLag, armLag, headLag) {
+    key(kt, tab, t, out);
+    key(kt, tab, t - legLag, out, LEGS);
+    key(kt, tab, t - armLag, out, ARMS);
+    key(kt, tab, t - headLag, out, HEAD);
+    return out;
+  }
+
+  /* uke's flight is one continuous arc, not three channels keyed
+     separately: a cubic Bézier for the middle of his body and a turn that
+     tracks it, on a clock that accelerates all the way to the mat — no
+     easing out, a throw lands hard. Then a short bounce. */
+  function fly(f, t, ex) {
+    var F = ex.T.fly;
+    if (!F || t <= F.a) return;
+    if (t >= F.b) {
+      var b = t - F.b;
+      if (b < 0.4) f.y += 9 * ex.hard * Math.abs(Math.sin(b * 26)) * Math.exp(-b * 11);
+      return;
+    }
+    var u = (t - F.a) / (F.b - F.a), s = Math.pow(u, F.acc), r = 1 - s;
+    var c1x = F.c1[0], c1y = F.c1[1] * ex.lift, c2x = F.c2[0], c2y = F.c2[1] * ex.lift;
+    var ex3 = F.end[0] + ex.land, ey3 = F.end[1];
+    f.x = r * r * r * ex.x0 + 3 * r * r * s * c1x + 3 * r * s * s * c2x + s * s * s * ex3;
+    f.y = r * r * r * ex.y0 + 3 * r * r * s * c1y + 3 * r * s * s * c2y + s * s * s * ey3 - 150;
+    f.g = 0;
+    f.pitch = ex.p0 + (F.turn - ex.p0) * Math.pow(s, 1.1);   // from however far he already leaned
+    /* legs whip open going over, then gather for the landing */
+    var w = Math.sin(Math.PI * s);
+    f.hl -= 14 * w; f.hr += 14 * w;
+  }
+
+  /* mirror a pose from the drawing's frame (tori on the right) onto the
+     mat: m = +1 as drawn, -1 flipped; then stand it on the lower sole
+     unless it's in the air */
+  function place(f, m) {
+    f.x = bout.cx + m * f.x; f.yaw *= m; f.z = 0; f.sz = 0;
+    var g = Math.min(1, Math.max(0, f.g));
+    var drop = HIP - Math.max(reach(f.hl, f.kl), reach(f.hr, f.kr));
+    f.y = -drop * g + f.y;
+  }
+
+  /* grip fighting between throws: the pair drifts together, each shifts
+     weight foot to foot and tugs at the other's collar, all on slow
+     out-of-step clocks so it never loops visibly. k fades it in and out
+     around a throw so nothing pops. */
+  function grips(f, j, k) {
+    var w = Math.sin(T * 1.3 + j * 1.7), tug = Math.sin(T * 1.9 + j * 2.3);
+    f.hl += w * 6 * k; f.hr -= w * 6 * k;
+    f.kl += (w > 0 ? w : 0) * 8 * k; f.kr += (w < 0 ? -w : 0) * 8 * k;
+    f.bend += Math.sin(T * 0.9 + j) * 3 * k;
+    f.sl += tug * 6 * k; f.sr -= tug * 5 * k; f.el += tug * 6 * k; f.er -= tug * 4 * k;
+  }
+
+  /* start an exchange. who: 0 red, 1 blue, -1 a tie (a blocked attempt by
+     whoever goes first). Throws are picked by weight, and each exchange
+     draws its own pace, arc height, landing spot and how hard it lands. */
+  function begin(who) {
+    var tie = who < 0, tori = tie ? (Math.random() < 0.5 ? 0 : 1) : who;
+    var r = Math.random(), name = tie ? 'block' : r < 0.45 ? 'harai' : r < 0.72 ? 'seoi' : 'osoto';
+    var T0 = TECH[name], pace = 0.86 + Math.random() * 0.3;
+    bout.th = {
+      T: T0, name: name, t: 0, tori: tori, m: bout.side[tori],
+      rate: (G.speed > 1 ? 2.6 : 1) * pace,
+      lift: 0.88 + Math.random() * 0.24,          // arc height
+      land: (Math.random() - 0.5) * 34,            // landing spot
+      hard: 0.7 + Math.random() * 0.6,             // bounce off the mat
+      lean: (Math.random() - 0.5) * 12,            // tori's follow-through
+      x0: 0, y0: 0, p0: 0, slam: 0
+    };
+  }
+
+  function boutMove(dt) {
+    bout.cx += (bout.tx - bout.cx) * Math.min(1, dt * 1.6);
+    var drift = Math.sin(T * 0.7) * 8 + Math.sin(T * 0.31) * 5, j, f;
+    if (bout.wait > 0) bout.wait -= dt;
+
+    if (!bout.th && bout.next !== null && bout.party < 0) { begin(bout.next); bout.next = null; }
+    var ex = bout.th;
+    if (ex) {
+      var T0 = ex.T, kt = T0.kt, end = kt[kt.length - 1];
+      ex.t = Math.min(end, ex.t + dt * ex.rate);
+      var t = ex.t, tori = bout.f[ex.tori], uke = bout.f[1 - ex.tori];
+      /* the grip-fighting fades out as the exchange starts and back in as
+         they square up again */
+      var k = Math.max(0, 1 - t / 0.35) + Math.max(0, (t - (end - 0.45)) / 0.45);
+      layered(kt, T0.t, t, tori, 0.02, -0.05, 0.04);
+      layered(kt, T0.u, t, uke, 0.08, 0.05, 0.06);
+      if (T0.fly && t > T0.fly.a && t < T0.fly.b) {
+        key(kt, T0.u, T0.fly.a, TMP);            // where the arc starts from
+        ex.x0 = TMP.x; ex.p0 = TMP.pitch;
+        var tg = Math.min(1, Math.max(0, TMP.g));
+        ex.y0 = 150 + TMP.y - (HIP - Math.max(reach(TMP.hl, TMP.kl), reach(TMP.hr, TMP.kr))) * tg;
+      }
+      fly(uke, t, ex);
+      /* the landing spot shifts the rest of uke's keys with it */
+      if (T0.fly && t >= T0.fly.b) uke.x += ex.land * Math.max(0, 1 - (t - T0.fly.b) / (end - T0.fly.b));
+      tori.bend += ex.lean * Math.sin(Math.PI * Math.min(1, t / end));
+      grips(tori, ex.tori, k); grips(uke, 1 - ex.tori, k);
+      place(tori, ex.m); place(uke, ex.m);
+      tori.x += drift * k; uke.x += drift * k;
+      if (T0.fly && t >= T0.fly.b && !ex.slam) {
+        ex.slam = 1;
+        if (G.speed <= 10) {
+          splash(AX + (bout.cx + ex.m * (T0.fly.end[0] + ex.land)) * cam.S, AY + ZCY * cam.S, 1.8 + ex.hard);
+          surge = 0.8 + ex.hard * 0.4;
+        }
+      }
+      if (t >= end) {
+        if (T0.swap) { bout.side[ex.tori] = -ex.m; bout.side[1 - ex.tori] = ex.m; }
+        bout.th = null;
+        bout.wait = 0.45 + Math.random() * 1.3;   // a breath of grip fighting before the next
+      }
+    }
+    if (!bout.th) {
+      for (j = 0; j < 2; j++) {
+        f = bout.f[j];
+        key(HARAI_K, HARAI_U, 0, f); grips(f, j, 1); place(f, -bout.side[j]);
+        f.x += drift;
+      }
+    }
+
+    /* the run is over: they bow to each other three times, then turn to
+       the crowd with their arms up */
+    if (bout.party < 0 && G.done === 'reverted' && !bout.th) {
+      bout.party = 0; splash(AX + bout.cx * cam.S, AY, 3.6); surge = 1.6;
+    }
+    if (bout.party >= 0 && !bout.th) {
+      var P = bout.party += dt;
+      for (j = 0; j < 2; j++) {
+        f = bout.f[j];
+        f.sl = f.sr = -6; f.el = f.er = -6; f.hl = f.hr = 0; f.kl = f.kr = 2;
+        if (P < 4.5) {
+          var bw = Math.sin(Math.PI * Math.min(1, (P % 1.5) / 1.1));
+          f.bend = 42 * bw * bw; f.nx = 10 * bw;
+        } else {
+          var pump = Math.abs(Math.sin(P * 3));
+          f.yaw = f.yaw * Math.max(0, 1 - (P - 4.5) * 3);
+          f.bend = 0; f.nx = -6;
+          f.sl = f.sr = -160 - pump * 12; f.sz = 18; f.el = f.er = -8 - pump * 20;
+        }
+        f.y = -(HIP - Math.max(reach(f.hl, f.kl), reach(f.hr, f.kr)));
+      }
+    }
+  }
+
+  /* nearest positive hit along the ray in a primitive's unit space */
+  function hitT(ty, ox, oy, oz, dx, dy, dz, A) {
+    if (ty === 0) {
+      var b = ox * dx + oy * dy + oz * dz, c = ox * ox + oy * oy + oz * oz - 1, D = b * b - A * c;
+      return D < 0 ? -1 : (-b - Math.sqrt(D)) / A;
+    }
+    if (ty === 1) {
+      var tn = -1e9, tf = 1e9, t1, t2, q;
+      if (dx !== 0) { t1 = (-1 - ox) / dx; t2 = (1 - ox) / dx; if (t1 > t2) { q = t1; t1 = t2; t2 = q; } if (t1 > tn) tn = t1; if (t2 < tf) tf = t2; }
+      else if (ox < -1 || ox > 1) return -1;
+      if (dy !== 0) { t1 = (-1 - oy) / dy; t2 = (1 - oy) / dy; if (t1 > t2) { q = t1; t1 = t2; t2 = q; } if (t1 > tn) tn = t1; if (t2 < tf) tf = t2; }
+      else if (oy < -1 || oy > 1) return -1;
+      if (dz !== 0) { t1 = (-1 - oz) / dz; t2 = (1 - oz) / dz; if (t1 > t2) { q = t1; t1 = t2; t2 = q; } if (t1 > tn) tn = t1; if (t2 < tf) tf = t2; }
+      else if (oz < -1 || oz > 1) return -1;
+      return tn <= tf ? tn : -1;
+    }
+    var a = dx * dx + dz * dz;
+    if (a > 1e-12) {
+      var bb = ox * dx + oz * dz, cc = ox * ox + oz * oz - 1, DD = bb * bb - a * cc;
+      if (DD < 0) return -1;
+      var ts = (-bb - Math.sqrt(DD)) / a, y = oy + ts * dy;
+      if (y >= -1 && y <= 1) return ts;
+    }
+    if (dy !== 0) {
+      var tc = ((dy < 0 ? 1 : -1) - oy) / dy, px = ox + tc * dx, pz = oz + tc * dz;
+      if (px * px + pz * pz <= 1) return tc;
+    }
+    return -1;
+  }
+
+  var ZG = new Uint16Array(0), ZC = new Uint32Array(0), ZT = new Float32Array(0);
+  var zr0 = 0, zc0 = 0, zw = 0, zh = 0;
+
+  function renderFigures() {
+    pose();
+    var S = cam.S, hx = AX, hy = AY, k, o, M, I, q;
+    var bx0 = 1e9, bx1 = -1e9, by0 = 1e9, by1 = -1e9;
+    for (k = 0; k < NP; k++) {
+      q = PR[k];
+      M = mul(PMk[k], PAR[q[0]], trs(MA, q[2], q[3], q[4], q[8], q[9], q[10], q[5] * 0.5, q[6] * 0.5, q[7] * 0.5));
+      I = inv(PIk[k], M);
+      /* a conservative screen rectangle: the half-diagonal of the part */
+      var rad = Math.sqrt(M[0] * M[0] + M[1] * M[1] + M[2] * M[2] + M[4] * M[4] + M[5] * M[5]
+              + M[6] * M[6] + M[8] * M[8] + M[9] * M[9] + M[10] * M[10]) * S;
+      var cx = hx + M[3] * S, cy = hy - M[7] * S;
+      var c0 = Math.floor((cx - rad) / cw), c1 = Math.ceil((cx + rad) / cw);
+      var r0 = Math.floor((cy - rad) / chh), r1 = Math.ceil((cy + rad) / chh);
+      o = k * 4; RC[o] = c0; RC[o + 1] = c1; RC[o + 2] = r0; RC[o + 3] = r1;
+      if (c0 < bx0) bx0 = c0; if (c1 > bx1) bx1 = c1; if (r0 < by0) by0 = r0; if (r1 > by1) by1 = r1;
+      o = k * 7;
+      RK[o] = I[2] * Z0 + I[3]; RK[o + 1] = I[6] * Z0 + I[7]; RK[o + 2] = I[10] * Z0 + I[11];
+      RK[o + 3] = -I[2]; RK[o + 4] = -I[6]; RK[o + 5] = -I[10];
+      RK[o + 6] = I[2] * I[2] + I[6] * I[6] + I[10] * I[10];
+    }
+    if (bx0 < 0) bx0 = 0; if (by0 < 0) by0 = 0;
+    if (bx1 > cols - 1) bx1 = cols - 1; if (by1 > rows - 1) by1 = rows - 1;
+    zc0 = bx0; zr0 = by0; zw = bx1 - bx0 + 1; zh = by1 - by0 + 1;
+    if (zw <= 0 || zh <= 0) { zw = zh = 0; return; }
+    var n = zw * zh;
+    if (ZG.length < n) { ZG = new Uint16Array(n); ZC = new Uint32Array(n); ZT = new Float32Array(n); }
+    ZG.fill(0, 0, n);
+
+    for (var r = zr0; r < zr0 + zh; r++) {
+      var nc = 0;
+      for (k = 0; k < NP; k++) if (RC[k * 4 + 2] <= r && RC[k * 4 + 3] >= r) CAND[nc++] = k;
+      if (!nc) continue;
+      var v = (hy - (r + 0.5) * chh) / S, zo = (r - zr0) * zw;
+      for (var c = zc0; c < zc0 + zw; c++) {
+        var u = ((c + 0.5) * cw - hx) / S, best = 1e9, bk = -1;
+        for (var j = 0; j < nc; j++) {
+          k = CAND[j];
+          if (c < RC[k * 4] || c > RC[k * 4 + 1]) continue;
+          I = PIk[k]; o = k * 7;
+          var t = hitT(PR[k][1],
+            RK[o] + I[0] * u + I[1] * v, RK[o + 1] + I[4] * u + I[5] * v, RK[o + 2] + I[8] * u + I[9] * v,
+            RK[o + 3], RK[o + 4], RK[o + 5], RK[o + 6]);
+          if (t > 0 && t < best) { best = t; bk = k; }
+        }
+        if (bk < 0) continue;
+
+        /* the hit point in the part's unit space gives the normal there;
+           the inverse-transpose carries it back out to view space */
+        I = PIk[bk]; o = bk * 7;
+        var ox = RK[o] + I[0] * u + I[1] * v + best * RK[o + 3],
+            oy = RK[o + 1] + I[4] * u + I[5] * v + best * RK[o + 4],
+            oz = RK[o + 2] + I[8] * u + I[9] * v + best * RK[o + 5];
+        var ty = PR[bk][1], nx = ox, ny = oy, nz = oz;
+        if (ty === 1) {
+          var ax = ox < 0 ? -ox : ox, ay = oy < 0 ? -oy : oy, az = oz < 0 ? -oz : oz;
+          nx = ax >= ay && ax >= az ? ox : 0; ny = ay > ax && ay >= az ? oy : 0; nz = az > ax && az > ay ? oz : 0;
+        } else if (ty === 2) {
+          if (oy > 0.999 || oy < -0.999) { nx = 0; nz = 0; } else ny = 0;
+        }
+        var vx = I[0] * nx + I[4] * ny + I[8] * nz,
+            vy = I[1] * nx + I[5] * ny + I[9] * nz,
+            vz = I[2] * nx + I[6] * ny + I[10] * nz;
+        var il = 1 / (Math.sqrt(vx * vx + vy * vy + vz * vz) || 1);
+        vx *= il; vy *= il; vz *= il;
+        var ndl = vx * LX + vy * LY + vz * LZ; if (ndl < 0) ndl = 0;
+        /* a high ambient floor: the two judogi have to read as red and blue
+           even on the side turned away from the light, so the shading only
+           takes the colour down so far, and the rim brightens it in its own
+           hue rather than washing it white */
+        var sh = 0.6 + 0.5 * ndl, rim = 1 - (vz > 0 ? vz : 0); rim = 1 + rim * rim * rim * 0.35;
+        var mt = MAT[PR[bk][11]];
+        var R = mt[0] * sh * rim, Gc = mt[1] * sh * rim, B = mt[2] * sh * rim;
+        if (R > 255) R = 255; if (Gc > 255) Gc = 255; if (B > 255) B = 255;
+        var qi = (ndl * 5) | 0; if (qi > 4) qi = 4;
+        var at = zo + c - zc0;
+        ZG[at] = mt[3] || ZRAMP[qi];
+        ZC[at] = (255 << 24) | ((B | 0) << 16) | ((Gc | 0) << 8) | (R | 0);
+        ZT[at] = best;
+      }
+    }
+
+  }
+  /* ── the mat ─────────────────────────────────────────────────────────
+     A red tatami slab under the bout, travelling with it. Every cell in
+     the rows it can reach fires the same orthographic ray as the judoka
+     and asks where it meets the floor (y = 0): inside the mat that's a
+     board ('='), a seam between boards ('|', fixed to the world, so the
+     seams slide past as the bout drifts), or the border ('#'); just in
+     front of it, the slab's edge facing the camera. ── */
+  var MW = 560, MD = 150, MTH = 10, TATAMI = 96;   // half width, half depth, thickness, board length
+  var MAT_TOP = 0xff242cc4, MAT_SEAM = 0xff1a1e96, MAT_EDGE = 0xff141678, MAT_SIDE = 0xff10125f;
+  var MV = new Float64Array(12), mat = { r0: 0, r1: -1 };
+  function matSetup() {
+    inv(MV, VIEW);
+    var S = cam.S, y0 = 1e9, y1 = -1e9;
+    for (var a = -1; a <= 1; a += 2) for (var b = -1; b <= 1; b += 2) for (var h = 0; h <= 1; h++) {
+      var x = bout.cx + a * MW, y = -h * MTH, z = b * MD;
+      var sy = AY - (VIEW[4] * x + VIEW[5] * y + VIEW[6] * z + VIEW[7]) * S;
+      if (sy < y0) y0 = sy; if (sy > y1) y1 = sy;
+    }
+    mat.r0 = Math.max(0, Math.floor(y0 / chh) - 1);
+    mat.r1 = Math.min(rows - 1, Math.ceil(y1 / chh) + 1);
+    mat.ox = MV[2] * Z0 + MV[3]; mat.oy = MV[6] * Z0 + MV[7]; mat.oz = MV[10] * Z0 + MV[11];
+    mat.dx = -MV[2]; mat.dy = -MV[6]; mat.dz = -MV[10];
+  }
+  function matRow(r, rr) {
+    if (r < mat.r0 || r > mat.r1) return;
+    var S = cam.S, v = (AY - (r + 0.5) * chh) / S;
+    var bx = mat.ox + MV[1] * v, by = mat.oy + MV[5] * v, bz = mat.oz + MV[9] * v;
+    for (var c = 0; c < cols; c++) {
+      var u = ((c + 0.5) * cw - AX) / S;
+      var ox = bx + MV[0] * u, oy = by + MV[4] * u, oz = bz + MV[8] * u;
+      var t = -oy / mat.dy, x = ox + t * mat.dx - bout.cx, z = oz + t * mat.dz;
+      var ax = x < 0 ? -x : x, az = z < 0 ? -z : z;
+      if (ax < MW && az < MD) {
+        var wx = x + bout.cx, f = wx / TATAMI - Math.floor(wx / TATAMI);
+        var edge = MW - ax < 10 || MD - az < 8, seam = f < 0.06, mid = az < 2.5;
+        GLY[c] = edge ? 35 : seam ? 124 : mid ? 45 : 61;   // '#' '|' '-' '='
+        t32[rr + c] = edge ? MAT_EDGE : seam || mid ? MAT_SEAM : MAT_TOP;
+        continue;
+      }
+      var tf = (MD - oz) / mat.dz, yf = oy + tf * mat.dy, xf = ox + tf * mat.dx - bout.cx;
+      if (yf <= 0 && yf >= -MTH && xf > -MW && xf < MW) { GLY[c] = 35; t32[rr + c] = MAT_SIDE; }
+    }
+  }
+
+  /* the grid follows the camera: a big font while the bout is close, shrinking
+     as the view widens, but never below the old fixed density, which is
+     what the frame budget was tuned for. Past that floor the judoka keep getting
+     smaller inside a grid that stays put. */
+  var FS0 = 20, FSMIN = 5.6, gridFS = 0;
+
+  /* ── the strip ───────────────────────────────────────────────────────
+     The page opens on the bout full screen. Scrolling the first stretch
+     shrinks the canvas from the whole viewport to a strip pinned at the
+     top — the judoka with a little air above and below — and the site
+     rises up behind it on white. The shrink is the scroll position, not a
+     timer: the content starts a full screen down the page and the canvas
+     gives up one pixel of height per pixel scrolled, so the content's top
+     edge always sits right on the canvas's bottom edge. ── */
+  var viewH = 0, stripH = 0, introEl = document.getElementById('intro');
+  var scroller = document.getElementById('scroller'), heroEl = document.getElementById('hero');
+  /* AX, AY: where on screen the bout's middle sits. On landing that's
+     beside the line, a little low (the box in the mockup); by the time
+     the strip has shrunk it's the strip's centre, with the camera
+     following the bout. stripP is how far the shrink has got, 0 to 1. */
+  var AX = 0, AY = 0, stripP = 0;
+  function layout() {
+    var d = vh - stripH, p = d > 0 ? Math.min(1, Math.max(0, scroller.scrollTop / d)) : 1;
+    var h = Math.round(vh - p * d), narrow = vw < 720;
+    stripP = p;
+    AX = vw * ((narrow ? 0.5 : 0.47) + (narrow ? 0 : 0.03) * p) - bout.cx * cam.S * p;
+    AY = vh * (narrow ? 0.58 : 0.53) * (1 - p) + h * 0.5 * p;
+    /* the line scrolls with the intro, pixel for pixel */
+    var st = scroller.scrollTop;
+    heroEl.style.transform = 'translateY(' + (-st) + 'px)';
+    heroEl.style.visibility = st > vh ? 'hidden' : 'visible';
+    if (h === viewH) return;
+    viewH = h;
+    canvas.style.clipPath = 'inset(0 0 ' + (vh - h) + 'px 0)';
+    cam.S = Math.min(cam.D, fitH(viewH));
+  }
+
   function resize() {
-    var dpr = Math.min(devicePixelRatio || 1, 1.75);
+    dpr = Math.min(devicePixelRatio || 1, 1.75);
     vw = innerWidth; vh = innerHeight;
-    canvas.width = Math.floor(vw * dpr); canvas.height = Math.floor(vh * dpr);
+    canvas.width = mask.width = Math.floor(vw * dpr);
+    canvas.height = mask.height = Math.floor(vh * dpr);
     canvas.style.width = vw + 'px'; canvas.style.height = vh + 'px';
-    /* font-size drives cell size, and cell count scales as 1/fs^2 — shrinking
-       by sqrt(10) packs roughly 10x as many characters into the same page */
-    var fs = vw < 560 ? 3.3 : vw < 1000 ? 3.6 : 4.0;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.font = '400 ' + fs + 'px "DM Mono", ui-monospace, monospace';
-    ctx.textBaseline = 'top';
-    cw = ctx.measureText('M').width || fs * 0.6;
-    chh = fs * 1.14;
+    /* larger than a pure density field would want: a stroke has to be big
+       enough to read as pointing somewhere, which is the whole point of
+       giving the contours their own characters */
+    FSMIN = vw < 560 ? 4.8 : vw < 1000 ? 5.2 : 5.6;
+    FS0 = vw < 560 ? 8 : 10;
+    stripH = Math.round(Math.max(113, Math.min(167, vh * 0.173)));
+    introEl.style.height = vh + 'px';          // content starts a full screen down
+    viewH = -1; layout();
+    camFit();
+    grid(true);
+  }
+  function grid(force) {
+    var fs = FS0 * cam.S / cam.S0;
+    fs = Math.round((fs < FSMIN ? FSMIN : fs > FS0 ? FS0 : fs) * 4) / 4;
+    if (!force && fs === gridFS) return;
+    gridFS = fs;
+    mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    mctx.font = '400 ' + fs + 'px "DM Mono", ui-monospace, monospace';
+    mctx.textBaseline = 'top';
+    cw = mctx.measureText('M').width || fs * 0.6;
+    chh = fs * 0.98;
     cols = Math.ceil(vw / cw) + 1; rows = Math.ceil(vh / chh) + 1;
-    line = new Array(cols); bkt = new Uint8Array(cols);
+
+    H = new Float32Array(cols * rows); F = new Float32Array(cols * rows);
+    CT = new Float32Array(cols * NW * 2);
+    GLY = new Uint16Array(cols);
+    tint.width = cols; tint.height = rows;
+    timg = tctx.createImageData(cols, rows);
+    t32 = new Uint32Array(timg.data.buffer);
+    snap = 1;
     document.getElementById('m-grid').textContent = cols + '×' + rows;
   }
 
   function splash(x, y, s) {
-    if (ripples.length > 16) ripples.shift();
+    if (ripples.length >= RMAX) ripples.shift();
     ripples.push({ x: x, y: y, t: T, s: s * gainSet });
   }
 
   function draw() {
-    ctx.fillStyle = ground;
-    ctx.fillRect(0, 0, vw, vh);
+    /* wavelengths live in cells, not pixels, so when the font shrinks the
+       sea shrinks with it and the whole field reads as the camera pulling
+       back rather than the texture getting busier */
+    var rowsAll = rows;
+    rows = Math.min(rowsAll, Math.ceil(viewH / chh) + 1);    // only what the strip shows
+    var i, c, r, w, z = zoom * FSMIN / gridFS, n = cols * rows;
+    renderFigures(); matSetup();
 
-    var nr = ramp.length, z = zoom;
-    var live = [], i;
-    for (i = 0; i < ripples.length; i++) {
-      var age = T - ripples[i].t;
-      if (age < 3.1) live.push({
-        x: ripples[i].x, y: ripples[i].y,
-        f: age * 355,
-        a: ripples[i].s * Math.exp(-age * 0.78) * (1 + surge)
-      });
+    /* the win frame: once it's reverted, a banner in the sea above them */
+    var bn = null;
+    if (bout.party >= 0) {
+      bn = { r: Math.max(1, Math.floor((AY - (ZH - ZCY) * cam.S) / chh)),
+             c: Math.round((AX + bout.cx * cam.S) / cw),
+             a: 'MEAN REVERTED', b: 'after ' + num(G.at) + ' hands' };
     }
-    ripples = live.length === ripples.length ? ripples
-            : ripples.filter(function (r) { return T - r.t < 3.1; });
 
-    var wellA = 1.15 * gainSet * (1 + surge * 0.6);
-
-    for (var r2 = 0; r2 < rows; r2++) {
-      var y = r2 * chh, wy = y * 0.0165 * z;
-      for (var c = 0; c < cols; c++) {
-        var x = c * cw, wx = x * 0.0125 * z;
-
-        var v = Math.sin(wx * 1.6 + T * 0.62 + Math.sin(wy * 1.15 - T * 0.34) * 1.8)
-              + Math.sin(wy * 2.1 - T * 0.47 + Math.sin(wx * 0.9 + T * 0.26) * 1.5)
-              + 0.8 * Math.sin((wx + wy) * 1.45 + T * 0.8);
-        v *= 0.32;
-
-        for (var k = 0; k < live.length; k++) {
-          var L = live[k], dx = x - L.x, dy = y - L.y;
-          var d = Math.sqrt(dx * dx + dy * dy), off = d - L.f;
-          if (off > -230 && off < 230) {
-            v += Math.sin(off * 0.094) * Math.exp(-(off * off) / 9000) * L.a;
-          }
-        }
-
-        var gx = x - mx, gy = y - my, g2 = gx * gx + gy * gy;
-        if (g2 < 96000) {
-          var gd = Math.sqrt(g2);
-          v += wellA * (1 - gd / 310) * Math.cos(gd * 0.026);
-        }
-
-        var m = v * 0.5 + 0.5;
-        if (m < 0) m = 0; else if (m > 0.9999) m = 0.9999;
-        var ch = ramp[(m * nr) | 0];
-        line[c] = ch;
-        bkt[c] = (ch === ' ' || ch === undefined) ? 0 : 1 + ((m * (LV - 1)) | 0);
+    /* ── column tables: amplitude times sin/cos of the column-only phase ── */
+    for (w = 0; w < NW; w++) {
+      var kx = WD[w * 2] * WK[w] * z, ph = -WW[w] * T, a0 = WA[w], sl = w * 2;
+      for (c = 0; c < cols; c++) {
+        var A0 = kx * (c * cw) + ph, o = c * 10 + sl;
+        CT[o] = a0 * Math.sin(A0); CT[o + 1] = a0 * Math.cos(A0);
       }
-      var st = 0;
-      for (var c2 = 1; c2 <= cols; c2++) {
-        if (c2 === cols || bkt[c2] !== bkt[st]) {
-          if (bkt[st] !== 0) {
-            ctx.fillStyle = cache[bkt[st] - 1];
-            ctx.fillText(line.slice(st, c2).join(''), st * cw, y);
+    }
+
+    /* ── the swell: no trig per cell. The unroll below assumes NW = 5. ── */
+    var amp = 1.15 / WSUM;
+    for (r = 0; r < rows; r++) {
+      var y = r * chh, row = r * cols;
+      for (w = 0; w < NW; w++) {
+        var B = WD[w * 2 + 1] * WK[w] * z * y;
+        RS[w * 2] = Math.sin(B); RS[w * 2 + 1] = Math.cos(B);
+      }
+      var s0 = RS[0], c0 = RS[1], s1 = RS[2], c1 = RS[3], s2 = RS[4],
+          c2 = RS[5], s3 = RS[6], c3 = RS[7], s4 = RS[8], c4 = RS[9];
+      for (c = 0; c < cols; c++) {
+        var b = c * 10;
+        var v = (CT[b]     * c0 + CT[b + 1] * s0
+               + CT[b + 2] * c1 + CT[b + 3] * s1
+               + CT[b + 4] * c2 + CT[b + 5] * s2
+               + CT[b + 6] * c3 + CT[b + 7] * s3
+               + CT[b + 8] * c4 + CT[b + 9] * s4) * amp;
+        /* a gentle S-curve pulls the crests and troughs apart and thins
+           out the mid-tones — Harri's contrast enhancement, applied to a
+           height field instead of a sampling vector. It is also what
+           gives the contours something worth tracing. */
+        H[row + c] = v * (0.78 + 0.22 * v * v);
+      }
+    }
+
+    /* ── ripples: expanding rings stamped through the profile table, so a
+         cell costs one distance and one lookup, and culled to the annulus
+         each ring actually touches instead of sweeping the whole grid ── */
+    var live = 0;
+    for (i = 0; i < ripples.length; i++) {
+      var rp = ripples[i], age = T - rp.t;
+      if (age > RLIFE) continue;
+      var R = 300 * age * (1 - 0.055 * age);              // front, easing off
+      var W = 38 + 46 * age;                              // wake half-width
+      var A = rp.s * Math.exp(-age * 0.95)
+            / Math.sqrt(1 + R / 130) * (1 + surge * 0.8); // 1/r spreading
+      if (A < 0.016) continue;         // under one shade: not worth stamping
+      ripples[live++] = rp;
+
+      var ro = R + W, rin = R - W, ro2 = ro * ro, rin2 = rin * rin;
+      var r0 = ((rp.y - ro) / chh) | 0, r1 = Math.ceil((rp.y + ro) / chh);
+      if (r0 < 0) r0 = 0; if (r1 > rows) r1 = rows;
+
+      for (r = r0; r < r1; r++) {
+        var dy = r * chh - rp.y, dy2 = dy * dy;
+        var half = ro2 - dy2; if (half <= 0) continue;
+        half = Math.sqrt(half);
+        /* once the ring outruns its own width the row splits in two */
+        var hole = (rin > 0 && dy2 < rin2) ? Math.sqrt(rin2 - dy2) : 0;
+        var rw = r * cols;
+        for (var pass = 0; pass < 2; pass++) {
+          var xa, xb;
+          if (hole > 0) {
+            if (pass === 0) { xa = rp.x - half; xb = rp.x - hole; }
+            else            { xa = rp.x + hole; xb = rp.x + half; }
+          } else {
+            if (pass) break;
+            xa = rp.x - half; xb = rp.x + half;
           }
-          st = c2;
+          var ca = (xa / cw) | 0, cb = Math.ceil(xb / cw);
+          if (ca < 0) ca = 0; if (cb > cols) cb = cols;
+          for (c = ca; c < cb; c++) {
+            var dx = c * cw - rp.x;
+            var u = (Math.sqrt(dx * dx + dy2) - R) / W;
+            if (u <= -1 || u >= 1) continue;
+            var fp = (u + 1) * 0.5 * PN, ip = fp | 0;
+            H[rw + c] += A * (PROF[ip] + (PROF[ip + 1] - PROF[ip]) * (fp - ip));
+          }
         }
+      }
+    }
+    ripples.length = live;
+
+    /* ── cursor wake: a soft swell that breathes, with zero value and zero
+         slope at its rim so it never shows an edge ── */
+    if (mx > -5000 && my > -5000) {
+      var wA = 0.9 * gainSet * (1 + surge * 0.5), wph = T * 2.1;
+      for (i = 0; i <= WN; i++) {
+        var q = i / WN, e2 = 1 - q * q;
+        WLUT[i] = wA * e2 * e2 * Math.cos(q * WR * 0.028 - wph);
+      }
+      var wr0 = ((my - WR) / chh) | 0, wr1 = Math.ceil((my + WR) / chh);
+      if (wr0 < 0) wr0 = 0; if (wr1 > rows) wr1 = rows;
+      for (r = wr0; r < wr1; r++) {
+        var wdy = r * chh - my, wdy2 = wdy * wdy;
+        var wh = WR * WR - wdy2; if (wh <= 0) continue;
+        wh = Math.sqrt(wh);
+        var wca = ((mx - wh) / cw) | 0, wcb = Math.ceil((mx + wh) / cw);
+        if (wca < 0) wca = 0; if (wcb > cols) wcb = cols;
+        var wrw = r * cols;
+        for (c = wca; c < wcb; c++) {
+          var wdx = c * cw - mx;
+          var wq = Math.sqrt(wdx * wdx + wdy2) / WR;
+          if (wq >= 1) continue;
+          var fq = wq * WN, iq = fq | 0;
+          H[wrw + c] += WLUT[iq] + (WLUT[iq + 1] - WLUT[iq]) * (fq - iq);
+        }
+      }
+    }
+
+    /* ── a calm pool around the judoka so they read over the swell: the
+         same idea as the halos behind the type, pulled toward a trough
+         with a smooth edge so the water doesn't draw a ring round him ── */
+    if (zw) {
+      var pcx = zc0 + zw * 0.5, pcy = zr0 + zh * 0.5, prx = zw * 0.5 + 4, pry = zh * 0.5 + 3;
+      var pr0 = Math.max(0, Math.floor(pcy - pry)), pr1 = Math.min(rows, Math.ceil(pcy + pry));
+      var pc0 = Math.max(0, Math.floor(pcx - prx)), pc1 = Math.min(cols, Math.ceil(pcx + prx));
+      for (r = pr0; r < pr1; r++) {
+        var ey = (r + 0.5 - pcy) / pry, ey2 = ey * ey, prw = r * cols;
+        for (c = pc0; c < pc1; c++) {
+          var ex = (c + 0.5 - pcx) / prx, e2 = ex * ex + ey2;
+          if (e2 >= 1) continue;
+          var pf = 1 - e2; pf = pf * pf * (3 - 2 * pf);
+          H[prw + c] += (-0.85 - H[prw + c]) * pf * 0.9;
+        }
+      }
+    }
+
+    /* ── ease the field on screen toward the one just computed. The field
+         is continuous but the character set is not, so a cell parked on a
+         band boundary would otherwise flicker between two glyphs every
+         frame. Three frames of lag is invisible; the chatter was not. ── */
+    var kE = (snap || reduce.matches) ? 1 : eK;
+    if (kE >= 1) F.set(H);
+    else for (i = 0; i < n; i++) F[i] += (H[i] - F[i]) * kE;
+    snap = 0;
+
+    /* ── glyphs into the mask, colour into the tint ──────────────────── */
+    mctx.setTransform(1, 0, 0, 1, 0, 0);
+    mctx.clearRect(0, 0, mask.width, mask.height);
+    mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    mctx.fillStyle = '#000';
+
+    var sN = 1 / (slopeN * 2.6), gsum = 0, fcc = String.fromCharCode;
+    for (r = 0; r < rows; r++) {
+      var rr = r * cols;
+      var up = r > 0 ? rr - cols : rr, dn = r < rows - 1 ? rr + cols : rr;
+      for (c = 0; c < cols; c++) {
+        var h = F[rr + c];
+        var gx = F[rr + (c < cols - 1 ? c + 1 : c)] - F[rr + (c > 0 ? c - 1 : c)];
+        var gy = F[dn + c] - F[up + c];
+        var ax = gx < 0 ? -gx : gx, ay = gy < 0 ? -gy : gy;
+        var mg = ax + ay; gsum += mg;
+
+        /* soft clip. A hard clamp turned every strong ripple into a flat
+           slab of solid @ — the opposite of the contour it should be
+           drawing. Rolling the extremes off keeps a big poke legible as
+           rings all the way through. */
+        var m = 0.5 + 0.5 * (h / (1 + 0.55 * (h < 0 ? -h : h)));
+        if (m < 0) m = 0; else if (m > 0.99999) m = 0.99999;
+
+        /* the iso-contour runs across the gradient, so a steep cell takes
+           the stroke perpendicular to its slope — four 45-degree sectors,
+           picked by comparison because atan2 per cell is not affordable */
+        var t = mg * sN;
+        var mq = t < 0.62 ? 0 : t < 1.06 ? 1 : t < 1.72 ? 2 : 3;
+        var oq = ax > ay * 2.414 ? 2 : ay > ax * 2.414 ? 0
+               : ((gx < 0) === (gy < 0)) ? 1 : 3;
+
+        /* a contour is worth more ink than its height alone would earn:
+           the palette runs trough-to-crest and its low stops sit almost on
+           the ground colour, so a stroke lying in the mid range would be
+           invisible. Lifting the steep cells lets the wave structure read
+           as line work over calm water, which is the whole idea. */
+        var ci = (m * LV) | 0;
+        if (mq > 1) {
+          /* lift it into view, but never past CEIL: a contour is allowed to
+             escape the invisible end of the palette, not to invent a new
+             crest. Without the ceiling the deep-ink accents on the lower
+             levels turned the whole field into a dark thicket. */
+          var lift = ci + (mq === 3 ? 52 : 28);
+          ci = lift > CEIL ? (ci > CEIL ? ci : CEIL) : lift;
+        }
+        GLY[c] = GT[(((m * HQ) | 0) * 4 + mq) * 4 + oq];
+        t32[rr + c] = PACK[ci];
+      }
+      matRow(r, rr);
+      /* the judoka stand on the mat: their cells replace everything */
+      var zr = r - zr0;
+      if (zw && zr >= 0 && zr < zh) {
+        var zo = zr * zw;
+        for (var zk = 0; zk < zw; zk++) {
+          var zg = ZG[zo + zk];
+          if (zg) { GLY[zc0 + zk] = zg; t32[rr + zc0 + zk] = ZC[zo + zk]; }
+        }
+      }
+      if (bn && (r === bn.r || r === bn.r + 1)) {
+        var bs = r === bn.r ? bn.a : bn.b, bc = bn.c - (bs.length >> 1);
+        for (var bj = 0; bj < bs.length; bj++) {
+          var bx = bc + bj;
+          if (bx < 0 || bx >= cols || bs.charCodeAt(bj) === 32) continue;
+          GLY[bx] = bs.charCodeAt(bj);
+          t32[rr + bx] = r === bn.r ? 0xff1f5aff : 0xff003dad;   // tang, tang-ink
+        }
+      }
+      mctx.fillText(fcc.apply(null, GLY), 0, r * chh);
+    }
+
+    tctx.putImageData(timg, 0, 0);
+    mctx.setTransform(1, 0, 0, 1, 0, 0);
+    mctx.globalCompositeOperation = 'source-in';
+    mctx.drawImage(tint, 0, 0, cols, rows, 0, 0, cols * cw * dpr, rows * chh * dpr);
+    mctx.globalCompositeOperation = 'source-over';
+
+    ctx.fillStyle = ground;
+    ctx.fillRect(0, 0, vw, viewH);
+    ctx.drawImage(mask, 0, 0, vw, vh);
+
+    /* the slope scale trails the field's own mean, so the contours stay
+       evenly distributed through a zoom change or a gain change */
+    slopeN += (gsum / n - slopeN) * 0.12;
+    if (slopeN < 1e-4) slopeN = 1e-4;
+    rows = rowsAll;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     THE TABLE
+
+     Punto banco off an eight-deck shoe — burn by the first card's value,
+     reshuffle at the cut card, the standard third-card tableau — made an
+     exactly even game. Banker wins 45.8597% of hands and Player 44.6247%,
+     so a banker win pays 0.446247 / 0.458597 ≈ 0.97307 to 1 (a 2.69%
+     commission, where a casino takes 5%) and Zob's expected result is
+     zero. He keeps his stake on Banker every hand from a $1,000 start.
+
+     Blue is Banker and red is Player. The winner of each hand throws the
+     other, and the bout moves with Zob's money, measured in bets: a banker
+     win carries it 0.973 of a step right, a player win a full step left,
+     a tie nobody. Est. is therefore flat at 0 and Dist. is a pure random
+     walk around it — the law of large numbers says his average result
+     per hand goes to zero even though Dist. itself wanders further and
+     further.
+
+     After 5,000 hands, the first time Dist. crosses back over 0 counts as
+     mean reversion: they bow out, and a fresh run starts. So does one
+     where Zob can no longer cover his bet — in a fair game that's certain
+     eventually, but the expected wait is infinite; at $100 bets he only
+     has ten of them, which is where "how long" gets interesting.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  var HAND = 4.4;                        // seconds per hand at 10x and up, times the speed; 1x is paced by the bout
+  var START = 100000, REVERT_AFTER = 5000;   // cents, hands
+  var PAY = 0.446247 / 0.458597;        // what a banker win pays, so the game is exactly even
+  var DRIFT = 0;                         // expected steps a hand: none
+  var BANKER = 1, PLAYER = 0;            // which judoka: blue, red
+  var G = {
+    shoe: new Uint8Array(416), n: 0, cut: 0,
+    cents: START, bet: 100, hands: 0, bw: 0, pw: 0, ties: 0, dist: 0, prev: 0,
+    speed: 1, acc: 0, done: '', doneT: 0, at: 0,
+    P: [], B: [], pt: 0, bt: 0, res: '', dirty: true, uiAt: 0
+  };
+
+  function shuffle() {
+    var s = G.shoe, i, j, q;
+    for (i = 0; i < 416; i++) s[i] = i % 52;
+    for (i = 415; i > 0; i--) { j = (Math.random() * (i + 1)) | 0; q = s[i]; s[i] = s[j]; s[j] = q; }
+    G.n = 0;
+    G.cut = 416 - 14 - ((Math.random() * 6) | 0);   // cut card ~14–19 from the back
+    G.n += 1 + (val(s[0]) || 10);                     // burn: turn one, bury that many
+  }
+  function val(c) { var r = (c >> 2) + 1; return r >= 10 ? 0 : r; }   // A=1 … 9, tens and faces 0
+  function card() { return G.shoe[G.n++]; }
+  function total(h) { var s = 0; for (var i = 0; i < h.length; i++) s += val(h[i]); return s % 10; }
+  /* the banker's side of the tableau, once the player has drawn a third card */
+  function bankerDraws(b, p3) {
+    if (b <= 2) return true;
+    if (b === 3) return p3 !== 8;
+    if (b === 4) return p3 >= 2 && p3 <= 7;
+    if (b === 5) return p3 >= 4 && p3 <= 7;
+    if (b === 6) return p3 === 6 || p3 === 7;
+    return false;
+  }
+
+  function hand() {
+    if (G.n >= G.cut) shuffle();
+    var P = [card()], B = [card()];
+    P.push(card()); B.push(card());
+    var pt = total(P), bt = total(B);
+    if (pt < 8 && bt < 8) {                         // no natural
+      if (pt <= 5) {
+        var p3 = card(); P.push(p3);
+        if (bankerDraws(bt, val(p3))) B.push(card());
+      } else if (bt <= 5) {
+        B.push(card());
+      }
+      pt = total(P); bt = total(B);
+    }
+    G.hands++;
+    if (bt > pt)      { G.cents += G.bet * PAY; G.bw++; G.dist += PAY; G.res = 'B'; bout.next = BANKER; }
+    else if (pt > bt) { G.cents -= G.bet; G.pw++; G.dist -= 1; G.res = 'P'; bout.next = PLAYER; }
+    else              { G.ties++; G.res = 'T'; bout.next = -1; }
+    G.P = P; G.B = B; G.pt = pt; G.bt = bt;
+    bout.tx = G.dist * STEP;
+    var diff = G.dist - G.hands * DRIFT;
+    if (G.hands > REVERT_AFTER && (diff === 0 || (diff > 0) !== (G.prev > 0))) {
+      G.done = 'reverted'; G.at = G.hands;
+    } else if (G.cents < G.bet) {
+      G.done = 'broke'; G.at = G.hands;
+    }
+    G.prev = diff;
+    logHand();
+    G.dirty = true;
+  }
+
+  function fresh() {
+    G.cents = START; G.hands = G.bw = G.pw = G.ties = G.dist = G.at = 0; G.prev = 0;
+    G.done = ''; G.doneT = 0; G.acc = 0; G.P = []; G.B = []; G.res = '';
+    G.dirty = true; G.uiAt = 0;
+    bout.tx = 0; bout.party = -1; bout.next = null; bout.wait = 0.8;
+    resetLog(); shuffle();
+  }
+
+  function gameTick(dt) {
+    if (G.done) {
+      /* a finished run holds long enough to see the ending, then deals again */
+      G.doneT += dt;
+      if (G.doneT > (G.done === 'reverted' ? 11 : 3.5) && !bout.th) fresh();
+      return;
+    }
+    if (G.speed === 1) {
+      /* at 1x the bout sets the pace: the next hand is dealt as soon as the
+         last exchange is over and they've gripped up again, so there's
+         never a dead stretch waiting on a clock */
+      if (!bout.th && bout.next === null && bout.wait <= 0 && bout.party < 0) hand();
+      return;
+    }
+    G.acc += dt * G.speed / HAND;
+    var k = G.acc | 0;
+    G.acc -= k;
+    if (k > 4000) k = 4000;
+    while (k-- > 0 && !G.done) hand();
+  }
+
+  /* ── Zob in Projects: a terminal with his fields, and a job view under
+       them that shows the run — every hand logged, and Dist. charted against Est. ── */
+  var $ = function (id) { return document.getElementById(id); };
+  var RANK = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  var SUIT = ['♠', '♥', '♦', '♣'];
+  var bacOpen = $('bac-open'), zEnv = $('zob-env'), zChart = $('z-chart'), zLog = $('z-log');
+  function num(n) { return n.toLocaleString('en-US'); }
+  function dollars(c) {
+    return (c / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  /* compact signed numbers: plain while they're short, 1.2e4 past that */
+  function sci(v, dp) {
+    var a = Math.abs(v), s = v > 0 ? '+' : v < 0 ? '−' : '';
+    if (a < 10000) return s + (dp ? a.toFixed(dp) : Math.round(a));
+    return s + a.toExponential(1).replace('e+', 'e');
+  }
+  function suited(h) { var s = []; for (var i = 0; i < h.length; i++) s.push(RANK[h[i] >> 2] + SUIT[h[i] & 3]); return s.join(' '); }
+  function pad(s, n) { s = String(s); while (s.length < n) s += ' '; return s; }
+  function lpad(s, n) { s = String(s); while (s.length < n) s = ' ' + s; return s; }
+
+  /* the log keeps the last eight hands; the chart keeps Dist. sampled at
+     a stride that doubles whenever the buffer fills, so a run of millions
+     of hands still draws from a few hundred points */
+  var LOG = [], DS = [], stride = 1, CAP = 480;
+  function logHand() {
+    LOG.push(lpad('#' + num(G.hands), 10) + '  B ' + G.bt + '  ' + pad(suited(G.B), 12)
+      + 'P ' + G.pt + '  ' + pad(suited(G.P), 12)
+      + (G.res === 'B' ? 'banker  +$' + dollars(G.bet * PAY) : G.res === 'P' ? 'player  −$' + num(G.bet / 100) : 'tie     push'));
+    if (LOG.length > 8) LOG.shift();
+    if (G.hands % stride === 0) {
+      DS.push(G.dist);
+      if (DS.length > CAP) {
+        for (var i = 0; i < CAP / 2; i++) DS[i] = DS[i * 2 + 1];
+        DS.length = CAP / 2; stride *= 2;
       }
     }
   }
+  function resetLog() { LOG.length = 0; DS.length = 0; stride = 1; }
+
+  function chart() {
+    var dpr2 = Math.min(devicePixelRatio || 1, 2), w = zChart.clientWidth, h = 120;
+    if (!w) return;
+    if (zChart.width !== Math.round(w * dpr2)) { zChart.width = Math.round(w * dpr2); zChart.height = h * dpr2; }
+    var g = zChart.getContext('2d');
+    g.setTransform(dpr2, 0, 0, dpr2, 0, 0);
+    g.clearRect(0, 0, w, h);
+    var n = DS.length, hands = Math.max(1, n * stride), top = 5;
+    for (var i = 0; i < n; i++) { var a = Math.abs(DS[i]); if (a > top) top = a; }
+    if (hands * DRIFT > top) top = hands * DRIFT;
+    top *= 1.15;
+    var y = function (v) { return h / 2 - v / top * (h / 2 - 6); };
+    g.strokeStyle = 'rgba(57,255,106,.22)'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(0, y(0)); g.lineTo(w, y(0)); g.stroke();
+    g.strokeStyle = '#23a54a'; g.lineWidth = 1.5; g.setLineDash([5, 4]);
+    g.beginPath(); g.moveTo(0, y(0)); g.lineTo(w, y(hands * DRIFT)); g.stroke();
+    g.setLineDash([]);
+    if (n > 1) {
+      g.strokeStyle = '#39ff6a'; g.lineWidth = 1.6; g.beginPath();
+      for (i = 0; i < n; i++) {
+        var xx = (i + 1) * stride / hands * w;
+        if (i) g.lineTo(xx, y(DS[i])); else g.moveTo(xx, y(DS[i]));
+      }
+      g.stroke();
+    }
+    g.fillStyle = '#23a54a'; g.font = '10px "DM Mono", ui-monospace, monospace';
+    g.fillText('+' + Math.round(top), 4, 12); g.fillText('−' + Math.round(top), 4, h - 4);
+    g.textAlign = 'right'; g.fillText(num(G.hands) + ' hands', w - 4, h - 4); g.textAlign = 'left';
+  }
+
+  function ui(now) {
+    if (!G.dirty) return;
+    if (G.speed > 1 && now - G.uiAt < 100) return;   // ~10Hz once it runs fast
+    G.dirty = false; G.uiAt = now;
+    var dealt = G.hands > 0;
+    $('b-tot').textContent = dealt ? G.bt : '–';
+    $('p-tot').textContent = dealt ? G.pt : '–';
+    $('b-cards').textContent = dealt ? suited(G.B) : '\u00a0';
+    $('p-cards').textContent = dealt ? suited(G.P) : '\u00a0';
+    $('s-b').dataset.won = !dealt || G.res !== 'P' ? 'true' : 'false';
+    $('s-p').dataset.won = !dealt || G.res !== 'B' ? 'true' : 'false';
+    $('n-rolls').textContent = num(G.hands);
+    $('n-bal').textContent = '$' + dollars(G.cents);
+    $('n-dist').textContent = sci(G.dist, Math.abs(G.dist) < 100 ? 2 : 0);
+    $('n-est').textContent = '0';
+    $('b-stake').textContent = '$' + num(G.bet / 100) + ' on BANKER';
+    $('z-last').textContent = !dealt ? '\u2014' : G.res === 'B' ? 'BANKER +$' + dollars(G.bet * PAY)
+      : G.res === 'P' ? 'PLAYER \u2212$' + num(G.bet / 100) : 'TIE, push';
+    if (zEnv.hidden) return;
+    $('z-state').textContent = G.done === 'reverted' ? 'mean reverted at hand ' + num(G.at)
+      : G.done === 'broke' ? 'broke at hand ' + num(G.at) + ', dealing again'
+      : G.hands < REVERT_AFTER ? num(REVERT_AFTER - G.hands) + ' hands until reversion counts'
+      : 'waiting for Dist. to cross Est.';
+    zLog.textContent = LOG.length ? LOG.join('\n') : 'first hand coming…';
+    chart();
+  }
+
+  bacOpen.addEventListener('click', function () {
+    var open = zEnv.hidden;
+    zEnv.hidden = !open;
+    bacOpen.setAttribute('aria-expanded', open ? 'true' : 'false');
+    G.dirty = true; G.uiAt = 0; ui(performance.now());
+  });
+  function toggles(attr, fn) {
+    var all = document.querySelectorAll('[' + attr + ']');
+    [].forEach.call(all, function (b) {
+      b.addEventListener('click', function () {
+        [].forEach.call(all, function (q) { q.setAttribute('aria-pressed', q === b ? 'true' : 'false'); });
+        fn(+b.getAttribute(attr)); G.dirty = true; G.uiAt = 0;
+      });
+    });
+  }
+  toggles('data-spd', function (v) { G.speed = v; G.acc = 0; });
+  toggles('data-bet', function (v) { G.bet = v; });
 
   function frame(now) {
-    var dt = Math.min(0.05, (now - last) / 1000 || 0);
-    last = now; T += dt; tick += dt;
+    /* clamped both ways: a long spell in a background tab must not arrive
+       as one enormous step, and dt must never go negative */
+    var dt = Math.min(0.05, Math.max(0, (now - last) / 1000 || 0));
+    last = now; T += dt;
+    eK = 1 - Math.exp(-dt * 26);
+
+    gameTick(dt); ui(now);
+    boutMove(dt);
+    layout();
+    cam.D += (camGoal() - cam.D) * Math.min(1, dt * 2.4);
+    cam.S = Math.min(cam.D, fitH(viewH));
+    grid(false);
 
     surge += (0 - surge) * Math.min(1, dt * 2.6);
     zoom += (zoomT - zoom) * Math.min(1, dt * 2.2);
@@ -621,166 +1793,71 @@
 
     mx += (px_ - mx) * Math.min(1, dt * 9);
     my += (py_ - my) * Math.min(1, dt * 9);
-    speed *= Math.exp(-dt * 4);
 
     auto -= dt;
-    if (auto <= 0) { auto = 2.4 + Math.random() * 2.6; splash(Math.random() * vw, Math.random() * vh, 0.5); }
+    if (auto <= 0) { auto = 2.6 + Math.random() * 3.0; splash(Math.random() * vw, Math.random() * viewH, 0.55); }
 
-    if (tick >= 0.03) {
-      tick = 0; draw(); frames++;
-      if (now - fpsAt > 1000) {
-        document.getElementById('m-fps').textContent = Math.round(frames * 1000 / (now - fpsAt));
-        frames = 0; fpsAt = now;
-      }
+    draw(); frames++;
+    if (now - fpsAt > 1000) {
+      document.getElementById('m-fps').textContent = Math.round(frames * 1000 / (now - fpsAt));
+      frames = 0; fpsAt = now;
     }
     requestAnimationFrame(frame);
   }
 
-  /* ── zoom navigation: no scrolling, five depths ── */
-  var stations = [].slice.call(document.querySelectorAll('.station'));
-  var railBtns = [].slice.call(document.querySelectorAll('[data-go]'));
-  var names = ['home', 'builds', 'as of late', 'right now', 'say hi'];
-  var at = 0, busy = 0, hint = document.getElementById('hint');
-
-  /* stagger: arriving content resolves top-down, leaving content dissolves
-     bottom-up, which reads as the level receding rather than blinking out */
-  stations.forEach(function (st) {
-    var kids = [].slice.call(st.children), n = kids.length;
-    kids.forEach(function (k, i) {
-      k.style.setProperty('--d', (i * 62) + 'ms');
-      k.style.setProperty('--dr', ((n - 1 - i) * 42) + 'ms');
-    });
-  });
-
-  /* headings resolve character by character out of the water's own ramp */
-  var scrambleToken = 0;
-  function resolve(el) {
-    if (!el) return;
-    var real = el.dataset.txt || (el.dataset.txt = el.textContent);
-    if (reduce.matches) { el.textContent = real; return; }
-    var mine = ++scrambleToken, chars = real.split(''), n = chars.length;
-    var pool = ' .:-=+*#%@'.split(''), t0 = 0, span = 560, tail = 240;
-    function tickFrame(now) {
-      if (mine !== scrambleToken) return;
-      if (!t0) t0 = now;
-      var p = (now - t0) / span, out = '';
-      for (var i = 0; i < n; i++) {
-        if (chars[i] === ' ') { out += ' '; continue; }
-        var settle = (i / n) * (1 - tail / span) + 0.06;
-        if (p >= settle) out += chars[i];
-        else out += pool[(Math.random() * pool.length) | 0];
-      }
-      el.textContent = out;
-      if (p < 1) requestAnimationFrame(tickFrame);
-      else el.textContent = real;
-    }
-    requestAnimationFrame(tickFrame);
+  /* ── scrolling ── the shrink follows the scroll position; the water
+       takes its accent from whichever section is in the middle of the
+       screen, with a small swell as it changes ── */
+  scroller.addEventListener('scroll', function () { layout(); if (reduce.matches) draw(); }, { passive: true });
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        accT = (en.target.dataset.accent || '255,90,31').split(',').map(Number);
+        surge = 0.8; splash(AX, AY, 1.4);
+      });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    [].forEach.call(document.querySelectorAll('.station'), function (st) { io.observe(st); });
   }
 
-  function paint() {
-    stations.forEach(function (s, i) {
-      s.dataset.state = i === at ? 'here' : (i < at ? 'behind' : 'ahead');
-      s.setAttribute('aria-hidden', i === at ? 'false' : 'true');
-    });
-    railBtns.forEach(function (b, i) { b.setAttribute('aria-current', i === at ? 'true' : 'false'); });
-    var mag = Math.pow(1.9, at);
-    document.getElementById('mag').textContent = (mag < 10 ? mag.toFixed(2) : mag.toFixed(1)) + '×';
-    document.getElementById('zout').disabled = at === 0;
-    document.getElementById('zin').disabled = at === stations.length - 1;
-    document.getElementById('say').textContent = 'Level ' + (at + 1) + ' of 5: ' + names[at];
-  }
-
-  function go(n) {
-    n = Math.max(0, Math.min(stations.length - 1, n));
-    if (n === at) return;
-    var down = n > at;
-    at = n; paint();
-    zoomT = 1 + at * 0.26;
-    surge = down ? 1.5 : 1.15;
-    splash(vw * 0.5, vh * 0.5, down ? 3.4 : 2.6);
-    splash(vw * 0.5, vh * 0.5, down ? 1.6 : 1.2);
-    accT = (stations[at].dataset.accent || '255,90,31').split(',').map(Number);
-    if (!hint.classList.contains('gone')) hint.classList.add('gone');
-    var el = stations[at]; el.scrollTop = 0;
-    resolve(el.querySelector('h2'));
-    if (reduce.matches) draw();
-    busy = performance.now() + 620;
-  }
-  function step(d) { if (performance.now() > busy) go(at + d); }
-
-  var wheelAcc = 0, wheelAt = 0;
-  function scrollable(e, dir) {
-    var el = stations[at];
-    if (el.scrollHeight - el.clientHeight < 8) return false;
-    if (!(e.target.closest && e.target.closest('.station'))) return false;
-    var top = el.scrollTop <= 1, bottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
-    return dir > 0 ? !bottom : !top;
-  }
-
-  addEventListener('wheel', function (e) {
-    var now = performance.now();
-    if (scrollable(e, e.deltaY)) { wheelAcc = 0; return; }
-    if (now - wheelAt > 220) wheelAcc = 0;
-    wheelAt = now;
-    wheelAcc += e.deltaY + (e.ctrlKey ? e.deltaY * 2 : 0);
-    if (Math.abs(wheelAcc) > 48) { step(wheelAcc > 0 ? 1 : -1); wheelAcc = 0; }
-  }, { passive: true });
-
-  addEventListener('keydown', function (e) {
-    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
-    var k = e.key;
-    if (/^(ArrowDown|PageDown)$/.test(k) || k === ' ') { e.preventDefault(); step(1); }
-    else if (/^(ArrowUp|PageUp)$/.test(k)) { e.preventDefault(); step(-1); }
-    else if (k === 'Home') { go(0); } else if (k === 'End') { go(stations.length - 1); }
-    else if (k === '+' || k === '=') { step(1); } else if (k === '-') { step(-1); }
-  });
-
-  var ty = 0, tx = 0;
-  addEventListener('touchstart', function (e) {
-    ty = e.touches[0].clientY; tx = e.touches[0].clientX;
-    px_ = tx; py_ = ty; splash(tx, ty, 2.4); surge = 1.1;
-  }, { passive: true });
-  addEventListener('touchmove', function (e) {
-    var t = e.touches[0];
-    px_ = t.clientX; py_ = t.clientY;
-    var dy = t.clientY - ty;
-    if (Math.abs(dy) > 54 && Math.abs(dy) > Math.abs(t.clientX - tx) && !scrollable(e, -dy)) {
-      step(t.clientY < ty ? 1 : -1); ty = t.clientY; tx = t.clientX;
-    }
-  }, { passive: true });
-
-  railBtns.forEach(function (b) { b.addEventListener('click', function () { go(+b.dataset.go); }); });
-  document.getElementById('zin').addEventListener('click', function () { go(at + 1); });
-  document.getElementById('zout').addEventListener('click', function () { go(at - 1); });
-
-  /* ── high-feedback pointer: velocity-scaled ripples, hover wakes ── */
+  /* ── high-feedback pointer: velocity-scaled ripples and a wake under the
+       cursor, but only inside the strip — over the white page the water
+       leaves you alone ── */
+  function inStrip(y) { return y < viewH; }
+  function away() { px_ = -9999; py_ = -9999; }
   var lastSpawn = 0, lx = 0, ly = 0;
   addEventListener('pointermove', function (e) {
+    if (!inStrip(e.clientY)) { away(); return; }
     var now = performance.now();
     px_ = e.clientX; py_ = e.clientY;
     var d = Math.hypot(e.clientX - lx, e.clientY - ly);
     lx = e.clientX; ly = e.clientY;
-    speed = Math.min(60, speed + d);
-    if (now - lastSpawn > 42) {
+    if (now - lastSpawn > 95) {
       lastSpawn = now;
-      splash(px_, py_, 0.85 + Math.min(2.4, d * 0.05));
+      splash(px_, py_, 0.5 + Math.min(1.7, d * 0.035));
     }
     if (reduce.matches) draw();
   }, { passive: true });
 
   addEventListener('pointerdown', function (e) {
+    if (!inStrip(e.clientY)) return;
     splash(e.clientX, e.clientY, 3.8); surge = 1.4;
     if (reduce.matches) draw();
   }, { passive: true });
 
-  addEventListener('pointerleave', function () { px_ = -9999; py_ = -9999; }, { passive: true });
+  addEventListener('touchstart', function (e) {
+    var t = e.touches[0];
+    if (!inStrip(t.clientY)) return;
+    px_ = t.clientX; py_ = t.clientY; splash(t.clientX, t.clientY, 2.4); surge = 1.1;
+  }, { passive: true });
+  addEventListener('touchmove', function (e) {
+    var t = e.touches[0];
+    if (inStrip(t.clientY)) { px_ = t.clientX; py_ = t.clientY; } else away();
+  }, { passive: true });
 
-  document.addEventListener('pointerover', function (e) {
-    var el = e.target.closest && e.target.closest('.rows li,.pins a,.shelf li,.links a,.seg button,.rail button,.mail');
-    if (!el) return;
-    var r = el.getBoundingClientRect();
-    splash(r.left + r.width / 2, r.top + r.height / 2, 1.5);
-  });
+  addEventListener('pointerleave', away, { passive: true });
+  /* a scroll moves the page under a still cursor */
+  scroller.addEventListener('scroll', function () { if (!inStrip(ly)) away(); }, { passive: true });
 
   /* ── console ── */
   var poke = document.getElementById('poke'), panel = document.getElementById('panel');
@@ -792,6 +1869,7 @@
   });
   document.getElementById('ramp').addEventListener('input', function (e) {
     ramp = (e.target.value.length > 1 ? e.target.value : ' .:-=+*#%@').split('');
+    glyphs();
     if (reduce.matches) draw();
   });
   function seg(sel, fn) {
@@ -803,17 +1881,30 @@
       });
     });
   }
-  seg('[data-pal]', function (b) { pal = +b.dataset.pal; mixColors(); surge = 1.2; splash(vw / 2, vh / 2, 2.4); if (reduce.matches) draw(); });
+  seg('[data-pal]', function (b) { pal = +b.dataset.pal; mixColors(); surge = 1.2; splash(vw / 2, viewH / 2, 2.4); if (reduce.matches) draw(); });
   seg('[data-gain]', function (b) { gainSet = +b.dataset.gain; surge = gainSet * 0.8; });
 
   /* ── boot ── */
-  mixColors(); resize(); paint();
-  mx = vw * 0.5; my = vh * 0.42; px_ = mx; py_ = my;
-  splash(vw * 0.36, vh * 0.52, 2.2); T = 1.1;
+  glyphs(); mixColors(); shuffle(); resize(); boutMove(0);
+  mx = vw * 0.5; my = viewH * 0.42; px_ = mx; py_ = my;
+  splash(vw * 0.36, viewH * 0.52, 2.2); T = 1.1;
+  /* keys (arrows, space, page down) scroll the scroller, not the page */
+  scroller.focus({ preventScroll: true });
   draw();
   addEventListener('resize', function () { resize(); draw(); });
   if (reduce.matches) {
     document.getElementById('m-fps').textContent = '0 (still)';
+    /* no animation: the hands still play and the bout and camera jump
+       straight to where each one leaves them — no throws, just the tally */
+    setInterval(function () {
+      if (G.done) { gameTick(HAND); if (G.done) return; }
+      for (var k = 0; k < G.speed && !G.done; k++) hand();
+      bout.cx = bout.tx; bout.next = null;
+      if (G.done === 'reverted') bout.party = 5;
+      boutMove(0);
+      cam.D = camGoal(); cam.S = Math.min(cam.D, fitH(viewH)); grid(false);
+      G.uiAt = 0; ui(performance.now()); draw();
+    }, HAND * 1000);
   } else {
     fpsAt = performance.now(); last = fpsAt;
     requestAnimationFrame(frame);
