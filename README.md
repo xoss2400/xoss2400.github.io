@@ -12,7 +12,8 @@ height, clamped to 113–167px) and the sections scroll underneath it on white.
 
 **The bout.** Inside the water, two judoka fight on a yellow tatami with a blue border. Each is about 34
 ellipsoid, box and cylinder primitives on a joint rig, raycast into the character grid. The
-throws are harai goshi and seoi nage, plus a blocked turn-in for ties. Poses run on
+throws are harai goshi, uchi mata, seoi nage, tai otoshi and tomoe nage; a tie is a blocked
+turn-in or a faked foot sweep. Poses run on
 cubic Hermite splines at each technique's real key times with limb lag, and the thrown
 fighter flies one Bézier arc. Every exchange randomises its pace, arc height, landing spot
 and impact. The middle of the screen is the mean (marked `^ mean` under the mat): the
