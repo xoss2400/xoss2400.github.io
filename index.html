@@ -101,11 +101,6 @@
     position:fixed;z-index:4;left:clamp(16px,6vw,96px);top:max(92px,18vh);margin:0;
     width:min(580px,44vw);pointer-events:none;color:var(--text);will-change:transform,opacity;
   }
-  /* a still patch of water behind the words, so they never fight the swell */
-  .hero::before{
-    content:"";position:absolute;z-index:-1;inset:-14% -18% -16% -22%;
-    background:radial-gradient(closest-side,var(--ground,#eefaf0) 62%,rgba(238,250,240,0));
-  }
   .hero .who{
     font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
     color:var(--text-2);margin:0 0 1.1rem;
@@ -118,7 +113,13 @@
   .hero h1 .nw{white-space:nowrap}
   .hero .sub{
     margin:1.3rem 0 0;max-width:38ch;font-size:clamp(1rem,1.35vw,1.15rem);line-height:1.5;
-    color:var(--read);text-shadow:0 0 10px var(--ground,#eefaf0),0 0 3px var(--ground,#eefaf0);
+    color:var(--read);
+  }
+  /* a highlighter's worth of white behind each line, so the judoka can
+     walk under the sentence without the two running together */
+  .hero .sub .hl{
+    background:rgba(255,255,255,.82);padding:.12em .35em;margin:0 -.35em;border-radius:4px;
+    -webkit-box-decoration-break:clone;box-decoration-break:clone;
   }
   .hero .actions{pointer-events:auto;margin-top:1.4rem}
   .hero .cue{
@@ -230,6 +231,18 @@
   }
   .proj .body{margin:1rem 0 0;max-width:48ch;font-size:1rem;line-height:1.6;color:var(--read)}
   .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:1.6rem}
+  /* a short window (a laptop with its toolbars): the cards tighten up
+     before the script has to fold or shrink them, mostly by sizing the
+     display type to the height as well as the width */
+  @media (min-width:761px) and (max-height:900px){
+    .proj{padding-block:clamp(20px,4.5vh,44px)}
+    .proj-top{gap:clamp(20px,3vw,40px)}
+    .proj h3{font-size:clamp(2.2rem,min(6vw,9vh),5rem)}
+    .proj .line{margin-top:.45rem;font-size:clamp(1.1rem,min(2.2vw,3.6vh),1.6rem)}
+    .proj .body{margin-top:.65rem;line-height:1.5}
+    .proj .meta{margin-bottom:.7rem}
+    .proj .actions{margin-top:1.1rem}
+  }
   .btn{
     display:inline-flex;align-items:center;gap:.45em;font:inherit;font-size:.92rem;font-weight:500;
     padding:.72em 1.25em;border-radius:999px;cursor:pointer;text-decoration:none;
@@ -342,6 +355,32 @@
   .stars:focus-visible{outline:2px solid var(--brick);outline-offset:4px;border-radius:2px}
   .nc-val{flex:none;font:var(--caps);font-size:.66rem;letter-spacing:.04em;min-width:1.8em}
   .nc-cap{margin:2px 0 8px;padding-top:10px;border-top:1px solid var(--rule);font-size:.8rem;font-style:italic;color:var(--faint)}
+
+  /* ── a card that won't fit the window: its facts, stack (and wrestlELO's
+       math) fold behind one button, set by the script. On a screen tall
+       enough the button never shows and the details stay open. ── */
+  .fold > summary{display:none}
+  .proj.tight .fold > summary{
+    display:flex;list-style:none;cursor:pointer;margin-top:clamp(18px,3vh,28px);padding-top:clamp(12px,2vh,18px);
+    border-top:1px solid var(--line);border-radius:2px;
+  }
+  .fold > summary::-webkit-details-marker{display:none}
+  .fold > summary:focus-visible{outline:2px solid var(--text);outline-offset:4px}
+  .proj.tight .fold[open] > .facts{border-top:0;margin-top:14px;padding-top:0}
+  /* the two pictures sized by width, held to a width whose height fits */
+  .proj.tight .shot{max-width:calc((var(--fit) - 190px) * 1.39);justify-self:center;width:100%}
+  .proj.tight .chart{max-width:calc((var(--fit) - 230px) * 1.7);justify-self:center;width:100%}
+  .tog{
+    display:inline-flex;align-items:center;gap:.5em;padding:.45em .9em;border-radius:99px;
+    box-shadow:0 0 0 1px var(--line);font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;color:var(--text);
+    background:var(--paper,#fff);transition:background .2s var(--ease);
+  }
+  .tog i,.tog b{font-style:normal;font-weight:400}
+  .tog b,.fold[open] > summary .tog i{display:none}
+  .fold[open] > summary .tog b{display:inline}
+  .tog::after{content:"";width:.5em;height:.5em;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:translateY(-.15em) rotate(45deg);transition:transform .25s var(--ease)}
+  .fold[open] > summary .tog::after{transform:translateY(.1em) rotate(-135deg)}
+  .fold > summary:hover .tog{background:var(--card)}
 
   /* ── Quill: the real app, in a plain window frame ── */
   .shot{
@@ -648,11 +687,12 @@
     #water,.bar,.console,.sharp,.skip,.hero .cue,.hero .actions,.tctl,.zenv,.nc,.elo,.flow,.chart svg,.chart .legend,.tip,#intro,.term{display:none!important}
     #scroller{position:static;overflow:visible}
     .hero{position:static;transform:none!important;opacity:1!important;visibility:visible!important;width:auto;padding:0 40px}
-    .hero::before{display:none}
     .station{padding-top:28px}
     .proj,.proof li,.now li,.sheet{background:none;box-shadow:none;border:1px solid #ddd;break-inside:avoid}
     .chart details{display:block}
     .math-tog{display:none}
+    .proj{zoom:1!important}
+    .fold > summary{display:none!important}
     a[href^="http"]::after,a[href^="mailto"]::after{content:" (" attr(href) ")";font-size:.8em;color:#555}
     .btn::after{content:none!important}
   }
@@ -743,7 +783,7 @@
 <header class="hero" id="hero">
   <p class="who">John McGowan &middot; Software &amp; Automation &middot; New York</p>
   <h1><span class="nw">The future is</span> <em class="nw">unknown.</em></h1>
-  <p class="sub">Hello, I write code. These are Saigo and Milo, fighting to determine all of our fate. Fate can be strange.</p>
+  <p class="sub"><span class="hl">Hello, I write code. These are Saigo and Milo, fighting to determine all of our fate. Fate can be strange.</span></p>
   <div class="actions">
     <a class="btn" href="john-mcgowan-resume.pdf" target="_blank" rel="noopener">R&eacute;sum&eacute; <span class="arr">PDF</span></a>
     <button type="button" class="btn ghost" data-copy>Copy email</button>
@@ -794,13 +834,16 @@
             </figure>
           </div>
 
-          <ul class="facts three case">
-            <li><b>The morning checklist</b><span>A desktop app on internal FastAPI services now runs the 15 to 20 tasks the team did by hand.</span><span class="win">6 hours saved daily across the team.</span></li>
-            <li><b>Orion to Salesforce</b><span>A Python ETL replaced a weekly manual upload and a paid dataloader.io subscription.</span><span class="win">Records within a day, no license fee.</span></li>
-            <li><b>Flows that fire only when they should</b><span>Record-triggered Flows now tell a file upload from a saved note.</span><span class="win">Each fires only on a real attachment.</span></li>
-          </ul>
-          <p class="note">Underneath: Azure-hosted services in Docker with PostgreSQL, behind one set of internal APIs. Along the way I passed the <b>SIE exam</b>.</p>
-          <ul class="stack" aria-label="Built with"><li>Python</li><li>FastAPI</li><li>PostgreSQL</li><li>Docker</li><li>Azure</li><li>Salesforce Flows</li><li>Salesforce REST API</li><li>Orion APIs</li></ul>
+          <details class="fold" open>
+            <summary><span class="tog"><i>Show details</i><b>Hide details</b></span></summary>
+            <ul class="facts three case">
+              <li><b>The morning checklist</b><span>A desktop app on internal FastAPI services now runs the 15 to 20 tasks the team did by hand.</span><span class="win">6 hours saved daily across the team.</span></li>
+              <li><b>Orion to Salesforce</b><span>A Python ETL replaced a weekly manual upload and a paid dataloader.io subscription.</span><span class="win">Records within a day, no license fee.</span></li>
+              <li><b>Flows that fire only when they should</b><span>Record-triggered Flows now tell a file upload from a saved note.</span><span class="win">Each fires only on a real attachment.</span></li>
+            </ul>
+            <p class="note">Underneath: Azure-hosted services in Docker with PostgreSQL, behind one set of internal APIs. Along the way I passed the <b>SIE exam</b>.</p>
+            <ul class="stack" aria-label="Built with"><li>Python</li><li>FastAPI</li><li>PostgreSQL</li><li>Docker</li><li>Azure</li><li>Salesforce Flows</li><li>Salesforce REST API</li><li>Orion APIs</li></ul>
+          </details>
         </article>
       </div>
 
@@ -882,13 +925,16 @@
             </figure>
           </div>
 
-          <ul class="facts">
-            <li><b>Open to anyone.</b><span>Sign in with Google (OpenID Connect, PKCE and a nonce) or Spotify, and log from the Apple Music catalogue. One provider interface merges the same album across services.</span></li>
-            <li><b>A sandbox for guests.</b><span>One click makes a guest who follows a seeded circle and logs from sample history. Guests are walled off from real users across the feed, search, profiles and counts, and deleted after a week.</span></li>
-            <li><b>Careful with accounts.</b><span>Provider tokens encrypted with AES-256-GCM, and accounts merge only on a verified email, which blocks takeover through Spotify's unverified one. Sign-in is tested end to end against local Google and Spotify stubs.</span></li>
-            <li><b>Self-hosted, properly.</b><span>A multi-stage Docker image running as non-root behind Caddy on a Hetzner VPS, with SQLite on one volume. GitHub Actions builds to GHCR and deploys over SSH.</span></li>
-          </ul>
-          <ul class="stack" aria-label="Built with"><li>Next.js</li><li>TypeScript</li><li>SQLite</li><li>Docker</li><li>Caddy</li><li>GitHub Actions</li><li>Google OIDC</li><li>Spotify API</li><li>Apple Music</li></ul>
+          <details class="fold" open>
+            <summary><span class="tog"><i>Show details</i><b>Hide details</b></span></summary>
+            <ul class="facts">
+              <li><b>Open to anyone.</b><span>Sign in with Google (OpenID Connect, PKCE and a nonce) or Spotify, and log from the Apple Music catalogue. One provider interface merges the same album across services.</span></li>
+              <li><b>A sandbox for guests.</b><span>One click makes a guest who follows a seeded circle and logs from sample history. Guests are walled off from real users across the feed, search, profiles and counts, and deleted after a week.</span></li>
+              <li><b>Careful with accounts.</b><span>Provider tokens encrypted with AES-256-GCM, and accounts merge only on a verified email, which blocks takeover through Spotify's unverified one. Sign-in is tested end to end against local Google and Spotify stubs.</span></li>
+              <li><b>Self-hosted, properly.</b><span>A multi-stage Docker image running as non-root behind Caddy on a Hetzner VPS, with SQLite on one volume. GitHub Actions builds to GHCR and deploys over SSH.</span></li>
+            </ul>
+            <ul class="stack" aria-label="Built with"><li>Next.js</li><li>TypeScript</li><li>SQLite</li><li>Docker</li><li>Caddy</li><li>GitHub Actions</li><li>Google OIDC</li><li>Spotify API</li><li>Apple Music</li></ul>
+          </details>
         </article>
 
         <!-- ── Quill ── -->
@@ -911,13 +957,16 @@
             </figure>
           </div>
 
-          <ul class="facts">
-            <li><b>Fast on long documents.</b><span>A 501-page, 231,000-word document lays out in about 110 ms, and typing a character re-lays and repaints in under a millisecond.</span></li>
-            <li><b>Only redo what changed.</b><span>Paragraphs are copy-on-write and their layouts are cached by revision, so an edit re-lays one paragraph, and only the visible pages are painted.</span></li>
-            <li><b>Word's own format.</b><span>.docx in and out, with styles, themes, numbering, headers and footers. PDF export subsets and embeds fonts, in the same layout as on screen.</span></li>
-            <li><b>Tested by driving it.</b><span>Headless end-to-end tests feed synthetic keystrokes and clicks to the real editor, and a script hook replays input and saves screenshots, like this one.</span></li>
-          </ul>
-          <ul class="stack" aria-label="Built with"><li>Rust</li><li>egui</li><li>HarfRust</li><li>fontdb</li><li>pdf-writer</li><li>quick-xml</li></ul>
+          <details class="fold" open>
+            <summary><span class="tog"><i>Show details</i><b>Hide details</b></span></summary>
+            <ul class="facts">
+              <li><b>Fast on long documents.</b><span>A 501-page, 231,000-word document lays out in about 110 ms, and typing a character re-lays and repaints in under a millisecond.</span></li>
+              <li><b>Only redo what changed.</b><span>Paragraphs are copy-on-write and their layouts are cached by revision, so an edit re-lays one paragraph, and only the visible pages are painted.</span></li>
+              <li><b>Word's own format.</b><span>.docx in and out, with styles, themes, numbering, headers and footers. PDF export subsets and embeds fonts, in the same layout as on screen.</span></li>
+              <li><b>Tested by driving it.</b><span>Headless end-to-end tests feed synthetic keystrokes and clicks to the real editor, and a script hook replays input and saves screenshots, like this one.</span></li>
+            </ul>
+            <ul class="stack" aria-label="Built with"><li>Rust</li><li>egui</li><li>HarfRust</li><li>fontdb</li><li>pdf-writer</li><li>quick-xml</li></ul>
+          </details>
         </article>
 
         <!-- ── wrestlELO ── -->
@@ -954,47 +1003,50 @@
             </figure>
           </div>
 
-          <ul class="facts">
-            <li><b>Scored once, at the end.</b><span>Tuned on 2015&ndash;21, then tested on 2022&ndash;25: 76.8% accuracy over 90,434 bouts, and a log loss of 0.472 against 0.693 for a coin flip.</span></li>
-            <li><b>Honest probabilities.</b><span>Expected calibration error of 0.0167 on the test seasons. No probability bin is off by more than 2.5 points.</span></li>
-            <li><b>Brackets, rebuilt.</b><span>The raw rows ran backwards. Reversing them took &ldquo;the champion's last bout is against the runner-up&rdquo; from 1.7% to 89.7%.</span></li>
-            <li><b>What the tuning found.</b><span>No offseason reversion, margin-of-victory multipliers, and K factors far above the textbook (120 and 80, not 40 and 20).</span></li>
-          </ul>
-          <details class="math">
-            <summary>
-              <span class="math-head">
-                <h4>The math</h4>
-                <span class="math-lede">Every bout runs four lines of arithmetic. The values are the tuned ones, chosen on 2015&ndash;21 and only then scored on 2022&ndash;25.</span>
-              </span>
-              <span class="math-tog" aria-hidden="true"><i>Show</i><b>Hide</b></span>
-            </summary>
-            <ol class="eqs">
-              <li>
-                <p class="eq-k"><span>1</span>Predict</p>
-                <math display="block"><msub><mi>E</mi><mi>a</mi></msub><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mn>10</mn><mrow><mo stretchy="false">(</mo><msub><mi>R</mi><mi>b</mi></msub><mo>&minus;</mo><msub><mi>R</mi><mi>a</mi></msub><mo stretchy="false">)</mo><mo>/</mo><mn>400</mn></mrow></msup></mrow></mfrac></math>
-                <p>Wrestler <i>a</i>'s chance of beating <i>b</i>, from their ratings <i>R</i>. College wrestling has no draws, so this is a straight win probability. A 400-point edge is 10-to-1 odds.</p>
-              </li>
-              <li>
-                <p class="eq-k"><span>2</span>Weigh the result</p>
-                <math display="block"><msub><mi>K</mi><mi>a</mi></msub><mo>=</mo><mi>k</mi><mo stretchy="false">(</mo><msub><mi>n</mi><mi>a</mi></msub><mo stretchy="false">)</mo><mo>&middot;</mo><mi>M</mi><mo>&middot;</mo><mfrac><mn>2.2</mn><mrow><mn>0.001</mn><mspace width="0.1em"></mspace><mi mathvariant="normal">&Delta;</mi><mi>R</mi><mo>+</mo><mn>2.2</mn></mrow></mfrac></math>
-                <p>How far this bout moves the rating. <i>k</i> is 120 for a wrestler's first 8 bouts and 80 after. <i>M</i> rewards dominance: decision 1, overtime decision 0.7, major 1.33, tech fall 1.67, fall 2. The last factor, with &Delta;<i>R</i> = winner minus loser, damps a favourite's win and amplifies an upset, the same correction FiveThirtyEight's NFL Elo uses.</p>
-              </li>
-              <li>
-                <p class="eq-k"><span>3</span>Update</p>
-                <math display="block"><msubsup><mi>R</mi><mi>a</mi><mo>&prime;</mo></msubsup><mo>=</mo><msub><mi>R</mi><mi>a</mi></msub><mo>+</mo><msub><mi>K</mi><mi>a</mi></msub><mspace width="0.1em"></mspace><mo stretchy="false">(</mo><msub><mi>S</mi><mi>a</mi></msub><mo>&minus;</mo><msub><mi>E</mi><mi>a</mi></msub><mo stretchy="false">)</mo></math>
-                <p><i>S</i> is 1 for a win and 0 for a loss: you move by how surprising the result was. Each wrestler uses their own <i>K</i>, so a newcomer moves further than the veteran they beat.</p>
-                <p class="ex">From the scoreboard: if Red wins by <label class="sr" for="elo-m">result</label><select id="elo-m">
-                  <option value="1">decision</option><option value="0.7">overtime decision</option><option value="1.33">major decision</option><option value="1.67">tech fall</option><option value="2">fall</option>
-                </select>, Red gains <b id="elo-dr">+0</b> and Green loses <b id="elo-dg">0</b>, both past their first 8 bouts.</p>
-              </li>
-              <li>
-                <p class="eq-k"><span>4</span>Batch and carry over</p>
-                <math display="block"><mi>R</mi><mo stretchy="false">&larr;</mo><mi>&mu;</mi><mo>+</mo><mi>&lambda;</mi><mspace width="0.1em"></mspace><mo stretchy="false">(</mo><mi>R</mi><mo>&minus;</mo><mi>&mu;</mi><mo stretchy="false">)</mo></math>
-                <p>Between seasons, ratings can shrink toward the mean <i>&mu;</i> = 1500. Tuning chose <i>&lambda;</i> = 1, no shrinkage at all. Within a tournament round, every bout is predicted from the ratings as they stood before the round and the changes land together, so the order bouts were logged in can't matter.</p>
-              </li>
-            </ol>
+          <details class="fold" open>
+            <summary><span class="tog"><i>Show details</i><b>Hide details</b></span></summary>
+            <ul class="facts">
+              <li><b>Scored once, at the end.</b><span>Tuned on 2015&ndash;21, then tested on 2022&ndash;25: 76.8% accuracy over 90,434 bouts, and a log loss of 0.472 against 0.693 for a coin flip.</span></li>
+              <li><b>Honest probabilities.</b><span>Expected calibration error of 0.0167 on the test seasons. No probability bin is off by more than 2.5 points.</span></li>
+              <li><b>Brackets, rebuilt.</b><span>The raw rows ran backwards. Reversing them took &ldquo;the champion's last bout is against the runner-up&rdquo; from 1.7% to 89.7%.</span></li>
+              <li><b>What the tuning found.</b><span>No offseason reversion, margin-of-victory multipliers, and K factors far above the textbook (120 and 80, not 40 and 20).</span></li>
+            </ul>
+            <details class="math">
+              <summary>
+                <span class="math-head">
+                  <h4>The math</h4>
+                  <span class="math-lede">Every bout runs four lines of arithmetic. The values are the tuned ones, chosen on 2015&ndash;21 and only then scored on 2022&ndash;25.</span>
+                </span>
+                <span class="math-tog" aria-hidden="true"><i>Show</i><b>Hide</b></span>
+              </summary>
+              <ol class="eqs">
+                <li>
+                  <p class="eq-k"><span>1</span>Predict</p>
+                  <math display="block"><msub><mi>E</mi><mi>a</mi></msub><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mn>10</mn><mrow><mo stretchy="false">(</mo><msub><mi>R</mi><mi>b</mi></msub><mo>&minus;</mo><msub><mi>R</mi><mi>a</mi></msub><mo stretchy="false">)</mo><mo>/</mo><mn>400</mn></mrow></msup></mrow></mfrac></math>
+                  <p>Wrestler <i>a</i>'s chance of beating <i>b</i>, from their ratings <i>R</i>. College wrestling has no draws, so this is a straight win probability. A 400-point edge is 10-to-1 odds.</p>
+                </li>
+                <li>
+                  <p class="eq-k"><span>2</span>Weigh the result</p>
+                  <math display="block"><msub><mi>K</mi><mi>a</mi></msub><mo>=</mo><mi>k</mi><mo stretchy="false">(</mo><msub><mi>n</mi><mi>a</mi></msub><mo stretchy="false">)</mo><mo>&middot;</mo><mi>M</mi><mo>&middot;</mo><mfrac><mn>2.2</mn><mrow><mn>0.001</mn><mspace width="0.1em"></mspace><mi mathvariant="normal">&Delta;</mi><mi>R</mi><mo>+</mo><mn>2.2</mn></mrow></mfrac></math>
+                  <p>How far this bout moves the rating. <i>k</i> is 120 for a wrestler's first 8 bouts and 80 after. <i>M</i> rewards dominance: decision 1, overtime decision 0.7, major 1.33, tech fall 1.67, fall 2. The last factor, with &Delta;<i>R</i> = winner minus loser, damps a favourite's win and amplifies an upset, the same correction FiveThirtyEight's NFL Elo uses.</p>
+                </li>
+                <li>
+                  <p class="eq-k"><span>3</span>Update</p>
+                  <math display="block"><msubsup><mi>R</mi><mi>a</mi><mo>&prime;</mo></msubsup><mo>=</mo><msub><mi>R</mi><mi>a</mi></msub><mo>+</mo><msub><mi>K</mi><mi>a</mi></msub><mspace width="0.1em"></mspace><mo stretchy="false">(</mo><msub><mi>S</mi><mi>a</mi></msub><mo>&minus;</mo><msub><mi>E</mi><mi>a</mi></msub><mo stretchy="false">)</mo></math>
+                  <p><i>S</i> is 1 for a win and 0 for a loss: you move by how surprising the result was. Each wrestler uses their own <i>K</i>, so a newcomer moves further than the veteran they beat.</p>
+                  <p class="ex">From the scoreboard: if Red wins by <label class="sr" for="elo-m">result</label><select id="elo-m">
+                    <option value="1">decision</option><option value="0.7">overtime decision</option><option value="1.33">major decision</option><option value="1.67">tech fall</option><option value="2">fall</option>
+                  </select>, Red gains <b id="elo-dr">+0</b> and Green loses <b id="elo-dg">0</b>, both past their first 8 bouts.</p>
+                </li>
+                <li>
+                  <p class="eq-k"><span>4</span>Batch and carry over</p>
+                  <math display="block"><mi>R</mi><mo stretchy="false">&larr;</mo><mi>&mu;</mi><mo>+</mo><mi>&lambda;</mi><mspace width="0.1em"></mspace><mo stretchy="false">(</mo><mi>R</mi><mo>&minus;</mo><mi>&mu;</mi><mo stretchy="false">)</mo></math>
+                  <p>Between seasons, ratings can shrink toward the mean <i>&mu;</i> = 1500. Tuning chose <i>&lambda;</i> = 1, no shrinkage at all. Within a tournament round, every bout is predicted from the ratings as they stood before the round and the changes land together, so the order bouts were logged in can't matter.</p>
+                </li>
+              </ol>
+            </details>
+            <ul class="stack" aria-label="Built with"><li>Python</li><li>pandas</li><li>NumPy</li><li>pytest</li><li>React</li><li>Vite</li></ul>
           </details>
-          <ul class="stack" aria-label="Built with"><li>Python</li><li>pandas</li><li>NumPy</li><li>pytest</li><li>React</li><li>Vite</li></ul>
         </article>
 
         <!-- ── Zob ── -->
@@ -1051,13 +1103,16 @@
           </div>
           </div>
 
-          <ul class="facts">
-            <li><b>Real punto banco.</b><span>Eight decks, a burn card, a cut card and the full third-card rules, dealt from a shuffled shoe.</span></li>
-            <li><b>Provably even.</b><span>Banker pays 0.97307 to 1. Four million simulated hands averaged &minus;0.0002 bets a hand, well inside the noise.</span></li>
-            <li><b>Judoka from primitives.</b><span>About 34 ellipsoids, boxes and cylinders each, on a joint rig, raycast into characters every frame.</span></li>
-            <li><b>Real throws.</b><span>Harai goshi, seoi nage and o-soto-gari, keyed to real timing, with a little lag in the limbs.</span></li>
-          </ul>
-          <ul class="stack" aria-label="Built with"><li>JavaScript</li><li>Canvas 2D</li><li>No dependencies</li></ul>
+          <details class="fold" open>
+            <summary><span class="tog"><i>Show details</i><b>Hide details</b></span></summary>
+            <ul class="facts">
+              <li><b>Real punto banco.</b><span>Eight decks, a burn card, a cut card and the full third-card rules, dealt from a shuffled shoe.</span></li>
+              <li><b>Provably even.</b><span>Banker pays 0.97307 to 1. Four million simulated hands averaged &minus;0.0002 bets a hand, well inside the noise.</span></li>
+              <li><b>Judoka from primitives.</b><span>About 34 ellipsoids, boxes and cylinders each, on a joint rig, raycast into characters every frame.</span></li>
+              <li><b>Throws that keep score.</b><span>Red (Player) holds the left, blue (Banker) the right. The winner throws the loser out past his own side, harai goshi or seoi nage, then they walk back to their marks, so the match drifts with Zob&rsquo;s money.</span></li>
+            </ul>
+            <ul class="stack" aria-label="Built with"><li>JavaScript</li><li>Canvas 2D</li><li>No dependencies</li></ul>
+          </details>
         </article>
 
         <!-- ── small-data deep learning ── -->
@@ -1091,12 +1146,15 @@
             </figure>
           </div>
 
-          <ul class="facts three">
-            <li><b>Simple wins small.</b><span>The high-complexity plain CNN beat ResNet-20 at every size up to 640 images per class.</span></li>
-            <li><b>Depth wins big.</b><span>At 1,280 images per class, ResNet-20 pulled ahead, 75.7% to 70.5%.</span></li>
-            <li><b>Close to the paper.</b><span>Mean absolute gap from the published numbers: 2.7 to 3.7 points per model, one seed per configuration.</span></li>
-          </ul>
-          <ul class="stack" aria-label="Built with"><li>PyTorch</li><li>torchvision</li><li>pandas</li><li>matplotlib</li></ul>
+          <details class="fold" open>
+            <summary><span class="tog"><i>Show details</i><b>Hide details</b></span></summary>
+            <ul class="facts three">
+              <li><b>Simple wins small.</b><span>The high-complexity plain CNN beat ResNet-20 at every size up to 640 images per class.</span></li>
+              <li><b>Depth wins big.</b><span>At 1,280 images per class, ResNet-20 pulled ahead, 75.7% to 70.5%.</span></li>
+              <li><b>Close to the paper.</b><span>Mean absolute gap from the published numbers: 2.7 to 3.7 points per model, one seed per configuration.</span></li>
+            </ul>
+            <ul class="stack" aria-label="Built with"><li>PyTorch</li><li>torchvision</li><li>pandas</li><li>matplotlib</li></ul>
+          </details>
         </article>
       </div>
 
@@ -1134,7 +1192,7 @@
           <p>We are all animals and our nature is meant to be in the woods and near bodies of water. 
             I live my life deeply aware of this. In my spare time I coach youth wrestling and
             train Brazilian Jiu-Jitsu. I collect books in a similar manner to doomsday preppers,
-            it has often been to the detrement of my walletand free space. </p>
+            it has often been to the detrement of my wallet and free space. </p>
         </div>
         <dl class="sheet">
           <div><dt>Education</dt><dd>Cornell University, College of Engineering<small>B.S. Computer Science, May 2026</small></dd></div>
@@ -1432,23 +1490,26 @@
   var LX = -0.42, LY = 0.62, LZ = 0.66;   // key light, view space
 
   /* cx/tx: the bout's centre on the mat and where the tally says it
-     should be · side: which side of centre each judoka stands on ·
-     th: the throw in progress · party: seconds into the celebration ·
-     f: this frame's pose for red [0] and blue [1] */
-  var bout = { cx: 0, tx: 0, side: [-1, 1], th: null, next: null, wait: 0.8, party: -1,
+     should be · side: which side of centre each judoka stands on, and it
+     never changes: red (Player) left, blue (Banker) right, so the pair's
+     drift reads as Zob's money · th: the throw in progress · cross: the
+     walk back to their marks after one · party: seconds into the
+     celebration · f: this frame's pose for red [0] and blue [1] */
+  var bout = { cx: 0, tx: 0, side: [-1, 1], th: null, cross: null, next: null, wait: 0.8, party: -1,
                f: [{}, {}] };
   var cam = { S: 1, S0: 1, D: 1 };      // px per model unit; landing scale; drift scale
   var HERO_H = 0.32;                     // the bout's share of the screen height on landing
   var PAD = 10;                          // px kept clear above and below the bout
 
-  /* the camera follows the bout everywhere, so the only thing that makes
-     it pull back is the canvas getting shorter as the page scrolls (the
-     bout always fits its height, so that one is instant) */
+  /* drift never pulls the camera back (layout() keeps the bout on screen
+     by panning instead), so the only thing that does is the canvas getting
+     shorter as the page scrolls (the bout always fits its height, so that
+     one is instant) */
   /* TOPI: on a phone the bar sits over the top of the strip, so the bout
      fits in what's left under it */
   var TOPI = 0;
   function fitH(h) { return Math.max(0.05, (h - 2 * PAD - TOPI) / ZH); }
-  function camGoal() {      // the camera follows the bout, so drift needs no pull-back
+  function camGoal() {      // panning keeps the drift on screen, so it needs no pull-back
     return Math.min(cam.S0, (vw * 0.5) / (1.25 * ZHW));
   }
   function camFit() {
@@ -1580,17 +1641,19 @@
   }
 
   /* ── the throws ──────────────────────────────────────────────────────
-     Every exchange is one of four techniques, each keyed as poses on its
-     own real timeline with tori (the thrower) starting on the right:
+     Every exchange is one of three techniques, each keyed as poses on its
+     own real timeline with tori (the thrower) starting on the right. Both
+     throws send uke over tori and out past tori's side, which is the
+     direction Zob's money moves: blue, on the right, throws red to the
+     right on a banker win; red, on the left, throws blue to the left on a
+     player win. Then they walk back to their marks (see boutMove):
 
      harai goshi — sweeping hip throw, from judoinfo.com's eight frames:
        grips, kuzushi, tori turns in, hip loaded, the sweep, uke over the
        hip and upside down, impact, follow-through, uke back up. uke lands
-       past tori, so the pair swap sides.
+       past tori, on the far side.
      seoi nage — the same entry dropped low: tori's knees go deep, no leg
        sweep, and uke goes over the shoulder on a higher, tighter arc.
-     o-soto-gari — tori steps beside uke and reaps his leg away; uke goes
-       straight over backwards and lands behind where he stood. No swap.
      a blocked attempt — what a tie looks like: tori turns in, uke drops
        his hips and stuffs it, tori spins back out to grips.
 
@@ -1648,31 +1711,6 @@
     8: { 4: 45, 5: -8, 6: 18, 7: 8, 8: 16 }
   });
 
-  var OSOTO_T = [
-    [ 40, 0, -90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1],
-    [  6, 0, -90, 0,  8,  -14, 16,   6, 14,  -82, -80, -62, -90,   2, 1],
-    [ -4, 0, -90, 0, 18,   -6, 14, -70, 30,  -70, -70, -30, -95,   0, 1],
-    [ -8, 0, -90, 0, 45,   -4, 14,  55, 10,  -50, -40, -20, -80,  -6, 1],
-    [-10, 0, -90, 0, 58,   -2, 16,  85,  4,  -45, -30, -10, -70, -10, 1],
-    [-10, 0, -90, 0, 50,   -4, 18,  40, 14,  -50, -40, -20, -70,  -6, 1],
-    [ -6, 0, -90, 0, 24,   -8, 12,  10, 12,  -56, -46, -40, -60,   0, 1],
-    [ 20, 0, -90, 0, 14,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1],
-    [ 36, 0, -90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1],
-    [ 40, 0, -90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1]
-  ];
-  var OSOTO_U = [
-    [ -40,    0, 90,   0, 12,  -10,  10,  10,  12,  -60, -50, -50, -60,  0, 1],
-    [ -34,    4, 90,   0,  6,   -8,  10,   6,  12,  -64, -46, -56, -56,  0, 1],
-    [ -36,    0, 90,   0,-14,    4,   6,  -8,  10,  -40, -40, -70, -30, -6, 1],
-    [ -40,    0, 90, -25,-10,  -40,  10, -70,   8,  -30, -20, -90, -20,-10, 0],
-    [ -70,    0, 90, -60, -6,  -60,  12, -80,  10,  -40, -30,-110, -10, -8, 0],
-    [-120, -134, 90, -90, -4,  -40,  20, -30,  30,  -60, -30,-130,  -5,  0, 0],
-    [-120, -134, 90, -90, -2,  -36,  16, -26,  24,  -58, -28,-120,  -8,  6, 0],
-    [ -90,  -70, 90, -40, 40,  -80, 110, -70, 105,  -30, -40, -30, -40,  0, 0.3],
-    [ -50,    0, 90,   0, 14,  -10,  10,  10,  12,  -60, -50, -50, -60,  0, 1],
-    [ -40,    0, 90,   0, 12,  -10,  10,  10,  12,  -60, -50, -50, -60,  0, 1]
-  ];
-
   var BLOCK_T = [
     [ 40, 0, -90, 0, 12,  -10, 10,  10, 12,  -60, -50, -50, -60,   0, 1],
     [ 14, 0,   0, 0, 16,  -20, 26,   6, 24,  -70, -60, -62, -70,   0, 1],
@@ -1702,8 +1740,6 @@
        tighter too: he should roll over tori's back, not float above it */
     seoi:  { kt: HARAI_K, t: SEOI_T, u: HARAI_U, swap: true,
              fly: { a: 1.10, b: 1.95, c1: [-10, 214], c2: [90, 199], end: [135, 16], turn: 270, acc: 1.7, lift: 0.05 } },
-    osoto: { kt: [0, 0.40, 0.70, 0.95, 1.15, 1.30, 1.70, 2.30, 2.80, 3.20], t: OSOTO_T, u: OSOTO_U, swap: false,
-             fly: { a: 0.95, b: 1.30, c1: [-50, 175], c2: [-100, 110], end: [-120, 16], turn: -90, acc: 1.4 } },
     block: { kt: [0, 0.45, 0.75, 1.0, 1.3, 1.75], t: BLOCK_T, u: BLOCK_U, swap: false, fly: null }
   };
   var KEYS = ['x', 'y', 'yaw', 'pitch', 'bend', 'hl', 'kl', 'hr', 'kr', 'sl', 'el', 'sr', 'er', 'nx', 'g'];
@@ -1805,7 +1841,7 @@
      draws its own pace, arc height, landing spot and how hard it lands. */
   function begin(who) {
     var tie = who < 0, tori = tie ? (Math.random() < 0.5 ? 0 : 1) : who;
-    var r = Math.random(), name = tie ? 'block' : r < 0.45 ? 'harai' : r < 0.72 ? 'seoi' : 'osoto';
+    var name = tie ? 'block' : Math.random() < 0.6 ? 'harai' : 'seoi';
     var T0 = TECH[name], pace = 0.86 + Math.random() * 0.3;
     bout.th = {
       T: T0, name: name, t: 0, tori: tori, m: bout.side[tori],
@@ -1818,12 +1854,13 @@
     };
   }
 
+  var CROSS = 1.4;    // seconds for the walk back to their marks, at pace 1
   function boutMove(dt) {
     bout.cx += (bout.tx - bout.cx) * Math.min(1, dt * 1.6);
     var drift = Math.sin(T * 0.7) * 8 + Math.sin(T * 0.31) * 5, j, f;
     if (bout.wait > 0) bout.wait -= dt;
 
-    if (!bout.th && bout.next !== null && bout.party < 0) { begin(bout.next); bout.next = null; }
+    if (!bout.th && !bout.cross && bout.next !== null && bout.party < 0) { begin(bout.next); bout.next = null; }
     var ex = bout.th;
     if (ex) {
       var T0 = ex.T, kt = T0.kt, end = kt[kt.length - 1];
@@ -1850,28 +1887,55 @@
       if (T0.fly && t >= T0.fly.b && !ex.slam) {
         ex.slam = 1;
         if (G.speed <= 10) {
-          splash(AX + (bout.cx + ex.m * (T0.fly.end[0] + ex.land)) * cam.S, AY + ZCY * cam.S, 1.8 + ex.hard);
+          var lx = bout.cx + ex.m * (T0.fly.end[0] + ex.land);   // where he lands, on screen
+          splash(AX + (VIEW[0] || 1) * lx * cam.S, AY + (ZCY - VIEW[4] * lx) * cam.S, 1.8 + ex.hard);
+          spray(lx, Math.round(48 + 36 * ex.hard), ex.m);
           surge = 0.8 + ex.hard * 0.4;
         }
       }
       if (t >= end) {
-        if (T0.swap) { bout.side[ex.tori] = -ex.m; bout.side[1 - ex.tori] = ex.m; }
+        /* uke ended up past tori: they walk back to their marks */
+        if (T0.swap) bout.cross = { t: 0, rate: ex.rate };
         bout.th = null;
         bout.wait = 0.45 + Math.random() * 1.3;   // a breath of grip fighting before the next
       }
     }
     if (!bout.th) {
+      /* back to their marks, as after matte: each starts where the throw
+         left him (his mark mirrored across the centre) and walks to his
+         own, red passing behind and blue in front, turning as he goes,
+         two strides, hands off the grips until they square up again */
+      var cr = bout.cross, s = 1;
+      if (cr) {
+        cr.t += dt * cr.rate;
+        s = Math.min(1, cr.t / CROSS);
+        if (s >= 1) bout.cross = cr = null;
+      }
       for (j = 0; j < 2; j++) {
         f = bout.f[j];
-        key(HARAI_K, HARAI_U, 0, f); grips(f, j, 1); place(f, -bout.side[j]);
-        f.x += drift;
+        key(HARAI_K, HARAI_U, 0, f);
+        if (cr) {
+          var e = s * s * (3 - 2 * s), w = Math.sin(Math.PI * s), mm = bout.side[j] * (1 - 2 * e);
+          var st = Math.sin(4 * Math.PI * s) * w;
+          f.x *= mm; f.yaw *= mm;                 // through the centre, and through facing out
+          f.hl += 24 * st; f.hr -= 24 * st;
+          f.kl += 20 * Math.max(0, st); f.kr += 20 * Math.max(0, -st);
+          f.sl += (-6 - f.sl) * w; f.sr += (-6 - f.sr) * w; f.el += (-6 - f.el) * w; f.er += (-6 - f.er) * w;
+          grips(f, j, 1 - w);
+          place(f, 1);
+          f.z = (j === 0 ? 1 : -1) * 72 * w;
+          f.x += drift * (1 - w);
+        } else {
+          grips(f, j, 1); place(f, -bout.side[j]);
+          f.x += drift;
+        }
       }
     }
 
     /* the run is over: they bow to each other three times, then turn to
        the crowd with their arms up */
-    if (bout.party < 0 && G.done === 'reverted' && !bout.th) {
-      bout.party = 0; splash(AX + bout.cx * cam.S, AY, 3.6); surge = 1.6;
+    if (bout.party < 0 && G.done === 'reverted' && !bout.th && !bout.cross) {
+      bout.party = 0; splash(BX, BY, 3.6); surge = 1.6;
     }
     if (bout.party >= 0 && !bout.th) {
       var P = bout.party += dt;
@@ -2076,38 +2140,83 @@
      edge always sits right on the canvas's bottom edge. ── */
   var viewH = 0, stripH = 0, introEl = document.getElementById('intro'), consoleEl = document.querySelector('.console');
   var scroller = document.getElementById('scroller'), heroEl = document.getElementById('hero');
-  /* AX, AY: where on screen the bout's middle sits. Across, that's always
+  /* BX, BY: where on screen the bout's middle sits. Across, that's always
      the middle; down, it starts a little low (below the words on a phone)
-     and eases to the strip's centre as the strip shrinks. stripP is how
-     far the shrink has got, 0 to 1. */
-  var AX = 0, AY = 0, stripP = 0;
+     and eases to the strip's centre as the strip shrinks. AX, AY: where
+     the stage's origin has to go for that, which moves as the bout drifts.
+     stripP is how far the shrink has got, 0 to 1. */
+  var AX = 0, AY = 0, BX = 0, BY = 0, stripP = 0;
+  /* the name pill's box, measured on resize (and once the fonts land), not
+     every frame: reading layout mid-scroll would force a reflow per frame */
+  /* barL is where the links on the right start, and dockW the width of
+     the water's two buttons, so the strip knows the gap the bar leaves */
+  var pillEl = document.querySelector('.bar > .pill'), barREl = document.querySelector('.bar-r');
+  var pillBox = { t: 12, b: 52, r: 150, barL: 1e4, dockW: 80 }, docked = false;
+  /* the words' box as it sits unscrolled, for the still water behind them */
+  var heroBox = { l: 0, t: 0, r: 0, b: 0 };
+  function measurePill() {
+    var r = pillEl.getBoundingClientRect(), q = barREl.getBoundingClientRect();
+    var hb = heroEl.getBoundingClientRect(), st = scroller.scrollTop;
+    heroBox = { l: hb.left, t: hb.top + st, r: hb.right, b: hb.bottom + st };
+    var a = document.getElementById('pause').getBoundingClientRect(), b = document.getElementById('poke').getBoundingClientRect();
+    pillBox = { t: r.top, b: r.bottom, r: r.right, barL: q.width ? q.left : vw, dockW: b.right - a.left };
+  }
   function layout() {
     var d = vh - stripH, p = d > 0 ? Math.min(1, Math.max(0, scroller.scrollTop / d)) : 1;
     var h = Math.round(vh - p * d), narrow = vw < 720;
     stripP = p;
-    /* the bout stands in the middle of the screen, below the words on a
-       phone, and the camera follows it: drift shows as the mat's seams
-       sliding past, and the fighters never walk off the edge of the screen */
-    AX = vw * 0.5 - bout.cx * cam.S;
-    AY = vh * (narrow ? 0.77 : 0.58) * (1 - p) + (TOPI + (h - TOPI) * 0.5) * p;
+    /* the canvas height first, so the bout below is placed at this frame's
+       scale, not the last one's */
+    if (h !== viewH) {
+      viewH = h;
+      /* the water's controls ride its bottom-left corner, out of the text,
+         unless the strip is too short to fit them under the name pill: then
+         they sit beside it */
+      var beside = docked = h - 52 < pillBox.b + 6;
+      consoleEl.style.top = (beside ? pillBox.t + (pillBox.b - pillBox.t - 40) / 2 : h - 52) + 'px';
+      consoleEl.style.left = beside ? (pillBox.r + 8) + 'px' : '';
+      consoleEl.classList.toggle('up', h > vh * 0.5);
+      canvas.style.clipPath = 'inset(0 0 ' + (vh - h) + 'px 0)';
+      cam.S = Math.min(cam.D, fitH(viewH));
+    }
+    /* the bout starts in the middle of the screen, below the words on a
+       phone */
+    BX = vw * 0.5;
+    BY = vh * (narrow ? 0.77 : 0.58) * (1 - p) + (TOPI + (h - TOPI) * 0.5) * p;
     /* mid-shrink, that easing can sit the bout lower than the visible water
        allows, so keep all of it inside: the mat (its front face reaches
        about 28 units below the floor) above the bottom edge first, then
        the heads below the top */
     var mBot = h - PAD - (ZCY + 28) * cam.S, mTop = TOPI + PAD + (ZH - ZCY) * cam.S;
-    AY = Math.min(Math.max(AY, mTop), mBot);
+    BY = Math.min(Math.max(BY, mTop), mBot);
+    /* once the strip is short enough that the heads reach the bar, the bar's
+       pills cover most of its width, so the middle (and the room to walk)
+       become the gap between them, eased in over the last 24px of scroll */
+    var half = vw * 0.5, head = BY - (ZH - ZCY) * cam.S;
+    var gl = pillBox.r + (docked ? 8 + pillBox.dockW : 0) + 8, gr = pillBox.barL - 8;
+    var k = gr - gl > 120 ? Math.min(1, Math.max(0, (pillBox.b + 24 - head) / 24)) : 0;
+    BX += ((gl + gr) * 0.5 - BX) * k;
+    half += ((gr - gl) * 0.5 - half) * k;
+    /* the middle of the screen is the mean, Zob's expected total of 0.
+       The bout and its mat walk off it as he wins or loses and come back
+       when he does, one bet at a time. A long run would carry them off
+       the screen, so the walk is drawn true near the middle and squeezed
+       toward a margin farther out (off never passes R, which leaves room
+       for a thrown judoka lying long). The camera takes up the rest of the
+       way: out there the seams slide past instead, so every hand still
+       moves something. The camera also looks a little down (PITCH) and
+       from the side (CAMYAW), so a step along the mat moves a point up the
+       screen by VIEW[4] as well. Undo that, or as Zob's total wanders the
+       pair creep up or down the strip. (Before the first pose, VIEW is
+       still zeros.) */
+    var u = (VIEW[0] || 1) * bout.cx * cam.S, R = Math.max(1, half - 300 * cam.S - 12);
+    AX = BX + u / Math.sqrt(1 + (u / R) * (u / R)) - u;
+    AY = BY + VIEW[4] * bout.cx * cam.S;
     /* the words scroll with the intro, pixel for pixel, fading as they go */
     var st = scroller.scrollTop;
     heroEl.style.transform = 'translateY(' + (-st) + 'px)';
     heroEl.style.opacity = Math.max(0, 1 - st / (vh * 0.55)).toFixed(3);
     heroEl.style.visibility = st > vh * 0.55 ? 'hidden' : 'visible';
-    if (h === viewH) return;
-    viewH = h;
-    /* the water's controls ride its bottom-left corner, out of the text */
-    consoleEl.style.top = (h - 52) + 'px';
-    consoleEl.classList.toggle('up', h > vh * 0.5);
-    canvas.style.clipPath = 'inset(0 0 ' + (vh - h) + 'px 0)';
-    cam.S = Math.min(cam.D, fitH(viewH));
   }
 
   function resize() {
@@ -2129,8 +2238,10 @@
     stripH = TOPI + Math.round(Math.max(113, Math.min(167, vh * 0.173 - TOPI)) * 2 / 3);
     introEl.style.height = vh + 'px';          // content starts a full screen down
     document.documentElement.style.setProperty('--strip', stripH + 'px');
+    measurePill();
     viewH = -1; layout();
     camFit();
+    layout();                 // again, now at the new scale
     grid(true);
   }
   function grid(force) {
@@ -2155,6 +2266,23 @@
     document.getElementById('m-grid').textContent = cols + '×' + rows;
   }
 
+  /* spray: when a thrown judoka lands, the sea behind the mat throws up a
+     burst of droplets. Each is a point in the bout's own units, so it scales
+     with the camera, fired up and out and falling under gravity, and drawn
+     as the stroke its motion makes: | ' / \ rising, * at the top, , and .
+     coming down. They're drawn before the mat and the judoka, so both stay
+     in front of the water. */
+  var SPRAY = [], SGRAV = 1000, SMAX = 200;
+  var SPC = new Int32Array(SMAX * 2), SPR = new Int32Array(SMAX * 2), SPG = new Uint16Array(SMAX * 2), SPI = new Uint8Array(SMAX * 2);
+  function spray(x, n, m) {
+    for (var i = 0; i < n; i++) {
+      if (SPRAY.length >= SMAX) SPRAY.shift();
+      var side = (Math.random() - 0.5) * 2;
+      SPRAY.push({ x: x + side * 30, t: T + Math.random() * 0.08,
+                   vx: side * (40 + Math.random() * 230) + m * 40, vy: 140 + Math.random() * 360 });
+    }
+  }
+
   function splash(x, y, s) {
     if (ripples.length >= RMAX) ripples.shift();
     ripples.push({ x: x, y: y, t: T, s: s * gainSet });
@@ -2169,11 +2297,22 @@
     var i, c, r, w, z = zoom * FSMIN / gridFS, n = cols * rows;
     renderFigures(); matSetup();
 
+    /* the mean: a mark under the middle of the screen, where the bout
+       started and where it comes back to when Zob's total does. It sits
+       under the mat's front edge (found where that edge crosses the
+       middle column), in the page's slate. */
+    var mk = null, mv0 = VIEW[0] || 1;
+    if (cam.S > 0) {
+      var mkx = ((BX - AX) / cam.S + VIEW[1] * MTH - VIEW[2] * MD - VIEW[3]) / mv0;
+      var mky = AY - (VIEW[4] * mkx - VIEW[5] * MTH + VIEW[6] * MD + VIEW[7]) * cam.S;
+      mk = { r: Math.floor(mky / chh) + 1, c: Math.floor(BX / cw) };
+    }
+
     /* the win frame: once it's reverted, a banner in the sea above them */
     var bn = null;
     if (bout.party >= 0) {
-      bn = { r: Math.max(1, Math.floor((AY - (ZH - ZCY) * cam.S) / chh)),
-             c: Math.round((AX + bout.cx * cam.S) / cw),
+      bn = { r: Math.max(1, Math.floor((BY - (ZH - ZCY) * cam.S) / chh)),
+             c: Math.round(BX / cw),
              a: 'MEAN REVERTED', b: 'after ' + num(G.at) + ' hands' };
     }
 
@@ -2286,8 +2425,34 @@
       }
     }
 
+    /* ── a still patch of water behind the words, so they never fight the
+         swell. It's here in the field rather than a scrim over the canvas so
+         the mat and the judoka still draw on top of it: the bout can walk
+         under the words and stay in sight. An ellipse a little bigger than
+         the words, flat to 62% of the way out and easing back to the sea at
+         its rim, and it goes as the words scroll away and fade. ── */
+    var hop = 1 - scroller.scrollTop / (vh * 0.55), hr0 = 0, hr1 = 0, hc0 = 0, hc1 = 0, hcx, hcy, hrx, hry;
+    if (hop > 0 && heroBox.r > heroBox.l) {
+      var hw = heroBox.r - heroBox.l, hh = heroBox.b - heroBox.t, hsc = scroller.scrollTop;
+      var hx0 = heroBox.l - 0.22 * hw, hx1 = heroBox.r + 0.18 * hw;
+      var hy0 = heroBox.t - hsc - 0.14 * hh, hy1 = heroBox.b - hsc + 0.16 * hh;
+      hcx = (hx0 + hx1) * 0.5 / cw; hcy = (hy0 + hy1) * 0.5 / chh;
+      hrx = (hx1 - hx0) * 0.5 / cw; hry = (hy1 - hy0) * 0.5 / chh;
+      hr0 = Math.max(0, Math.floor(hcy - hry)); hr1 = Math.min(rows, Math.ceil(hcy + hry));
+      hc0 = Math.max(0, Math.floor(hcx - hrx)); hc1 = Math.min(cols, Math.ceil(hcx + hrx));
+      for (r = hr0; r < hr1; r++) {
+        var hey = (r + 0.5 - hcy) / hry, hey2 = hey * hey, hrw = r * cols;
+        for (c = hc0; c < hc1; c++) {
+          var hex = (c + 0.5 - hcx) / hrx, he = Math.sqrt(hex * hex + hey2);
+          if (he >= 1) continue;
+          var hf = he < 0.62 ? 1 : (1 - he) / 0.38; hf = hf * hf * (3 - 2 * hf);
+          H[hrw + c] += (-1.6 - H[hrw + c]) * hf * hop;
+        }
+      }
+    }
+
     /* ── a calm pool around the judoka so they read over the swell: the
-         same idea as the halos behind the type, pulled toward a trough
+         same idea as the still water behind the words, pulled toward a trough
          with a smooth edge so the water doesn't draw a ring round him ── */
     if (zw) {
       var pcx = zc0 + zw * 0.5, pcy = zr0 + zh * 0.5, prx = zw * 0.5 + 4, pry = zh * 0.5 + 3;
@@ -2313,6 +2478,31 @@
     else for (i = 0; i < n; i++) F[i] += (H[i] - F[i]) * kE;
     snap = 0;
 
+    /* ── where each droplet of spray is this frame, as a cell, a stroke and
+         a shade that fades as it falls back ── */
+    var sn = 0, sl = 0, v0 = VIEW[0] || 1;
+    for (i = 0; i < SPRAY.length; i++) {
+      var sp = SPRAY[i], sa = T - sp.t;
+      if (sa < 0) { SPRAY[sl++] = sp; continue; }
+      var sh = sp.vy * sa - 0.5 * SGRAV * sa * sa;
+      if (sh < 0) continue;                       // back in the sea
+      SPRAY[sl++] = sp;
+      var swx = sp.x + sp.vx * sa;
+      var sc = Math.floor((AX + v0 * swx * cam.S) / cw), sr = Math.floor((AY + (ZCY - VIEW[4] * swx - sh) * cam.S) / chh);
+      if (sc < 0 || sc >= cols || sr < 0 || sr >= rows) continue;
+      var sv = sp.vy - SGRAV * sa, svx = sp.vx;
+      SPC[sn] = sc; SPR[sn] = sr;
+      SPG[sn] = sv > 160 ? ((svx > sv * 0.5) ? 47 : (svx < -sv * 0.5) ? 92 : 124)   // / \ |
+              : sv > 40 ? 39 : sv > -60 ? 42 : sv > -200 ? 44 : 46;              // ' * , .
+      /* the deep end of the palette, so it reads over the calm pool round
+         the judoka, easing back toward the water as it falls */
+      var si = LV - 1 - Math.round(56 * sa * SGRAV / (2 * sp.vy));
+      SPI[sn] = si; sn++;
+      /* a fast one leaves a streak in the cell it just left */
+      if (sv > 260 && sr + 1 < rows) { SPC[sn] = sc; SPR[sn] = sr + 1; SPG[sn] = 39; SPI[sn] = si - 30; sn++; }
+    }
+    SPRAY.length = sl;
+
     /* ── glyphs into the mask, colour into the tint ──────────────────── */
     mctx.setTransform(1, 0, 0, 1, 0, 0);
     mctx.clearRect(0, 0, mask.width, mask.height);
@@ -2323,6 +2513,14 @@
     for (r = 0; r < rows; r++) {
       var rr = r * cols;
       var up = r > 0 ? rr - cols : rr, dn = r < rows - 1 ? rr + cols : rr;
+      /* the still patch behind the words slopes down at its rim, and a
+         slope draws a contour: keep its cells to plain height shading, or
+         it gets a ring drawn round it */
+      var hca = 1, hcb = 0, hry2 = 0;
+      if (r >= hr0 && r < hr1) {
+        var hdy = (r + 0.5 - hcy) / hry; hry2 = 1 - hdy * hdy;
+        if (hry2 > 0) { var hdx = hrx * Math.sqrt(hry2); hca = hcx - hdx - 0.5; hcb = hcx + hdx - 0.5; }
+      }
       for (c = 0; c < cols; c++) {
         var h = F[rr + c];
         var gx = F[rr + (c < cols - 1 ? c + 1 : c)] - F[rr + (c > 0 ? c - 1 : c)];
@@ -2341,7 +2539,7 @@
            the stroke perpendicular to its slope — four 45-degree sectors,
            picked by comparison because atan2 per cell is not affordable */
         var t = mg * sN;
-        var mq = t < 0.62 ? 0 : t < 1.06 ? 1 : t < 1.72 ? 2 : 3;
+        var mq = t < 0.62 || (c >= hca && c <= hcb) ? 0 : t < 1.06 ? 1 : t < 1.72 ? 2 : 3;
         var oq = ax > ay * 2.414 ? 2 : ay > ax * 2.414 ? 0
                : ((gx < 0) === (gy < 0)) ? 1 : 3;
 
@@ -2362,7 +2560,17 @@
         GLY[c] = GT[(((m * HQ) | 0) * 4 + mq) * 4 + oq];
         t32[rr + c] = PACK[ci];
       }
+      for (var sk = 0; sk < sn; sk++) {
+        if (SPR[sk] === r) { GLY[SPC[sk]] = SPG[sk]; t32[rr + SPC[sk]] = PACK[SPI[sk]]; }
+      }
       matRow(r, rr);
+      if (mk && (r === mk.r || r === mk.r + 1) && (r + 1) * chh <= viewH) {
+        var ms = r === mk.r ? ' ^ ' : ' mean ', mc = mk.c - (ms.length >> 1);
+        for (var mj = 0; mj < ms.length; mj++) {
+          if (mc + mj < 0 || mc + mj >= cols) continue;
+          GLY[mc + mj] = ms.charCodeAt(mj); t32[rr + mc + mj] = 0xff876a5a;   // slate
+        }
+      }
       /* the judoka stand on the mat: their cells replace everything */
       var zr = r - zr0;
       if (zw && zr >= 0 && zr < zh) {
@@ -2411,8 +2619,9 @@
      commission, where a casino takes 5%) and Zob's expected result is
      zero. He keeps his stake on Banker every hand from a $1,000 start.
 
-     Blue is Banker and red is Player. The winner of each hand throws the
-     other, and the bout moves with Zob's money, measured in bets: a banker
+     Blue is Banker, on the right, and red is Player, on the left, and they
+     keep those sides. The winner of each hand throws the other out past
+     his own side, and the bout moves with Zob's money, measured in bets: a banker
      win carries it 0.973 of a step right, a player win a full step left,
      a tie nobody. Est. is therefore flat at 0 and Dist. is a pure random
      walk around it — the law of large numbers says his average result
@@ -2494,7 +2703,7 @@
     G.cents = START; G.hands = G.bw = G.pw = G.ties = G.dist = G.at = 0; G.prev = 0;
     G.done = ''; G.doneT = 0; G.acc = 0; G.P = []; G.B = []; G.res = '';
     G.dirty = true; G.uiAt = 0;
-    bout.tx = 0; bout.party = -1; bout.next = null; bout.wait = 0.8;
+    bout.tx = 0; bout.party = -1; bout.next = null; bout.wait = 0.8; bout.cross = null;
     resetLog(); shuffle();
   }
 
@@ -2509,7 +2718,7 @@
       /* at 1x the bout sets the pace: the next hand is dealt as soon as the
          last exchange is over and they've gripped up again, so there's
          never a dead stretch waiting on a clock */
-      if (!bout.th && bout.next === null && bout.wait <= 0 && bout.party < 0) hand();
+      if (!bout.th && !bout.cross && bout.next === null && bout.wait <= 0 && bout.party < 0) hand();
       return;
     }
     G.acc += dt * G.speed / HAND;
@@ -2661,9 +2870,9 @@
 
     gameTick(dt); ui(now);
     boutMove(dt);
-    layout();
     cam.D += (camGoal() - cam.D) * Math.min(1, dt * 2.4);
     cam.S = Math.min(cam.D, fitH(viewH));
+    layout();                 // after the scale, so the bout is placed at it
     grid(false);
 
     surge += (0 - surge) * Math.min(1, dt * 2.6);
@@ -2698,7 +2907,7 @@
       es.forEach(function (en) {
         if (!en.isIntersecting) return;
         accT = (en.target.dataset.accent || '255,90,31').split(',').map(Number);
-        surge = 0.8; splash(AX, AY, 1.4);
+        surge = 0.8; splash(BX, BY, 1.4);
       });
     }, { rootMargin: '-45% 0px -45% 0px' });
     [].forEach.call(document.querySelectorAll('.station'), function (st) { io.observe(st); });
@@ -2787,6 +2996,7 @@
       if (G.done === 'reverted') bout.party = 5;
       boutMove(0);
       cam.D = camGoal(); cam.S = Math.min(cam.D, fitH(viewH)); grid(false);
+      layout();               // the bout moved: place it and the camera
       G.uiAt = 0; ui(performance.now()); draw();
     }, HAND * 1000);
   } else {
@@ -2942,7 +3152,9 @@
     ea.addEventListener('input', showElo); eb.addEventListener('input', showElo);
     document.getElementById('elo-m').addEventListener('change', showElo);
     /* a printed page can't click, so the math prints open */
-    window.addEventListener('beforeprint', function () { document.querySelector('details.math').open = true; });
+    window.addEventListener('beforeprint', function () {
+      [].forEach.call(document.querySelectorAll('details.math, details.fold'), function (d) { d.open = true; });
+    });
     showElo();
   }
 
@@ -3206,6 +3418,54 @@
     console.log('%c~john', 'font:700 22px/1.4 "Instrument Serif",Georgia,serif;color:#ad3d00');
     console.log('You opened the console, good instinct. This page is one hand-written file:\nhttps://github.com/xoss2400/xoss2400.github.io\nSay hi: ' + mailAddr());
   } catch (e) {}
+
+  /* ── every card fits the window under the strip. One that doesn't folds
+       its details behind a button, and if what's left still overflows it
+       shrinks (CSS zoom, so the layout shrinks with it), down to 60%.
+       Phones are skipped: there a card is a column, read by scrolling.
+       A reader's own open or close is kept until the card fits again. ── */
+  var cards = [].slice.call(document.querySelectorAll('.proj'));
+  function fitCards() {
+    var strip = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip')) || 0;
+    var avail = innerHeight - strip - 40, wide = innerWidth > 760;
+    cards.forEach(function (card) {
+      var d = card.querySelector('details.fold');
+      card.style.zoom = '';
+      card.style.removeProperty('--fit');
+      card.classList.remove('tight');
+      if (!d) return;
+      var mine = d.getAttribute('data-user') === '1', was = d.open;
+      d.open = true;
+      if (!wide || card.offsetHeight <= avail) { d.removeAttribute('data-user'); return; }
+      card.classList.add('tight');
+      d.open = false;
+      /* zoom changes the width the card lays out in, so text rewraps and
+         anything sized by width grows back: measure again until it fits.
+         --fit is the height on offer in the card's own (zoomed) units, which
+         the screenshot and the chart use to cap their width */
+      var z = 1;
+      card.style.setProperty('--fit', avail + 'px');
+      for (var i = 0; i < 5; i++) {
+        var h = card.getBoundingClientRect().height;
+        if (h <= avail + 1 || z <= 0.6) break;
+        z = Math.max(0.6, z * avail / h);
+        card.style.zoom = z.toFixed(3);
+        card.style.setProperty('--fit', (avail / z).toFixed(0) + 'px');
+      }
+      d.open = mine ? was : false;
+    });
+  }
+  function refit() {
+    fitCards();
+    if (typeof drawChart === 'function') drawChart();   // at the width it now has
+  }
+  cards.forEach(function (card) {
+    var sm = card.querySelector('details.fold > summary');
+    if (sm) sm.addEventListener('click', function () { sm.parentNode.setAttribute('data-user', '1'); });
+  });
+  refit();
+  addEventListener('resize', fitCards);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
 })();
 </script>
 

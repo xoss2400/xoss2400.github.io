@@ -12,17 +12,23 @@ height, clamped to 113–167px) and the sections scroll underneath it on white.
 
 **The bout.** Inside the water, two judoka fight on a yellow tatami with a blue border. Each is about 34
 ellipsoid, box and cylinder primitives on a joint rig, raycast into the character grid. The
-throws are harai goshi, seoi nage, o-soto-gari, plus a blocked turn-in for ties. Poses run on
+throws are harai goshi and seoi nage, plus a blocked turn-in for ties. Poses run on
 cubic Hermite splines at each technique's real key times with limb lag, and the thrown
 fighter flies one Bézier arc. Every exchange randomises its pace, arc height, landing spot
-and impact. The camera follows the bout, so it stays centred while the mat slides past.
+and impact. The middle of the screen is the mean (marked `^ mean` under the mat): the
+bout and its mat walk off it as Zob wins or loses and come back when he does. Near the
+middle the walk is drawn true; farther out it's squeezed toward a margin and the camera
+pans the rest, so the mat's seams slide past and the fighters never leave the screen. In
+the scrolled strip the walk stays in the gap between the bar's pills.
 
 **Zob.** The bout is driven by Zob, who has $1,000 and bets Banker at a baccarat table.
 It's real punto banco: 8 decks, burn card, cut card and the standard third-card rules.
 Banker pays `0.446247 / 0.458597` (≈0.97307 to 1), which makes the game exactly even. In
 4M simulated hands the mean was −0.0002 bets a hand (z = −0.39).
 
-- Banker is blue and Player is red. The winner throws the loser.
+- Banker is blue and always stands on the right; Player is red and always on the left. The
+  winner throws the loser out past his own side (blue throws red right, red throws blue
+  left), then they walk back to their marks, red passing behind and blue in front.
 - The bout moves with Zob's money in bet units: +PAY to the right on a Banker win, −1 to
   the left on a Player win. That makes Dist. a random walk around a flat Est. of 0.
 - When Dist. crosses 0 after 5,000 hands, they bow, "MEAN REVERTED" shows, and the run
