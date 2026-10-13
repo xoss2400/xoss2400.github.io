@@ -1,10 +1,6 @@
 # ~john
 
-"I Write Code for monkeys."
-
-One hand-written `index.html`, a canvas, no frameworks, no build step and no images.
-It's served by GitHub Pages from the root of `main` at https://xoss2400.github.io/, so a
-push is a deploy.
+John McGowan's portfolio. "The future is unknown."
 
 ## What's on the page
 
@@ -14,12 +10,12 @@ moves (scaled by velocity), clicks and hovers, and a soft wake under the cursor.
 scroll, the canvas shrinks into a strip pinned to the top (`stripH` is 17.3% of the viewport
 height, clamped to 113–167px) and the sections scroll underneath it on white.
 
-**The bout.** Inside the water, two judoka fight on a red tatami. Each is about 34
+**The bout.** Inside the water, two judoka fight on a yellow tatami with a blue border. Each is about 34
 ellipsoid, box and cylinder primitives on a joint rig, raycast into the character grid. The
 throws are harai goshi, seoi nage, o-soto-gari, plus a blocked turn-in for ties. Poses run on
 cubic Hermite splines at each technique's real key times with limb lag, and the thrown
 fighter flies one Bézier arc. Every exchange randomises its pace, arc height, landing spot
-and impact. Once scrolled, the camera follows the bout.
+and impact. The camera follows the bout, so it stays centred while the mat slides past.
 
 **Zob.** The bout is driven by Zob, who has $1,000 and bets Banker at a baccarat table.
 It's real punto banco: 8 decks, burn card, cut card and the standard third-card rules.
@@ -34,11 +30,40 @@ Banker pays `0.446247 / 0.458597` (≈0.97307 to 1), which makes the game exactl
 - At 1× the bout sets the pace: the next hand is dealt after the exchange plus a
   0.45–1.75s grip-fighting beat. At 10× and up it's time-based (`HAND = 4.4`s ÷ speed).
 
-The Projects section shows Zob as a green-on-black terminal: Banker, Player, Rolls, Bal,
-Dist., Est., Bet and Last, with speed (1/10/100/1k×) and bet ($1/5/25/100) toggles.
-`[ job ]` opens a chart of Dist. against Est. and a log of recent hands.
+Zob's card shows him as a green-on-black terminal: Banker, Player, Hands, Balance, Dist.,
+Expected, Bet and Last, with speed (1/10/100/1k×) and bet ($1/5/25/100) toggles.
+`[ chart ]` opens a chart of Dist. against Expected and a log of recent hands.
 
-**Sections.** Projects, As of late, Right now and Say hi.
+**Landing.** Name and role, the line, one sentence on what I do, and two buttons
+(Résumé, Copy email). Only the buttons take the pointer, so the wheel still scrolls.
+
+**Sections.** A floating bar (name on the left; Experience, Projects, About and Contact,
+plus a Résumé button on wide screens) sits over the strip and marks the section in the
+middle of the screen. A skip link comes first. Under the strip:
+
+- **Experience**: Meristead Wealth as a case study (before / built / result for three
+  pieces of work, and a diagram of the Orion → Salesforce sync), then Mobius and the
+  Cornell game as rows.
+- **Projects**: four cards, each with copy, a picture, four facts and its stack.
+  - Ninth Circle: a sketch of its feed with generated covers and a draggable star rating.
+  - wrestlELO: a scoreboard running Elo's expected-score formula on two sliders. Links to `wrestlelo/`.
+  - Zob: his terminal.
+  - The small-data study: a line chart of the real results (crosshair tooltip, a table
+    under "See the numbers"), redrawn at its real width so it reads on a phone.
+  - "Also built" is a list. Rows with nothing public to link aren't links. Sharp's row
+    opens the widget below.
+- **About**: prose beside a fact sheet (education, coursework, SIE, awards, toolbox).
+- **Now**: four cards with an "Updated" stamp.
+- **Contact**: the email, Copy email, Résumé and GitHub, then a colophon.
+
+**Sharp.** The Mandarin widget, rebuilt as a draggable window over the page: type Chinese
+(or tap a sample) for pinyin and an English meaning, with the original's pixel armies
+fighting in the title bar. Pinyin comes from `pinyin-pro` (pinned, with an integrity hash,
+loaded the first time Sharp opens). Meanings come from MyMemory's free API, which gets
+whatever is typed. Its top answer is sometimes junk, so the widget ranks its matches by
+quality and shows two runners-up. Escape closes it and focus goes back to the button.
+
+**Print.** Printing drops the canvas, the bar and the widgets and spells out links.
 
 ## Rendering
 
@@ -74,12 +99,14 @@ Light, high-key, chlorinated. No pink, ever.
 | Lime | `#7BDD2E` | live states |
 | Slate | `#5A6A87` | the only neutral, blue-biased |
 
-Type: Archivo Black (display), Hanken Grotesk (body), DM Mono (labels, data and the ASCII
-field itself).
+Type: Instrument Serif (headlines), Hanken Grotesk (body), DM Mono (labels, data and the
+ASCII field itself). Page text is near-black `#0B0B10` on white, with `#F4F5F3` cards.
 
 ## Poke the water
 
-The pill at bottom-left is collapsed by default. Open it for:
+Two round buttons ride the bottom-left corner of the water: the full screen on landing,
+the strip once scrolled. ❚❚ pauses everything that moves (the loop, the game, the diagram's
+packets) and remembers the choice. The ≈ button shows its label on hover. Open it for:
 
 - **characters**: type any ramp. The first character is the empty trough and the last is
   the crest.
@@ -99,9 +126,12 @@ Everything is in `index.html`. Grep these headers in the script:
 - `THE TABLE`: the shoe, `hand()`, `gameTick()` and `fresh()`.
 - `Zob in Projects`: the terminal, log and chart.
 
-Copy lives in the `<section class="station">` blocks. Each station's `data-accent` is the
+Copy lives in the `<section class="station">` blocks, and the landing words in
+`<header class="hero">`. The Ninth Circle sketch's covers and rater are in the second
+`<script>`, after the engine. Each station's `data-accent` is the
 RGB the water eases toward in that section. Colours are custom properties at the top of
 `<style>`, and the water palettes are the `PAL` array.
 
-Before showing anybody, swap the placeholders: the As of late entries,
-`hi@example.com`, and the four `#` links in Say hi.
+Facts on the page come from the résumé and the projects' own READMEs and result files.
+Keep them in step when either changes. Update the Now cards and their "Updated" stamp as
+things change.
