@@ -13,7 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%23EEFAF0%27/%3E%3Ctext x=%2716%27 y=%2726%27 font-family=%27monospace%27 font-size=%2730%27 font-weight=%27700%27 fill=%27%23FF5A1F%27 text-anchor=%27middle%27%3E~%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Hanken+Grotesk:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Hanken+Grotesk:wght@400;500;700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:wght@600;700&display=swap">
 
 <style>
   :root{
@@ -216,6 +216,8 @@
   .meta .n{color:var(--text)}
   .live{display:inline-flex;align-items:center;gap:.45em;color:var(--lime-ink)}
   .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 3px rgba(123,221,46,.22)}
+  .live.wip{color:#7a5600}
+  .live.wip::before{background:var(--chrome);box-shadow:0 0 0 3px rgba(255,201,60,.3)}
   .proj h3{
     font-family:var(--serif);font-weight:400;font-size:clamp(2.6rem,6vw,5rem);
     line-height:.95;letter-spacing:-.025em;margin:0;text-wrap:balance;
@@ -301,38 +303,56 @@
   .xp .badge{display:inline-block;margin-left:.5em;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.25em .6em;border-radius:999px;background:rgba(255,201,60,.28);color:#7a5600;vertical-align:2px}
   @media (max-width:720px){ .xp li{grid-template-columns:minmax(0,1fr)} }
 
-  /* ── Ninth Circle, drawn small: the For You feed, in its own colours ── */
+  /* ── Ninth Circle, drawn small: the feed in its own clothes, a 1950s
+       quarterly report. Cream stock, black ink, one brick-red spot colour,
+       Libre Caslon to read and Franklin capitals to scan, rules for boxes ── */
   .nc{
-    margin:0;justify-self:center;width:min(100%,380px);color:#ecebe6;
-    background:#08080a;border-radius:26px;padding:18px 18px 8px;
-    box-shadow:0 30px 60px -24px rgba(11,11,16,.45),0 0 0 1px rgba(11,11,16,.9);
-    font-size:13px;
+    --ink:#1d1b17;--dim:#4f4a40;--faint:#857e6e;--rule:rgba(29,27,23,.2);--brick:#b0391f;
+    --caps:600 .6rem/1.3 "Libre Franklin","Franklin Gothic Medium","Helvetica Neue",Arial,sans-serif;
+    margin:0;justify-self:center;width:min(100%,380px);color:var(--ink);background:#f3eee2;
+    border-radius:3px;padding:20px 22px 8px;font:15px/1.4 "Libre Caslon Text","Century Schoolbook",Georgia,serif;
+    box-shadow:0 30px 60px -28px rgba(29,27,23,.5),0 0 0 1px rgba(29,27,23,.12);
   }
-  .nc-top{display:flex;justify-content:space-between;align-items:baseline;padding:2px 2px 14px;border-bottom:1px solid rgba(236,235,230,.1)}
-  .nc-mark{font-family:var(--serif);font-size:1.35rem;letter-spacing:-.01em}
-  .nc-tabs{display:flex;gap:12px;font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:#8d8c85}
-  .nc-tabs b{color:#ecebe6;font-weight:500}
-  .nc-day{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;color:#8d8c85;margin:14px 2px 4px}
-  .nc-item{display:grid;grid-template-columns:74px minmax(0,1fr);gap:14px;padding:12px 2px;border-bottom:1px solid rgba(236,235,230,.08)}
+  .nc-mark{margin:0;text-align:center;font:700 .72rem/1 "Libre Franklin",Arial,sans-serif;letter-spacing:.24em;text-transform:uppercase}
+  .nc-rule{height:6px;margin-top:10px;border-top:3px solid var(--ink);border-bottom:1px solid var(--ink)}
+  .nc-eye,.nc-day,.nc-who{font:var(--caps);letter-spacing:.13em;text-transform:uppercase}
+  .nc-eye{margin:9px 0 0;text-align:center;color:var(--brick)}
+  .nc-hi{margin:8px 0 0;text-align:center;font-size:1.6rem;line-height:1.1;letter-spacing:-.01em}
+  .nc-day{margin:16px 0 0;padding-bottom:6px;border-bottom:1px solid var(--ink);color:var(--brick)}
+  .nc-item{display:grid;grid-template-columns:62px minmax(0,1fr);gap:14px;padding:12px 0 13px;border-bottom:1px solid var(--rule)}
   .nc-item:last-of-type{border-bottom:0}
-  .nc-item svg{display:block;width:74px;height:74px;border-radius:5px}
-  .nc-who{margin:0;font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:#8d8c85}
-  .nc-who b{color:var(--chrome);font-weight:500}
-  .nc-t{margin:.3rem 0 0;font-size:1rem;font-weight:700;letter-spacing:-.01em;line-height:1.15}
-  .nc-a{margin:.1rem 0 0;color:#a9a8a0}
-  .nc-row{display:flex;align-items:center;gap:10px;margin-top:.45rem}
-  .nc-fav{font-family:var(--mono);font-size:.62rem;color:#a9a8a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .nc-fav::before{content:"\266B  ";color:var(--lime)}
-  /* stars: a dim row, a lit row clipped to the rating, and for the one you
-     can rate, a transparent range input on top doing all the work */
-  .stars{position:relative;display:inline-block;font-size:15px;letter-spacing:2px;line-height:1;color:#3a3a36;white-space:nowrap}
+  .nc-item svg{display:block;width:62px;height:62px;outline:1px solid rgba(29,27,23,.32);outline-offset:-1px}
+  .nc-who{margin:0;color:var(--faint)}
+  .nc-who b{color:var(--ink);font-weight:700}
+  .nc-t{margin:.35rem 0 0;font-size:1.02rem;font-weight:700;line-height:1.2}
+  .nc-t span{margin-left:.3rem;font-weight:400;font-style:italic;color:var(--faint)}
+  .nc-a{margin:0;font-size:.9rem;font-style:italic;color:var(--dim)}
+  .nc-row{display:flex;align-items:center;gap:10px;margin-top:.4rem;min-width:0}
+  .nc-fav{font-size:.84rem;font-style:italic;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nc-fav::before{content:"\266A";margin-right:.35em;font-style:normal;color:var(--brick)}
+  /* stars: a faint row, and an ink row clipped to the rating. Each row is a
+     slider: drag or tap across it, or use the arrow keys. The ::after
+     pads the target so a thumb can find it */
+  .stars{position:relative;display:inline-block;flex:none;font-size:16px;letter-spacing:2px;line-height:1;color:rgba(29,27,23,.16);white-space:nowrap}
+  .stars[role=slider]{cursor:pointer;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+  .stars[role=slider]::after{content:"";position:absolute;inset:-12px -6px}
   .stars::before{content:"\2605\2605\2605\2605\2605"}
-  .stars .lit{position:absolute;inset:0 auto 0 0;overflow:hidden;color:var(--chrome);width:calc(var(--r,0) * 10%)}
+  .stars .lit{position:absolute;inset:0 auto 0 0;overflow:hidden;color:var(--ink);width:calc(var(--r,0) * 10%)}
   .stars .lit::before{content:"\2605\2605\2605\2605\2605"}
-  .stars input{position:absolute;inset:-8px -4px;width:calc(100% + 8px);opacity:0;cursor:pointer;margin:0}
-  .stars:focus-within{outline:2px solid var(--chrome);outline-offset:4px;border-radius:3px}
-  .nc-val{font-family:var(--mono);font-size:.68rem;color:var(--chrome);min-width:2.2em}
-  .nc-cap{margin:6px 2px 6px;padding-top:10px;border-top:1px solid rgba(236,235,230,.08);font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;color:#8d8c85}
+  .stars:focus-visible{outline:2px solid var(--brick);outline-offset:4px;border-radius:2px}
+  .nc-val{flex:none;font:var(--caps);font-size:.66rem;letter-spacing:.04em;min-width:1.8em}
+  .nc-cap{margin:2px 0 8px;padding-top:10px;border-top:1px solid var(--rule);font-size:.8rem;font-style:italic;color:var(--faint)}
+
+  /* ── Quill: the real app, in a plain window frame ── */
+  .shot{
+    margin:0;justify-self:stretch;background:#fff;border-radius:14px;overflow:hidden;
+    box-shadow:0 0 0 1px var(--line),0 30px 60px -30px rgba(11,11,16,.4);
+  }
+  .shot-bar{display:flex;gap:6px;padding:9px 12px;background:#ececea;border-bottom:1px solid var(--line)}
+  .shot-bar i{width:9px;height:9px;border-radius:50%;background:#c8c7c2}
+  .shot a{display:block}
+  .shot img{display:block;width:100%;height:auto}
+  .shot figcaption{padding:10px 14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;color:var(--text-2)}
 
   /* ── wrestlELO: a scoreboard running the expected-score formula ── */
   .elo{
@@ -818,64 +838,93 @@
             <div>
               <p class="meta"><span class="n">01</span><span>Web app &middot; Aug 2025 &ndash; now</span><span class="live">Live</span></p>
               <h3 id="nc-h">Ninth Circle</h3>
-              <p class="line">An album log for you, the people you know, and the people you don't.</p>
-              <p class="body">Pull a record from your Spotify or Apple Music history, rate it out of five in half stars, keep one favourite track, and see what your friends have been hearing. Mobile first, near-black, and the sleeve art is the only colour on the page.</p>
+              <p class="line">Your circle's listening diary.</p>
+              <p class="body">Log the records you actually finished, rate them in half stars, keep the one track you'd play someone, and see what your friends have been spinning. It's dressed as a 1950s quarterly report: cream stock, black ink, one brick-red spot colour, and rules where other apps draw boxes.</p>
               <div class="actions">
                 <a class="btn" href="https://ninthcircle.xyz" target="_blank" rel="noopener">Visit ninthcircle.xyz <span class="arr">&nearr;</span></a>
               </div>
             </div>
 
             <figure class="nc" aria-label="A sketch of the Ninth Circle feed">
-              <div class="nc-top"><span class="nc-mark">ninth circle</span><span class="nc-tabs"><b>For you</b><span>Log</span><span>Library</span></span></div>
-              <p class="nc-day">TODAY</p>
+              <p class="nc-mark">Ninth Circle</p>
+              <div class="nc-rule"></div>
+              <p class="nc-eye" id="nc-q">Report on listening</p>
+              <p class="nc-hi">Welcome back, <em>John</em></p>
+              <p class="nc-day">Today</p>
               <div class="nc-item">
                 <svg data-cover="0" viewBox="0 0 120 120" aria-hidden="true"></svg>
                 <div>
-                  <p class="nc-who"><b>You</b> &middot; rate it</p>
-                  <p class="nc-t">Salt Hours</p>
-                  <p class="nc-a">Low Tide Choir</p>
-                  <div class="nc-row">
-                    <span class="stars" id="rate" style="--r:7"><span class="lit"></span><input type="range" min="0" max="10" step="1" value="7" aria-label="Your rating for Salt Hours, in half stars" aria-valuetext="3.5 stars"></span>
-                    <span class="nc-val" id="rate-v" aria-hidden="true">3.5</span>
-                  </div>
+                  <p class="nc-who"><b>maya</b> logged</p>
+                  <p class="nc-t">Masterpiece<span>2016</span></p>
+                  <p class="nc-a">by Big Thief</p>
+                  <div class="nc-row"><span class="stars" role="slider" tabindex="0" style="--r:9" aria-label="Your rating for Masterpiece" aria-valuemin="0" aria-valuemax="5" aria-valuenow="4.5" aria-valuetext="4.5 stars"><span class="lit"></span></span><span class="nc-val" aria-hidden="true">4.5</span><span class="nc-fav">Paul</span></div>
                 </div>
               </div>
               <div class="nc-item">
                 <svg data-cover="1" viewBox="0 0 120 120" aria-hidden="true"></svg>
                 <div>
-                  <p class="nc-who">Maya logged</p>
-                  <p class="nc-t">Glass Orchard</p>
-                  <p class="nc-a">Fernhouse</p>
-                  <div class="nc-row"><span class="stars" style="--r:9" role="img" aria-label="4.5 stars"><span class="lit"></span></span><span class="nc-fav">Second Bloom</span></div>
+                  <p class="nc-who"><b>theo</b> reviewed</p>
+                  <p class="nc-t">Moneyball<span>2025</span></p>
+                  <p class="nc-a">by Dutch Interior</p>
+                  <div class="nc-row"><span class="stars" role="slider" tabindex="0" style="--r:8" aria-label="Your rating for Moneyball" aria-valuemin="0" aria-valuemax="5" aria-valuenow="4" aria-valuetext="4 stars"><span class="lit"></span></span><span class="nc-val" aria-hidden="true">4</span><span class="nc-fav">Sandcastle Molds</span></div>
                 </div>
               </div>
               <div class="nc-item">
                 <svg data-cover="2" viewBox="0 0 120 120" aria-hidden="true"></svg>
                 <div>
-                  <p class="nc-who">Theo logged</p>
-                  <p class="nc-t">Northbound Static</p>
-                  <p class="nc-a">Kilo Weather</p>
-                  <div class="nc-row"><span class="stars" style="--r:6" role="img" aria-label="3 stars"><span class="lit"></span></span><span class="nc-fav">Radio Mast</span></div>
+                  <p class="nc-who"><b>sam</b> logged</p>
+                  <p class="nc-t">Cuttin' Grass Vol. 1<span>2020</span></p>
+                  <p class="nc-a">by Sturgill Simpson</p>
+                  <div class="nc-row"><span class="stars" role="slider" tabindex="0" style="--r:7" aria-label="Your rating for Cuttin' Grass Vol. 1" aria-valuemin="0" aria-valuemax="5" aria-valuenow="3.5" aria-valuetext="3.5 stars"><span class="lit"></span></span><span class="nc-val" aria-hidden="true">3.5</span><span class="nc-fav">Breakers Roar</span></div>
                 </div>
               </div>
-              <figcaption class="nc-cap">A sketch, not a screenshot. Drag the stars: it rates in halves.</figcaption>
+              <figcaption class="nc-cap">A sketch, not a screenshot. Drag any stars to rate it yourself, in halves.</figcaption>
             </figure>
           </div>
 
           <ul class="facts">
-            <li><b>Two services, one interface.</b><span>Spotify, Apple Music and local data sit behind one provider contract, and ratings for the same album pool across services.</span></li>
-            <li><b>Careful with accounts.</b><span>OAuth 2.0 with PKCE and Sign in with Apple, tokens encrypted with AES-256-GCM, and no auto-linking on unverified emails, which blocks account takeover.</span></li>
-            <li><b>Self-hosted, properly.</b><span>A multi-stage Docker image running as non-root behind Caddy on a Hetzner VPS. GitHub Actions builds to GHCR and deploys over SSH.</span></li>
-            <li><b>Tested against a fake Spotify.</b><span>Sign-in runs end to end against a local Spotify stub, and every album gets generated SVG art in case its real cover fails to load.</span></li>
+            <li><b>Open to anyone.</b><span>Sign in with Google (OpenID Connect, PKCE and a nonce) or Spotify, and log from the Apple Music catalogue. One provider interface merges the same album across services.</span></li>
+            <li><b>A sandbox for guests.</b><span>One click makes a guest who follows a seeded circle and logs from sample history. Guests are walled off from real users across the feed, search, profiles and counts, and deleted after a week.</span></li>
+            <li><b>Careful with accounts.</b><span>Provider tokens encrypted with AES-256-GCM, and accounts merge only on a verified email, which blocks takeover through Spotify's unverified one. Sign-in is tested end to end against local Google and Spotify stubs.</span></li>
+            <li><b>Self-hosted, properly.</b><span>A multi-stage Docker image running as non-root behind Caddy on a Hetzner VPS, with SQLite on one volume. GitHub Actions builds to GHCR and deploys over SSH.</span></li>
           </ul>
-          <ul class="stack" aria-label="Built with"><li>Next.js</li><li>TypeScript</li><li>SQLite</li><li>Docker</li><li>Caddy</li><li>GitHub Actions</li><li>Spotify API</li><li>MusicKit</li></ul>
+          <ul class="stack" aria-label="Built with"><li>Next.js</li><li>TypeScript</li><li>SQLite</li><li>Docker</li><li>Caddy</li><li>GitHub Actions</li><li>Google OIDC</li><li>Spotify API</li><li>Apple Music</li></ul>
+        </article>
+
+        <!-- ── Quill ── -->
+        <article class="proj" id="quill" aria-labelledby="ql-h">
+          <div class="proj-top">
+            <div>
+              <p class="meta"><span class="n">02</span><span>Desktop app &middot; Oct 2026 &ndash; now</span><span class="live wip">Work in progress</span></p>
+              <h3 id="ql-h">Quill</h3>
+              <p class="line">A word processor, written from scratch in Rust.</p>
+              <p class="body">Word's engine is closed, so Quill rebuilds the core of one: the document model, text shaping, pagination, editing, and the .docx format itself. It opens and saves Word files, lays text out on real pages, and exports PDF that matches the screen. About 10,000 lines of Rust, in a 6.9&nbsp;MB app.</p>
+              <div class="actions">
+                <a class="btn" href="#hello" data-mailto data-subject="Access to Quill">Request access <span class="arr">&nearr;</span></a>
+              </div>
+            </div>
+
+            <figure class="shot">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+              <a href="img/quill.webp" target="_blank" rel="noopener" aria-label="Open the Quill screenshot full size"><img src="img/quill.webp" width="780" height="560" loading="lazy" decoding="async" alt="Quill with a document open: a menu bar and a ribbon of formatting controls (style, font, size, bold, italic, colour, alignment, lists) above a white page with a title, headings and body text."></a>
+              <figcaption>The real app, not a sketch. The code is private while it's in progress.</figcaption>
+            </figure>
+          </div>
+
+          <ul class="facts">
+            <li><b>Fast on long documents.</b><span>A 501-page, 231,000-word document lays out in about 110 ms, and typing a character re-lays and repaints in under a millisecond.</span></li>
+            <li><b>Only redo what changed.</b><span>Paragraphs are copy-on-write and their layouts are cached by revision, so an edit re-lays one paragraph, and only the visible pages are painted.</span></li>
+            <li><b>Word's own format.</b><span>.docx in and out, with styles, themes, numbering, headers and footers. PDF export subsets and embeds fonts, in the same layout as on screen.</span></li>
+            <li><b>Tested by driving it.</b><span>Headless end-to-end tests feed synthetic keystrokes and clicks to the real editor, and a script hook replays input and saves screenshots, like this one.</span></li>
+          </ul>
+          <ul class="stack" aria-label="Built with"><li>Rust</li><li>egui</li><li>HarfRust</li><li>fontdb</li><li>pdf-writer</li><li>quick-xml</li></ul>
         </article>
 
         <!-- ── wrestlELO ── -->
         <article class="proj" id="wrestlelo" aria-labelledby="we-h">
           <div class="proj-top">
             <div>
-              <p class="meta"><span class="n">02</span><span>Data science &middot; Sept 2026</span><span class="live">Live demo</span></p>
+              <p class="meta"><span class="n">03</span><span>Data science &middot; Sept 2026</span><span class="live">Live demo</span></p>
               <h3 id="we-h">wrestlELO</h3>
               <p class="line">Elo ratings for twelve seasons of college wrestling.</p>
               <p class="body">It rebuilds every NCAA Division I bout from 2013/14 to 2024/25 out of a messy public scrape, rates each one with a tuned Elo model, and lets you browse any wrestler's career and the five bouts that mattered most.</p>
@@ -952,7 +1001,7 @@
         <article class="proj" id="zob" aria-labelledby="zob-h">
           <div class="proj-top">
             <div>
-              <p class="meta"><span class="n">03</span><span>Simulation</span><span class="live">Running on this page</span></p>
+              <p class="meta"><span class="n">04</span><span>Simulation</span><span class="live">Running on this page</span></p>
               <h3 id="zob-h">Zob</h3>
               <p class="line">A fair casino, a random walk, and a judo match that keeps score.</p>
               <p class="body">Zob has $1,000 and bets Banker at a baccarat table built to be exactly fair. Every hand moves the match at the top of this page: a Banker win pushes it right, a Player win pushes it left. With no edge either way it wanders, and when it finds its way back to the middle after 5,000 hands, they bow and start again. The idea for this was generally the most convoluted random walk model possible.</p>
@@ -1015,7 +1064,7 @@
         <article class="proj" id="small-data" aria-labelledby="dl-h">
           <div class="proj-top">
             <div>
-              <p class="meta"><span class="n">04</span><span>Research &middot; Cornell Deep Learning &middot; Spring 2026</span></p>
+              <p class="meta"><span class="n">05</span><span>Research &middot; Cornell Deep Learning &middot; Spring 2026</span></p>
               <h3 id="dl-h">ResNet walked so CNNs could jog</h3>
               <p class="line">How much model do you need when you barely have data?</p>
               <p class="body">I reproduced Brigato &amp; Iocchi (2020), training plain CNNs at three levels of complexity and a ResNet-20 on class-balanced CIFAR-10 subsets from 10 to 1,280 images per class. Then I pushed further, into Fashion-MNIST, SVHN, EfficientNet-B0, and focal and label-smoothing losses.</p>
@@ -1104,7 +1153,7 @@
       <h2 id="now-h">What I'm up to <em>this month.</em></h2>
       <ul class="now">
         <li style="--dot:var(--aqua)"><p class="k">At work</p><p>Automating trading operations and data reconciliation.</p></li>
-        <li style="--dot:var(--tang)"><p class="k">Building</p><p>Friend feeds and half-star ratings on mobile, for Ninth Circle.</p></li>
+        <li style="--dot:var(--tang)"><p class="k">Building</p><p>A guest sandbox and a new look for Ninth Circle: a 1950s quarterly report.</p></li>
         <li style="--dot:var(--lime)"><p class="k">Reading</p><p><em>The Door</em> by Magda Sźoba</p></li>
         <li style="--dot:var(--chrome)"><p class="k">Stuck on</p><p>Naming things. Still. Always.</p></li>
       </ul>
@@ -2763,7 +2812,11 @@
      so it's never in the page as text for a scraper to find ── */
   var mailAddr = function () { return ['jmcgowan5g', ['gmail', 'com'].join('.')].join(String.fromCharCode(64)); };
   [].forEach.call(document.querySelectorAll('[data-mailto]'), function (a) {
-    a.addEventListener('click', function (e) { e.preventDefault(); location.href = 'mailto:' + mailAddr(); });
+    var subj = a.getAttribute('data-subject');
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      location.href = 'mailto:' + mailAddr() + (subj ? '?subject=' + encodeURIComponent(subj) : '');
+    });
   });
   /* copy it: the button says so, and so does a live region */
   [].forEach.call(document.querySelectorAll('[data-copy]'), function (b) {
@@ -2818,19 +2871,46 @@
     cover(s, COVERS[+s.getAttribute('data-cover')]);
   });
 
-  /* the one rating you can change: ten half-star steps on a range input */
-  var rate = document.getElementById('rate'), rateV = document.getElementById('rate-v');
-  if (rate) {
-    var rin = rate.querySelector('input');
-    var showRate = function () {
-      var v = +rin.value, s = (v / 2).toFixed(1).replace('.0', '');
-      rate.style.setProperty('--r', v);
-      rateV.textContent = v ? s : '–';
-      rin.setAttribute('aria-valuetext', v ? s + (v === 2 ? ' star' : ' stars') : 'not rated');
-    };
-    rin.addEventListener('input', showRate);
-    showRate();
+  /* the report's dateline, as the app prints it: this quarter, this year */
+  var ncQ = document.getElementById('nc-q');
+  if (ncQ) {
+    var qd = new Date();
+    ncQ.textContent = 'Report on listening \u00b7 ' + ['First', 'Second', 'Third', 'Fourth'][Math.floor(qd.getMonth() / 3)] + ' Quarter, ' + qd.getFullYear();
   }
+
+  /* every row of stars rates: ten half-star steps from where the pointer
+     is, dragging as it moves, arrows from the keyboard. The first touch
+     makes the rating yours, and the line above says so */
+  [].forEach.call(document.querySelectorAll('.nc .stars[role=slider]'), function (st) {
+    var val = st.nextElementSibling, who = st.closest('.nc-item').querySelector('.nc-who'), mine = false;
+    var set = function (v) {
+      v = Math.max(0, Math.min(10, v));
+      var s = (v / 2).toFixed(1).replace('.0', '');
+      st.style.setProperty('--r', v); st.setAttribute('data-v', v);
+      st.setAttribute('aria-valuenow', v / 2);
+      st.setAttribute('aria-valuetext', v ? s + (v === 2 ? ' star' : ' stars') : 'not rated');
+      val.textContent = v ? s : '\u2013';
+      if (!mine) { mine = true; who.innerHTML = '<b>You</b> rated it'; }
+    };
+    var at = function (e) {
+      var r = st.getBoundingClientRect();
+      return Math.ceil((e.clientX - r.left) / r.width * 10);
+    };
+    st.setAttribute('data-v', parseFloat(st.style.getPropertyValue('--r')) || 0);
+    st.addEventListener('pointerdown', function (e) {
+      if (e.button) return;
+      e.preventDefault(); st.focus({ preventScroll: true });
+      try { st.setPointerCapture(e.pointerId); } catch (x) {}
+      set(at(e));
+    });
+    st.addEventListener('pointermove', function (e) { if (st.hasPointerCapture(e.pointerId)) set(at(e)); });
+    st.addEventListener('keydown', function (e) {
+      var v = +st.getAttribute('data-v'), k = e.key;
+      var n = k === 'ArrowRight' || k === 'ArrowUp' ? v + 1 : k === 'ArrowLeft' || k === 'ArrowDown' ? v - 1 : k === 'Home' ? 0 : k === 'End' ? 10 : null;
+      if (n === null) return;
+      e.preventDefault(); set(n);
+    });
+  });
 
   /* ── wrestlELO's expected score, live: E = 1 / (1 + 10^((Rb − Ra)/400)) ── */
   var ea = document.getElementById('elo-a'), eb = document.getElementById('elo-b');

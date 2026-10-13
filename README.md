@@ -41,11 +41,13 @@ Expected, Bet and Last, with speed (1/10/100/1k×) and bet ($1/5/25/100) toggles
 plus a Résumé button on wide screens) sits over the strip and marks the section in the
 middle of the screen. A skip link comes first. Under the strip:
 
-- **Experience**: Meristead Wealth as a case study (before / built / result for three
-  pieces of work, and a diagram of the Orion → Salesforce sync), then Mobius and the
+- **Experience**: Meristead Wealth as a case study (what was built and what it bought, for
+  three pieces of work, and a diagram of the Orion → Salesforce sync), then Mobius and the
   Cornell game as rows.
-- **Projects**: four cards, each with copy, a picture, four facts and its stack.
-  - Ninth Circle: a sketch of its feed with generated covers and a draggable star rating.
+- **Projects**: five cards, each with copy, a picture, four facts and its stack.
+  - Ninth Circle: a sketch of its feed , with generated covers and a draggable star rating.
+  - Quill: a real screenshot (`img/quill.webp`, taken with the app's own script hook),
+    marked work in progress; its button opens an email asking for access to the private repo.
   - wrestlELO: a scoreboard running Elo's expected-score formula on two sliders. Links to `wrestlelo/`.
   - Zob: his terminal.
   - The small-data study: a line chart of the real results (crosshair tooltip, a table
