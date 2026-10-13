@@ -21,6 +21,10 @@ bout and its mat walk off it as Zob wins or loses and come back when he does. Ne
 middle the walk is drawn true; farther out it's squeezed toward a margin and the camera
 pans the rest, so the mat's seams slide past and the fighters never leave the screen. In
 the scrolled strip the walk stays in the gap between the bar's pills.
+The camera also breathes: it pulls back as Zob's total wanders from the mean (gently from
+the first step, harder once the bout would leave the frame, never below 40% of the landing
+scale) and eases back in as it reverts. Every landing hits, at every speed: two rings
+through the water from the spot, a fountain of spray, and the mat jolts.
 
 **Zob.** The bout is driven by Zob, who has $1,000 and bets Banker at a baccarat table.
 It's real punto banco: 8 decks, burn card, cut card and the standard third-card rules.
@@ -36,6 +40,9 @@ Banker pays `0.446247 / 0.458597` (≈0.97307 to 1), which makes the game exactl
   restarts.
 - At 1× the bout sets the pace: the next hand is dealt after the exchange plus a
   0.45–1.75s grip-fighting beat. At 10× and up it's time-based (`HAND = 4.4`s ÷ speed).
+  Past 1× the throws are capped (they run 2.6× faster, about one every two seconds) so the
+  frame cost doesn't grow with speed: every hand is still counted, each throw acts out the
+  latest one, and the mat slides to catch up. The Zob card says so.
 
 Zob's card shows him as a green-on-black terminal: Banker, Player, Hands, Balance, Dist.,
 Expected, Bet and Last, with speed (1/10/100/1k×) and bet ($1/5/25/100) toggles.

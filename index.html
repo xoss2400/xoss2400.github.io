@@ -1108,7 +1108,7 @@
             <ul class="facts">
               <li><b>Real punto banco.</b><span>Eight decks, a burn card, a cut card and the full third-card rules, dealt from a shuffled shoe.</span></li>
               <li><b>Provably even.</b><span>Banker pays 0.97307 to 1. Four million simulated hands averaged &minus;0.0002 bets a hand, well inside the noise.</span></li>
-              <li><b>Judoka from primitives.</b><span>About 34 ellipsoids, boxes and cylinders each, on a joint rig, raycast into characters every frame.</span></li>
+              <li><b>Judoka from primitives.</b><span>About 34 ellipsoids, boxes and cylinders each, raycast into characters every frame. Past 1&times; the throws are capped at about one every two seconds, so speed never costs frames: every hand still counts, each throw acts out the latest one, and the mat slides to catch up.</span></li>
               <li><b>Throws that keep score.</b><span>Red (Player) holds the left, blue (Banker) the right. The winner throws the loser out past his own side (harai goshi, uchi mata, seoi nage, tai otoshi or tomoe nage), then they walk back to their marks, so the match drifts with Zob&rsquo;s money.</span></li>
             </ul>
             <ul class="stack" aria-label="Built with"><li>JavaScript</li><li>Canvas 2D</li><li>No dependencies</li></ul>
@@ -1501,16 +1501,26 @@
   var HERO_H = 0.32;                     // the bout's share of the screen height on landing
   var PAD = 10;                          // px kept clear above and below the bout
 
-  /* drift never pulls the camera back (layout() keeps the bout on screen
-     by panning instead), so the only thing that does is the canvas getting
-     shorter as the page scrolls (the bout always fits its height, so that
-     one is instant) */
+  /* two things pull the camera back: the canvas getting shorter as the
+     page scrolls (the bout always fits its height, so that one is
+     instant), and Zob's total wandering from the mean. Each step away
+     widens the view as if the frame had to hold everything from the mean
+     out to the bout, times 1.25 (and never less than a gentle pull that
+     starts at the first step), and it eases, so the camera breathes out
+     on a run and back in as it reverts. It stops at ZMIN of the landing
+     scale, so a long run can't shrink the judoka to nothing (past that,
+     layout()'s panning keeps them on screen). In the strip the bar leaves
+     too little room to zoom, so the drift there stops pulling back. */
   /* TOPI: on a phone the bar sits over the top of the strip, so the bout
      fits in what's left under it */
   var TOPI = 0;
   function fitH(h) { return Math.max(0.05, (h - 2 * PAD - TOPI) / ZH); }
-  function camGoal() {      // panning keeps the drift on screen, so it needs no pull-back
-    return Math.min(cam.S0, (vw * 0.5) / (1.25 * ZHW));
+  var ZMIN = 0.4;
+  function camGoal() {
+    var far = Math.abs(bout.cx) * (1 - stripP);
+    var hold = (vw * 0.5) / (1.25 * (far + ZHW));     // the mean and the bout both in frame
+    var ease = cam.S0 / (1 + far / (3 * ZHW));         // and a gentle pull from the first step
+    return Math.max(cam.S0 * ZMIN, Math.min(cam.S0, hold, ease));
   }
   function camFit() {
     cam.S0 = Math.min(HERO_H * vh / ZH, fitH(vh), (vw * 0.5) / (1.25 * ZHW));
@@ -1974,11 +1984,19 @@
       tori.x += drift * k; uke.x += drift * k;
       if (T0.fly && t >= T0.fly.b && !ex.slam) {
         ex.slam = 1;
-        if (G.speed <= 10) {
+        {
+          /* the impact, at every speed (throws never come faster than one
+             every second and a half, so the rings can't pile up): a hard
+             ring and a second one a beat behind it, the calm pool round the
+             judoka opening up so the rings show right from where he hits, a
+             fountain of spray, and the mat jolting */
           var lx = bout.cx + ex.m * (T0.fly.end[0] + ex.land);   // where he lands, on screen
-          splash(AX + (VIEW[0] || 1) * lx * cam.S, AY + (ZCY - VIEW[4] * lx) * cam.S, 1.8 + ex.hard);
-          spray(lx, Math.round(48 + 36 * ex.hard), ex.m);
-          surge = 0.8 + ex.hard * 0.4;
+          var hx = AX + (VIEW[0] || 1) * lx * cam.S, hy = AY + (ZCY - VIEW[4] * lx) * cam.S;
+          splash(hx, hy, 3.4 + 1.6 * ex.hard);
+          splash(hx, hy, 1.8 + ex.hard, 0.16);
+          spray(lx, Math.round(84 + 60 * ex.hard), ex.m);
+          surge = 1.3 + ex.hard * 0.6;
+          hit = { t: T, a: (3 + 3 * ex.hard) * Math.min(1, cam.S * 2) };
         }
       }
       if (t >= end) {
@@ -2234,6 +2252,7 @@
      the stage's origin has to go for that, which moves as the bout drifts.
      stripP is how far the shrink has got, 0 to 1. */
   var AX = 0, AY = 0, BX = 0, BY = 0, stripP = 0;
+  var hit = { t: -9, a: 0 };     // the last throw's landing: when, and how hard it jolts
   /* the name pill's box, measured on resize (and once the fonts land), not
      every frame: reading layout mid-scroll would force a reflow per frame */
   /* barL is where the links on the right start, and dockW the width of
@@ -2300,6 +2319,9 @@
     var u = (VIEW[0] || 1) * bout.cx * cam.S, R = Math.max(1, half - 300 * cam.S - 12);
     AX = BX + u / Math.sqrt(1 + (u / R) * (u / R)) - u;
     AY = BY + VIEW[4] * bout.cx * cam.S;
+    /* a landing jolts the mat and the pair down and back, for a moment */
+    var ha = T - hit.t;
+    if (ha >= 0 && ha < 0.5) AY += hit.a * Math.exp(-ha * 12) * Math.cos(ha * 62);
     /* the words scroll with the intro, pixel for pixel, fading as they go */
     var st = scroller.scrollTop;
     heroEl.style.transform = 'translateY(' + (-st) + 'px)';
@@ -2371,9 +2393,10 @@
     }
   }
 
-  function splash(x, y, s) {
+  /* d: start the ring that many seconds from now */
+  function splash(x, y, s, d) {
     if (ripples.length >= RMAX) ripples.shift();
-    ripples.push({ x: x, y: y, t: T, s: s * gainSet });
+    ripples.push({ x: x, y: y, t: T + (d || 0), s: s * gainSet });
   }
 
   function draw() {
@@ -2445,6 +2468,7 @@
     for (i = 0; i < ripples.length; i++) {
       var rp = ripples[i], age = T - rp.t;
       if (age > RLIFE) continue;
+      if (age < 0) { ripples[live++] = rp; continue; }    // not started yet
       var R = 300 * age * (1 - 0.055 * age);              // front, easing off
       var W = 38 + 46 * age;                              // wake half-width
       var A = rp.s * Math.exp(-age * 0.95)
@@ -2543,6 +2567,9 @@
          same idea as the still water behind the words, pulled toward a trough
          with a smooth edge so the water doesn't draw a ring round him ── */
     if (zw) {
+      /* for a second after a throw lands the pool opens up, so the rings
+         show from the spot he hit instead of starting at the pool's rim */
+      var pk = 0.9 * (1 - 0.85 * Math.max(0, 1 - (T - hit.t) / 1.1));
       var pcx = zc0 + zw * 0.5, pcy = zr0 + zh * 0.5, prx = zw * 0.5 + 4, pry = zh * 0.5 + 3;
       var pr0 = Math.max(0, Math.floor(pcy - pry)), pr1 = Math.min(rows, Math.ceil(pcy + pry));
       var pc0 = Math.max(0, Math.floor(pcx - prx)), pc1 = Math.min(cols, Math.ceil(pcx + prx));
@@ -2552,7 +2579,7 @@
           var ex = (c + 0.5 - pcx) / prx, e2 = ex * ex + ey2;
           if (e2 >= 1) continue;
           var pf = 1 - e2; pf = pf * pf * (3 - 2 * pf);
-          H[prw + c] += (-0.85 - H[prw + c]) * pf * 0.9;
+          H[prw + c] += (-0.85 - H[prw + c]) * pf * pk;
         }
       }
     }
