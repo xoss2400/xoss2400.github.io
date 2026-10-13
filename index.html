@@ -2059,8 +2059,12 @@
   /* the grid follows the camera: a big font while the bout is close, shrinking
      as the view widens, but never below the old fixed density, which is
      what the frame budget was tuned for. Past that floor the judoka keep getting
-     smaller inside a grid that stays put. */
-  var FS0 = 20, FSMIN = 5.6, gridFS = 0;
+     smaller inside a grid that stays put. The one exception is the slim
+     strip: it's two thirds the height it used to be, and the judoka shrink
+     with it (more than two thirds, since the padding doesn't), so its font
+     may go to 0.62 of the floor (FSLO) and they keep as many characters as
+     before. Only the strip's rows are drawn, so the budget still holds. */
+  var FS0 = 20, FSMIN = 5.6, FSLO = 3.5, gridFS = 0;
 
   /* ── the strip ───────────────────────────────────────────────────────
      The page opens on the bout full screen. Scrolling the first stretch
@@ -2117,9 +2121,12 @@
        enough to read as pointing somewhere, which is the whole point of
        giving the contours their own characters */
     FSMIN = vw < 560 ? 4.8 : vw < 1000 ? 5.2 : 5.6;
+    FSLO = FSMIN * 0.62;
     FS0 = vw < 560 ? 8 : 10;
     TOPI = vw < 720 ? 44 : 0;
-    stripH = Math.round(Math.max(113 + TOPI, Math.min(167 + TOPI, vh * 0.173)));
+    /* the water under the bar, scrolled: two thirds of what it once was
+       (113 to 167 px), like a toolbar tucking itself away */
+    stripH = TOPI + Math.round(Math.max(113, Math.min(167, vh * 0.173 - TOPI)) * 2 / 3);
     introEl.style.height = vh + 'px';          // content starts a full screen down
     document.documentElement.style.setProperty('--strip', stripH + 'px');
     viewH = -1; layout();
@@ -2128,7 +2135,7 @@
   }
   function grid(force) {
     var fs = FS0 * cam.S / cam.S0;
-    fs = Math.round((fs < FSMIN ? FSMIN : fs > FS0 ? FS0 : fs) * 4) / 4;
+    fs = Math.round((fs < FSLO ? FSLO : fs > FS0 ? FS0 : fs) * 4) / 4;
     if (!force && fs === gridFS) return;
     gridFS = fs;
     mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
