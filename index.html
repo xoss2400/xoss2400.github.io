@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#eefaf0">
-<title>~john</title>
-<meta name="description" content="Watching the world burn down and writing code for fun.">
-<meta property="og:title" content="~john">
-<meta property="og:description" content="Watching the world burn down and writing code for fun.">
+<title>John McGowan</title>
+<meta name="description" content="John McGowan, software and automation in New York: trading-operations and Salesforce automation at a wealth manager, plus web apps, data science and simulations.">
+<meta property="og:title" content="John McGowan">
+<meta property="og:description" content="Software and automation for people who move money, plus web apps, data science, and a judo match decided by baccarat.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%23EEFAF0%27/%3E%3Ctext x=%2716%27 y=%2726%27 font-family=%27monospace%27 font-size=%2730%27 font-weight=%27700%27 fill=%27%23FF5A1F%27 text-anchor=%27middle%27%3E~%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@300;400;500&family=Hanken+Grotesk:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Hanken+Grotesk:wght@400;500;700&display=swap">
 
 <style>
   :root{
@@ -36,7 +36,7 @@
     --scrim:rgba(253,253,251,.86);
     --read:#41506e;
 
-    --disp:"Archivo Black","Arial Black",Helvetica,sans-serif;
+    --disp:"Instrument Serif",ui-serif,Georgia,serif;
     --body:"Hanken Grotesk",system-ui,-apple-system,Segoe UI,sans-serif;
     --mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 
@@ -67,56 +67,438 @@
   #scroller:focus{outline:none}
   #intro{display:block}
 
-  /* ── the landing line: part of the intro, scrolling up and away with it.
-       It can't live inside #intro itself — the water canvas sits above the
-       scroller — so it stays fixed and the script moves it with the scroll. ── */
+  /* ── the page's own type and surfaces, on white under the strip ── */
+  :root{
+    --text:#0b0b10;
+    --text-2:#5b606b;
+    --line:rgba(11,11,16,.1);
+    --card:#f4f5f3;
+    --serif:"Instrument Serif",ui-serif,Georgia,serif;
+    --strip:140px;
+    /* the two lines the results chart is about, validated as a pair */
+    --c-cnn:#d4500f;
+    --c-res:#1f3fbf;
+    --c-mute:#b4b8bf;
+    /* NCAA wrestlers wear red and green */
+    --red:#c8322b;
+    --green:#2f8f3a;
+  }
+  #scroller{scroll-padding-top:calc(var(--strip) + 20px);scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){ #scroller{scroll-behavior:auto} }
+
+  .skip{
+    position:fixed;z-index:10;left:12px;top:12px;transform:translateY(-200%);
+    background:var(--text);color:#fff;padding:.7em 1.1em;border-radius:999px;
+    font-weight:600;text-decoration:none;transition:transform .2s var(--ease);
+  }
+  .skip:focus{transform:none}
+
+  /* ── the landing: who, the line, what I do, two ways in, and a cue,
+       beside the bout. It can't live inside #intro — the water canvas sits
+       above the scroller — so it stays fixed and the script moves it with
+       the scroll. Only the buttons take the pointer. ── */
   .hero{
-    position:fixed;z-index:4;left:20vw;top:33vh;margin:0;pointer-events:none;
-    font-family:var(--body);font-weight:700;font-size:clamp(2.6rem,5.2vw,5.6rem);
-    line-height:1.02;letter-spacing:-.025em;color:#0b0b10;max-width:9ch;
-    will-change:transform;
+    position:fixed;z-index:4;left:clamp(16px,6vw,96px);top:max(92px,18vh);margin:0;
+    width:min(580px,44vw);pointer-events:none;color:var(--text);will-change:transform,opacity;
   }
+  /* a still patch of water behind the words, so they never fight the swell */
+  .hero::before{
+    content:"";position:absolute;z-index:-1;inset:-14% -18% -16% -22%;
+    background:radial-gradient(closest-side,var(--ground,#eefaf0) 62%,rgba(238,250,240,0));
+  }
+  .hero .who{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--text-2);margin:0 0 1.1rem;
+  }
+  .hero h1{
+    font-family:var(--serif);font-weight:400;font-size:clamp(2.7rem,5.6vw,5.4rem);
+    line-height:.98;letter-spacing:-.02em;margin:0;text-wrap:balance;
+  }
+  .hero h1 em{color:var(--tang-ink)}
+  .hero h1 .nw{white-space:nowrap}
+  .hero .sub{
+    margin:1.3rem 0 0;max-width:38ch;font-size:clamp(1rem,1.35vw,1.15rem);line-height:1.5;
+    color:var(--read);text-shadow:0 0 10px var(--ground,#eefaf0),0 0 3px var(--ground,#eefaf0);
+  }
+  .hero .actions{pointer-events:auto;margin-top:1.4rem}
+  .hero .cue{
+    text-shadow:0 0 8px var(--ground,#eefaf0);display:inline-flex;align-items:center;gap:.6em;margin-top:1.4rem;
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--text-2);
+  }
+  .hero .cue i{font-style:normal;display:inline-block;animation:nudge 2.2s var(--ease) infinite}
+  @keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+  @media (prefers-reduced-motion:reduce){ .hero .cue i{animation:none} }
   @media (max-width:720px){
-    .hero{left:16px;top:14vh}
+    .hero{left:16px;right:16px;width:auto;top:max(80px,10vh)}
+    .hero .sub{max-width:none;font-size:.98rem}
+    .hero .cue{display:none}
   }
 
-  /* ── the site: ordinary sections on white, scrolling under the strip ── */
-  #site{position:relative;z-index:1;background:#fff}
-  .station{
-    width:min(940px,100%);margin:0 auto;
-    padding:clamp(56px,9vw,112px) clamp(16px,4vw,32px) 0;
+  /* ── the bar: name and sections, floating over the strip ── */
+  .bar{
+    position:fixed;z-index:6;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 12px);
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+    padding:0 clamp(12px,2vw,24px);pointer-events:none;
   }
-  .station:last-child{padding-bottom:clamp(96px,14vw,160px)}
+  .bar .pill{pointer-events:auto}
+  .bar-r{display:flex;gap:8px;align-items:center}
+  .pill{
+    display:flex;align-items:center;gap:2px;padding:4px;border-radius:999px;
+    background:rgba(253,253,251,.8);border:1px solid var(--line);
+    -webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);
+    box-shadow:0 1px 2px rgba(11,11,16,.04),0 6px 20px rgba(11,11,16,.06);
+  }
+  .pill a{
+    font-size:.84rem;font-weight:500;color:var(--text);text-decoration:none;
+    padding:.42em .9em;border-radius:999px;transition:background .18s,color .18s;
+  }
+  .pill a:hover{background:rgba(11,11,16,.06)}
+  .pill a[aria-current="true"]{background:var(--text);color:#fff}
+  .pill .me{font-weight:700;letter-spacing:-.01em}
+  .pill .me .t{color:var(--tang-ink);font-family:var(--mono);font-weight:500;margin-right:.1em}
+  .pill .me .full{font-weight:500;color:var(--text-2)}
+  .pill.cv a{background:var(--text);color:#fff}
+  .pill.cv a:hover{background:#26262e}
+  @media (max-width:860px){ .pill.cv{display:none} }
+  @media (max-width:540px){ .pill .me .full{display:none} }
+  @media (max-width:420px){ .pill a{padding:.42em .62em;font-size:.78rem} }
 
-  /* ── shared type roles ───────────────────── */
-  .tag{
-    font-family:var(--mono);font-size:.68rem;font-weight:400;letter-spacing:.18em;
-    text-transform:uppercase;color:var(--slate);margin:0 0 .7rem;
-    display:flex;align-items:center;gap:.6em;
+  /* ── the site ── */
+  #site{position:relative;z-index:1;background:#fff;color:var(--text)}
+  #site:focus{outline:none}
+  .wrap{width:min(1120px,100%);margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+  .station{padding-top:clamp(72px,10vw,136px)}
+  .eyebrow{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--text-2);margin:0 0 1rem;
   }
-  .tag b{color:var(--tang-ink);font-weight:500}
-  .tag::after{content:"";flex:1;height:1px;background:var(--hair)}
-  h1,h2{font-family:var(--disp);font-weight:400;letter-spacing:-.035em;line-height:.95;margin:0;text-wrap:balance}
-  h2{font-size:clamp(1.9rem,4.6vw,3.1rem)}
-  .said{color:var(--read);max-width:60ch;margin:.55rem 0 0;font-size:.95rem}
+  h2{
+    font-family:var(--serif);font-weight:400;font-size:clamp(2.3rem,5vw,4.1rem);
+    line-height:1;letter-spacing:-.02em;margin:0;max-width:20ch;text-wrap:balance;
+  }
+  h2 em{color:var(--text-2)}
+  a{color:inherit}
 
-  /* ── station 2 · projects ────────────────── */
-  .sheet{
-    background:var(--paper);border:1.5px solid var(--hair);border-radius:16px;
-    padding:clamp(6px,1.2vw,14px);margin-top:1rem;
+  /* the opening statement: the first sentence in ink, the rest quieter */
+  .lede{
+    margin:0;max-width:32ch;font-size:clamp(1.55rem,3.3vw,2.6rem);line-height:1.22;
+    font-weight:500;letter-spacing:-.022em;color:var(--text-2);text-wrap:pretty;
   }
-  /* a project is just its name and what it is, set large straight onto
-     the water, with whatever it needs underneath */
-  .proj{margin-top:clamp(1.2rem,3vw,2.2rem);container-type:inline-size}
-  .proj + .proj{margin-top:clamp(2.4rem,6vw,4rem)}
+  .lede b{color:var(--text);font-weight:500}
+
+  /* proof: four numbers, each with what it measures right under it */
+  .proof{
+    list-style:none;margin:clamp(36px,5vw,64px) 0 0;padding:0;display:grid;gap:12px;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+  @media (max-width:960px){ .proof{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:420px){ .proof{grid-template-columns:minmax(0,1fr)} }
+  .proof li{background:var(--card);border-radius:22px;padding:22px 22px 24px;display:flex;flex-direction:column;gap:8px}
+  .proof b{font-size:clamp(2.2rem,3.6vw,3rem);font-weight:600;letter-spacing:-.035em;line-height:1}
+  .proof b small{font-size:.5em;font-weight:600;letter-spacing:-.01em;margin-left:.1em;color:var(--text-2)}
+  .proof span{font-size:.92rem;line-height:1.45;color:var(--read)}
+  .proof i{font-style:normal;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-2);margin-top:auto;padding-top:6px}
+
+  /* ── cards: a job or a project, copy and picture side by side, then
+       what's inside ── */
+  .stack-list{display:grid;gap:clamp(20px,3vw,32px);margin-top:clamp(28px,5vw,56px)}
+  .proj{
+    background:var(--card);border-radius:clamp(20px,3vw,32px);
+    padding:clamp(24px,4.5vw,56px);container-type:inline-size;
+  }
+  .proj-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:center}
+  .proj-top.solo{grid-template-columns:minmax(0,1fr)}
+  @container (max-width:760px){ .proj-top{grid-template-columns:minmax(0,1fr)} }
+  .meta{
+    display:flex;flex-wrap:wrap;gap:.4em .8em;align-items:center;margin:0 0 1.1rem;
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-2);
+  }
+  .meta .n{color:var(--text)}
+  .live{display:inline-flex;align-items:center;gap:.45em;color:var(--lime-ink)}
+  .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 3px rgba(123,221,46,.22)}
   .proj h3{
-    font-family:var(--disp);font-size:clamp(2.6rem,8vw,5.4rem);letter-spacing:-.045em;
-    margin:0;line-height:.9;font-weight:400;color:var(--ink);
+    font-family:var(--serif);font-weight:400;font-size:clamp(2.6rem,6vw,5rem);
+    line-height:.95;letter-spacing:-.025em;margin:0;text-wrap:balance;
   }
-  .proj > p{
-    margin:clamp(.7rem,1.6vw,1.1rem) 0 0;max-width:38ch;
-    font-size:clamp(1.12rem,2.3vw,1.62rem);line-height:1.38;font-weight:500;color:var(--ink);
+  .proj .role{margin:.55rem 0 0;font-size:1rem;font-weight:600;letter-spacing:-.01em}
+  .proj .role span{font-weight:400;color:var(--text-2)}
+  .proj .line{
+    margin:.7rem 0 0;max-width:26ch;font-size:clamp(1.25rem,2.2vw,1.6rem);
+    line-height:1.25;font-weight:500;letter-spacing:-.015em;text-wrap:balance;
   }
+  .proj .body{margin:1rem 0 0;max-width:48ch;font-size:1rem;line-height:1.6;color:var(--read)}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:1.6rem}
+  .btn{
+    display:inline-flex;align-items:center;gap:.45em;font:inherit;font-size:.92rem;font-weight:500;
+    padding:.72em 1.25em;border-radius:999px;cursor:pointer;text-decoration:none;
+    background:var(--text);color:#fff;border:1px solid var(--text);min-height:44px;
+    transition:transform .18s var(--ease),background .18s,color .18s;
+  }
+  .btn:hover{transform:translateY(-1px);background:#26262e}
+  .btn.ghost{background:rgba(255,255,255,.6);color:var(--text);border-color:rgba(11,11,16,.22)}
+  .btn.ghost:hover{background:rgba(11,11,16,.05)}
+  .btn .arr{font-family:var(--mono);font-size:.85em}
+  .btn[data-copied]{background:var(--lime-ink);border-color:var(--lime-ink);color:#fff}
+
+  .facts{
+    list-style:none;margin:clamp(28px,4vw,48px) 0 0;padding:clamp(20px,3vw,28px) 0 0;
+    border-top:1px solid var(--line);display:grid;gap:22px clamp(20px,3vw,36px);
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+  .facts.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @container (max-width:900px){ .facts,.facts.three{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @container (max-width:480px){ .facts,.facts.three{grid-template-columns:minmax(0,1fr)} }
+  .facts b{display:block;font-size:.95rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.3rem}
+  .facts span{display:block;font-size:.9rem;line-height:1.5;color:var(--read)}
+  /* what was built, then what it bought */
+  .case .win{margin-top:.4rem;color:var(--text);font-weight:600}
+  .stack{margin:22px 0 0;display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0}
+  .stack li{
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;color:var(--text-2);
+    padding:.35em .75em;border-radius:999px;border:1px solid var(--line);background:#fff;
+  }
+  .note{margin:18px 0 0;font-size:.88rem;line-height:1.55;color:var(--read);max-width:80ch}
+  .note b{color:var(--text)}
+
+  /* ── the Orion → Salesforce sync, drawn as boxes and wires ── */
+  .flow{
+    margin:0;justify-self:stretch;background:#fff;border-radius:24px;padding:22px;
+    box-shadow:0 0 0 1px var(--line);display:grid;gap:14px;
+  }
+  .flow-row{display:grid;grid-template-columns:auto minmax(28px,1fr) auto minmax(28px,1fr) auto;align-items:center}
+  .node{border-radius:14px;padding:12px 14px;border:1px solid var(--line);background:var(--card);text-align:center}
+  .node b{display:block;font-size:.95rem;letter-spacing:-.01em}
+  .node span{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;color:var(--text-2);margin-top:2px}
+  .node.mid{background:var(--text);color:#fff;border-color:var(--text)}
+  .node.mid span{color:rgba(255,255,255,.65)}
+  .wire{position:relative;height:2px;background:repeating-linear-gradient(90deg,var(--c-mute) 0 4px,transparent 4px 8px);margin:0 6px}
+  .wire::after{content:"";position:absolute;right:-2px;top:-4px;border:5px solid transparent;border-left:7px solid var(--c-mute);border-right:0}
+  .wire i{position:absolute;top:-3px;left:0;width:8px;height:8px;border-radius:50%;background:var(--aqua);box-shadow:0 0 0 2px #fff;animation:packet 2.6s linear infinite}
+  .wire.b i{animation-delay:1.3s;background:var(--tang)}
+  @keyframes packet{from{left:0}to{left:calc(100% - 8px)}}
+  @media (prefers-reduced-motion:reduce){ .wire i{animation:none;left:calc(50% - 4px)} }
+  .still .wire i,.still .hero .cue i{animation-play-state:paused}
+  .steps{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+  .steps span{font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;padding:.3em .7em;border-radius:999px;background:var(--card);color:var(--text-2)}
+  .flow figcaption{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;color:var(--text-2);border-top:1px solid var(--line);padding-top:12px}
+  .flow figcaption b{color:var(--text);font-weight:500}
+  @container (max-width:420px){
+    .flow-row{grid-template-columns:minmax(0,1fr);gap:0;justify-items:stretch}
+    .wire{width:2px;height:26px;margin:4px auto;background:repeating-linear-gradient(180deg,var(--c-mute) 0 4px,transparent 4px 8px)}
+    .wire::after{right:-4px;top:auto;bottom:-3px;border:5px solid transparent;border-top:7px solid var(--c-mute);border-bottom:0}
+    .wire i{left:-3px;animation-name:packetv}
+  }
+  @keyframes packetv{from{top:0}to{top:calc(100% - 8px)}}
+
+  /* ── the rest of the experience, one row each ── */
+  .xp{list-style:none;margin:clamp(20px,3vw,32px) 0 0;padding:0}
+  .xp li{display:grid;grid-template-columns:minmax(150px,.9fr) minmax(0,2.4fr);gap:8px 32px;padding:24px 4px;border-top:1px solid var(--line)}
+  .xp li:last-child{border-bottom:1px solid var(--line)}
+  .xp .when{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--text-2);padding-top:.3em}
+  .xp h3{font-size:1.15rem;font-weight:700;letter-spacing:-.015em;margin:0}
+  .xp .r{margin:.15rem 0 0;color:var(--text-2);font-size:.95rem}
+  .xp p.d{margin:.6rem 0 0;line-height:1.55;color:var(--read);max-width:68ch}
+  .xp .badge{display:inline-block;margin-left:.5em;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.25em .6em;border-radius:999px;background:rgba(255,201,60,.28);color:#7a5600;vertical-align:2px}
+  @media (max-width:720px){ .xp li{grid-template-columns:minmax(0,1fr)} }
+
+  /* ── Ninth Circle, drawn small: the For You feed, in its own colours ── */
+  .nc{
+    margin:0;justify-self:center;width:min(100%,380px);color:#ecebe6;
+    background:#08080a;border-radius:26px;padding:18px 18px 8px;
+    box-shadow:0 30px 60px -24px rgba(11,11,16,.45),0 0 0 1px rgba(11,11,16,.9);
+    font-size:13px;
+  }
+  .nc-top{display:flex;justify-content:space-between;align-items:baseline;padding:2px 2px 14px;border-bottom:1px solid rgba(236,235,230,.1)}
+  .nc-mark{font-family:var(--serif);font-size:1.35rem;letter-spacing:-.01em}
+  .nc-tabs{display:flex;gap:12px;font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:#8d8c85}
+  .nc-tabs b{color:#ecebe6;font-weight:500}
+  .nc-day{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;color:#8d8c85;margin:14px 2px 4px}
+  .nc-item{display:grid;grid-template-columns:74px minmax(0,1fr);gap:14px;padding:12px 2px;border-bottom:1px solid rgba(236,235,230,.08)}
+  .nc-item:last-of-type{border-bottom:0}
+  .nc-item svg{display:block;width:74px;height:74px;border-radius:5px}
+  .nc-who{margin:0;font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:#8d8c85}
+  .nc-who b{color:var(--chrome);font-weight:500}
+  .nc-t{margin:.3rem 0 0;font-size:1rem;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+  .nc-a{margin:.1rem 0 0;color:#a9a8a0}
+  .nc-row{display:flex;align-items:center;gap:10px;margin-top:.45rem}
+  .nc-fav{font-family:var(--mono);font-size:.62rem;color:#a9a8a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nc-fav::before{content:"\266B  ";color:var(--lime)}
+  /* stars: a dim row, a lit row clipped to the rating, and for the one you
+     can rate, a transparent range input on top doing all the work */
+  .stars{position:relative;display:inline-block;font-size:15px;letter-spacing:2px;line-height:1;color:#3a3a36;white-space:nowrap}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .lit{position:absolute;inset:0 auto 0 0;overflow:hidden;color:var(--chrome);width:calc(var(--r,0) * 10%)}
+  .stars .lit::before{content:"\2605\2605\2605\2605\2605"}
+  .stars input{position:absolute;inset:-8px -4px;width:calc(100% + 8px);opacity:0;cursor:pointer;margin:0}
+  .stars:focus-within{outline:2px solid var(--chrome);outline-offset:4px;border-radius:3px}
+  .nc-val{font-family:var(--mono);font-size:.68rem;color:var(--chrome);min-width:2.2em}
+  .nc-cap{margin:6px 2px 6px;padding-top:10px;border-top:1px solid rgba(236,235,230,.08);font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;color:#8d8c85}
+
+  /* ── wrestlELO: a scoreboard running the expected-score formula ── */
+  .elo{
+    margin:0;justify-self:center;width:min(100%,420px);background:#fff;border-radius:24px;
+    padding:20px;box-shadow:0 0 0 1px var(--line),0 24px 50px -30px rgba(11,11,16,.35);
+  }
+  .elo-head{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-2);margin-bottom:14px}
+  .corner{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0}
+  .corner + .corner{border-top:1px solid var(--line)}
+  .band{width:12px;height:34px;border-radius:4px;background:var(--red)}
+  .corner.g .band{background:var(--green)}
+  .corner label{display:block;font-size:.8rem;font-weight:600}
+  .corner label span{font-weight:400;color:var(--text-2)}
+  .corner input[type=range]{width:100%;margin:.35rem 0 0;accent-color:var(--red)}
+  .corner.g input[type=range]{accent-color:var(--green)}
+  .corner output{font-size:1.6rem;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums;min-width:3.2ch;text-align:right}
+  .odds{margin-top:12px}
+  .odds-bar{display:flex;height:12px;border-radius:999px;overflow:hidden;gap:2px;background:#fff}
+  .odds-bar i{display:block;background:var(--red);transition:flex-grow .25s var(--ease)}
+  .odds-bar i + i{background:var(--green)}
+  .odds-txt{display:flex;justify-content:space-between;margin-top:8px;font-size:.92rem}
+  .odds-txt b{font-weight:600;font-variant-numeric:tabular-nums}
+  .formula{margin:14px 0 0;padding:10px 12px;border-radius:12px;background:var(--card);font-family:var(--mono);font-size:.7rem;line-height:1.6;color:var(--text-2);overflow-x:auto;white-space:nowrap}
+  .formula b{color:var(--text);font-weight:500}
+  .elo figcaption{margin-top:10px;font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;color:var(--text-2)}
+
+  /* ── wrestlELO's math: four steps, typeset in MathML ── */
+  .math{margin-top:clamp(28px,4vw,48px);background:#fff;border-radius:24px;padding:clamp(20px,3.5vw,36px);box-shadow:0 0 0 1px var(--line)}
+  .math h4{font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,3.4vw,2.4rem);letter-spacing:-.015em;line-height:1;margin:0}
+  .math-lede{display:block;margin:.6rem 0 0;max-width:62ch;color:var(--read);font-size:.95rem;line-height:1.55}
+  /* collapsed by default: the heading and its one line are the button */
+  .math summary{list-style:none;cursor:pointer;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-radius:12px}
+  .math summary::-webkit-details-marker{display:none}
+  .math summary:focus-visible{outline:2px solid var(--text);outline-offset:6px}
+  .math-tog{
+    flex:none;display:inline-flex;align-items:center;gap:.5em;margin-top:.3rem;padding:.45em .9em;border-radius:99px;
+    box-shadow:0 0 0 1px var(--line);font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;color:var(--text);
+    transition:background .2s var(--ease);
+  }
+  .math-tog i,.math-tog b{font-style:normal;font-weight:400}
+  .math-tog b,.math[open] .math-tog i{display:none}
+  .math[open] .math-tog b{display:inline}
+  .math-tog::after{content:"";width:.5em;height:.5em;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:translateY(-.15em) rotate(45deg);transition:transform .25s var(--ease)}
+  .math[open] .math-tog::after{transform:translateY(.1em) rotate(-135deg)}
+  .math summary:hover .math-tog{background:var(--card)}
+  @container (max-width:480px){ .math summary{flex-direction:column} }
+  .eqs{list-style:none;margin:clamp(18px,3vw,28px) 0 0;padding:0;display:grid;gap:clamp(18px,3vw,28px) clamp(20px,4vw,48px);grid-template-columns:repeat(2,minmax(0,1fr))}
+  @container (max-width:760px){ .eqs{grid-template-columns:minmax(0,1fr)} }
+  .eqs li{border-top:1px solid var(--line);padding-top:16px;min-width:0}
+  .eq-k{display:flex;align-items:center;gap:.6em;margin:0;font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-2)}
+  .eq-k span{display:grid;place-items:center;width:1.9em;height:1.9em;border-radius:50%;background:var(--text);color:#fff;font-size:.9em;letter-spacing:0}
+  .eqs math{font-size:1.3rem;margin:.9rem 0 .7rem;padding:.4rem 0;overflow-x:auto;overflow-y:hidden;color:var(--text);font-family:"STIX Two Math","Cambria Math","Latin Modern Math",math,serif}
+  .eqs li > p:not(.eq-k){margin:.4rem 0 0;font-size:.9rem;line-height:1.55;color:var(--read)}
+  .eqs i{font-family:var(--serif);font-size:1.12em;color:var(--text)}
+  .ex{background:var(--card);border-radius:12px;padding:10px 12px;color:var(--text)!important}
+  .ex b{font-variant-numeric:tabular-nums}
+  .ex select{font:inherit;font-weight:600;color:var(--text);background:#fff;border:1px solid rgba(11,11,16,.2);border-radius:8px;padding:.15em .4em;margin:0 .1em}
+
+  /* ── the small-data study: accuracy against examples per class ── */
+  .chart{
+    margin:0;justify-self:stretch;background:#fff;border-radius:24px;padding:18px 18px 12px;
+    box-shadow:0 0 0 1px var(--line);position:relative;
+  }
+  .chart-title{margin:0;font-size:.95rem;font-weight:600;letter-spacing:-.01em}
+  .chart-sub{margin:.15rem 0 0;font-size:.8rem;color:var(--text-2)}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0 2px;padding:0;list-style:none;font-size:.78rem;color:var(--text-2)}
+  .legend li{display:flex;align-items:center;gap:6px}
+  .legend i{width:14px;height:2px;border-radius:2px;background:var(--k)}
+  .chart svg{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y}
+  .chart .grid line{stroke:#e7e8ea;stroke-width:1}
+  .chart .ax text{font-family:var(--mono);font-size:10px;fill:#6b7079}
+  .chart .ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  .chart .ln.mute{stroke:var(--c-mute);stroke-width:1.5}
+  .chart .dot{stroke:#fff;stroke-width:2}
+  .chart .lab{font-family:var(--body);font-size:11px;font-weight:600;fill:var(--text)}
+  .chart .ann{font-family:var(--body);font-size:10.5px;fill:var(--text-2)}
+  .chart .xh{stroke:#9aa0a8;stroke-width:1}
+  .tip{
+    position:absolute;pointer-events:none;background:var(--text);color:#fff;border-radius:10px;
+    padding:8px 10px;font-size:.74rem;line-height:1.45;min-width:150px;opacity:0;transform:translateY(4px);
+    transition:opacity .12s,transform .12s;box-shadow:0 10px 24px -10px rgba(11,11,16,.5);
+  }
+  .tip.on{opacity:1;transform:none}
+  .tip b{display:block;font-weight:600;margin-bottom:2px}
+  .tip span{display:flex;align-items:center;gap:6px;justify-content:space-between}
+  .tip span i{width:8px;height:8px;border-radius:50%;background:var(--k);flex:none}
+  .tip span em{font-style:normal;margin-right:auto}
+  .chart details{margin-top:8px;font-size:.78rem;color:var(--text-2)}
+  .chart summary{cursor:pointer;font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;padding:4px 0}
+  .chart table{width:100%;border-collapse:collapse;margin-top:6px;font-variant-numeric:tabular-nums}
+  .chart th,.chart td{text-align:right;padding:4px 6px;border-bottom:1px solid var(--line)}
+  .chart th:first-child,.chart td:first-child{text-align:left}
+
+  /* ── Zob: the terminal sits under the copy, full width ── */
+  .proj .term{margin-top:clamp(24px,3vw,36px)}
+  /* beside the copy, like the other cards' pictures; the terminal sizes
+     itself to its own column, so there it stacks: Zob on top, the fields
+     in two columns under him */
+  .proj-top .term{margin-top:0;container-type:inline-size;width:100%;max-width:460px;justify-self:center}
+
+  /* ── also built: one row each; rows without a public link aren't links ── */
+  .more{margin-top:clamp(56px,8vw,96px)}
+  .more h3{font-size:1.05rem;font-weight:700;letter-spacing:-.01em;margin:0 0 .4rem}
+  .rows{list-style:none;margin:0;padding:0}
+  .rows li{border-top:1px solid var(--line)}
+  .rows li:last-child{border-bottom:1px solid var(--line)}
+  .rows .row{
+    display:grid;grid-template-columns:minmax(140px,.8fr) minmax(0,2.2fr) minmax(0,1fr) 1.2em;
+    gap:16px;align-items:baseline;padding:18px 4px;text-decoration:none;transition:background .18s,padding .25s var(--ease);
+  }
+  .rows a.row:hover{background:var(--card);padding-left:14px;padding-right:14px}
+  .rows .nm{font-weight:700;letter-spacing:-.01em}
+  .rows .ds{color:var(--read);line-height:1.45}
+  .rows .tk{font-family:var(--mono);font-size:.68rem;color:var(--text-2);letter-spacing:.04em}
+  .rows .go{font-family:var(--mono);font-size:.8rem;color:var(--text-2);transition:transform .2s var(--ease),color .2s}
+  .rows a.row:hover .go{transform:translate(2px,-2px);color:var(--tang-ink)}
+  @media (max-width:720px){
+    .rows .row{grid-template-columns:minmax(0,1fr) auto;gap:4px 12px}
+    .rows .ds,.rows .tk{grid-column:1 / -1}
+    .rows .go{grid-row:1;grid-column:2}
+  }
+
+  /* ── about: prose beside a fact sheet ── */
+  .about{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);margin-top:clamp(28px,5vw,52px);align-items:start}
+  @media (max-width:860px){ .about{grid-template-columns:minmax(0,1fr)} }
+  .about .prose p{margin:0;font-size:clamp(1.05rem,1.5vw,1.2rem);line-height:1.6;color:var(--read);max-width:56ch}
+  .about .prose p + p{margin-top:1rem}
+  .about .prose b{color:var(--text);font-weight:600}
+  .sheet{margin:0;background:var(--card);border-radius:22px;padding:6px 22px}
+  .sheet div{padding:14px 0;border-top:1px solid var(--line)}
+  .sheet div:first-child{border-top:0}
+  .sheet dt{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-2)}
+  .sheet dd{margin:.35rem 0 0;font-size:.92rem;line-height:1.5}
+  .sheet dd small{display:block;color:var(--text-2);font-size:.86rem}
+
+  /* ── now: four short columns ── */
+  .now{
+    list-style:none;margin:clamp(28px,5vw,52px) 0 0;padding:0;display:grid;gap:12px;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  }
+  .now li{background:var(--card);border-radius:22px;padding:24px 24px 26px}
+  .now .k{
+    display:flex;align-items:center;gap:.55em;margin:0 0 .9rem;
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-2);
+  }
+  .now .k::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--dot,var(--aqua))}
+  .now p{margin:0;font-size:1.06rem;line-height:1.45;letter-spacing:-.008em}
+  .stamp{margin:14px 0 0;font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;color:var(--text-2)}
+
+  /* ── contact ── */
+  /* one compact row: the ask on the left, the ways in on the right. The
+     address itself never appears as text, see the script */
+  .hello-row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px}
+  .hello h2{font-size:clamp(2.2rem,4.6vw,3.4rem);max-width:none}
+  .hello .said{margin:.8rem 0 0;max-width:46ch;font-size:1rem;line-height:1.5;color:var(--read)}
+  .hello .actions{margin:0}
+
+  /* ── colophon ── */
+  .colo{
+    margin-top:clamp(48px,6vw,80px);padding:28px 0 calc(96px + env(safe-area-inset-bottom,0px));
+    border-top:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 32px;
+    font-size:.84rem;line-height:1.55;color:var(--text-2);
+  }
+  .colo p{margin:0;max-width:62ch}
+
+  .sr-live{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 
   /* ── zob: a green-screen terminal inside the project ─ */
   .term{
@@ -167,60 +549,97 @@
     .zart{grid-row:auto;grid-column:1 / -1;justify-content:center;border-right:0;border-bottom:1px solid var(--gl)}
   }
 
-  .stack2{display:grid;gap:1rem;margin-top:1.1rem;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-  .sheet h3.hd{
-    font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
-    margin:.25rem .3rem .7rem;font-weight:500;color:var(--tang-ink);
-  }
-  .sheet.b h3.hd{color:var(--lime-ink)}
-  .swap{font-family:var(--mono);font-size:.57rem;color:var(--slate);letter-spacing:.06em;margin:.6rem .3rem 0}
-  .flag{
-    display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
-    text-transform:uppercase;background:var(--tang);color:var(--paper);
-    padding:.2em .45em;border-radius:3px;margin-right:.5em;vertical-align:2px;
-  }
 
-  /* ── station 3 · as of late ──────────────── */
-  .late{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.9rem clamp(1rem,4vw,2.6rem);margin-top:clamp(1.2rem,3vw,2rem);align-items:baseline}
-  .lk{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--slate);margin:0}
-  .ul{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
-  .ul li{font-size:clamp(1.05rem,2.1vw,1.4rem);line-height:1.35;color:var(--read)}
-  .ul u{
-    color:var(--ink);font-weight:500;text-decoration-line:underline;text-decoration-thickness:1px;
-    text-underline-offset:.24em;text-decoration-color:var(--slate);
+  /* ── Sharp: the Mandarin widget, as a little window over the page. Its
+       own colours: translucent emerald, gold labels, red flags. ── */
+  .sharp{
+    position:fixed;z-index:8;right:clamp(12px,2vw,26px);bottom:calc(clamp(12px,2vw,26px) + env(safe-area-inset-bottom,0px));
+    width:312px;color:#fff;font-family:var(--mono);border-radius:14px;overflow:hidden;
+    background:rgba(6,78,59,.9);-webkit-backdrop-filter:blur(10px) saturate(1.3);backdrop-filter:blur(10px) saturate(1.3);
+    box-shadow:0 24px 60px -18px rgba(6,40,30,.55),0 0 0 1px rgba(255,255,255,.12) inset;
   }
-  @media (max-width:520px){ .late{grid-template-columns:1fr;gap:.45rem} .ul + .lk{margin-top:.9rem} }
+  .sharp[hidden]{display:none}
+  .sharp::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 2px);
+  }
+  .sharp-bar{
+    position:relative;height:34px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 6px 0 12px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
+    background:linear-gradient(#0b5a45,#08503d);border-bottom:2px solid #d4b483;
+  }
+  .sharp-bar:active{cursor:grabbing}
+  .sharp-t{position:relative;z-index:2;font-size:.68rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:#ffc93c}
+  .sharp-x{
+    position:relative;z-index:2;width:28px;height:28px;border-radius:8px;border:0;cursor:pointer;
+    background:transparent;color:#fff;font:inherit;font-size:1rem;line-height:1;
+  }
+  .sharp-x:hover{background:rgba(255,255,255,.14)}
+  .sharp-x:focus-visible{outline:2px solid #ffc93c;outline-offset:1px}
+  /* the pixel armies: two squads march in, clash, and the survivors win */
+  .battle{position:absolute;left:70px;right:40px;top:0;bottom:0;overflow:hidden}
+  .sq{position:absolute;bottom:5px;display:flex;gap:4px;align-items:flex-end;transition:transform 3.2s steps(16)}
+  .sq.l{left:0}
+  .sq.r{right:0;flex-direction:row-reverse}
+  .px{position:relative;width:5px;height:9px;background:#e8e1c8;box-shadow:0 -3px 0 -1px #f3d9b1;transition:transform .5s,opacity .9s}
+  .sq.r .px{background:#cfe3d8}
+  .px.flag::before{content:"";position:absolute;left:2px;bottom:9px;width:1px;height:12px;background:#d4b483}
+  .px.flag::after{content:"";position:absolute;left:3px;bottom:15px;width:8px;height:5px;background:var(--fc,#c8322b)}
+  .sq.r .px.flag::after{left:auto;right:3px}
+  .px.down{transform:rotate(90deg) translate(3px,-2px);opacity:.15}
+  .sq.won .px:not(.down){animation:hop .45s steps(3) 3}
+  @keyframes hop{50%{transform:translateY(-4px)}}
+  .flash{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px;border-radius:50%;background:radial-gradient(#fff6c8,rgba(255,201,60,0) 70%);animation:boom .5s ease-out forwards}
+  @keyframes boom{from{transform:scale(.2);opacity:1}to{transform:scale(1.8);opacity:0}}
+  .sharp-body{position:relative;z-index:1;padding:12px}
+  #sharp-in{
+    width:100%;box-sizing:border-box;margin:0;padding:.6em .7em;border-radius:8px;
+    border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;
+    font:inherit;font-size:1rem;transition:border-color .2s,box-shadow .2s;
+  }
+  #sharp-in::placeholder{color:rgba(255,255,255,.55)}
+  #sharp-in:focus{outline:none;border-color:#ffc93c;box-shadow:0 0 0 3px rgba(255,201,60,.22)}
+  .sharp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+  .sharp-chips span{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-right:2px}
+  .sharp-chips button{
+    font:inherit;font-size:.82rem;color:#fff;cursor:pointer;padding:.25em .6em;border-radius:999px;
+    border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);
+  }
+  .sharp-chips button:hover{background:rgba(255,255,255,.16)}
+  .sharp-chips button:focus-visible{outline:2px solid #ffc93c;outline-offset:1px}
+  .sharp-out{display:grid;gap:8px;margin-top:10px}
+  .sharp-sec{background:rgba(255,255,255,.06);border-radius:8px;padding:8px 10px}
+  .sharp-sec b{display:block;font-size:.58rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#ffc93c;margin-bottom:3px}
+  .sharp-sec p{margin:0;font-size:.88rem;line-height:1.4;overflow-wrap:anywhere}
+  .sharp-sec small{display:block;margin-top:3px;font-size:.68rem;color:rgba(255,255,255,.65)}
+  .sharp-fine{margin:10px 0 0;font-size:.6rem;line-height:1.5;color:rgba(255,255,255,.62)}
+  .sharp-fine a{color:#fff}
+  @media (max-width:560px){
+    .sharp{left:12px;right:12px;width:auto}
+  }
+  .rows button.row{width:100%;font:inherit;color:inherit;text-align:left;background:none;border:0;cursor:pointer}
+  .rows button.row:hover{background:var(--card);padding-left:14px;padding-right:14px}
+  .rows button.row:hover .go{color:var(--lime-ink)}
+  .rows .try{display:inline-block;margin-left:.35em;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.2em .55em;border-radius:999px;background:rgba(123,221,46,.22);color:var(--lime-ink);vertical-align:2px}
 
-  /* ── station 4 · right now ───────────────── */
-  .kv{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
-  .kv small{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate)}
-  .kv strong{display:block;font-weight:500;font-size:.95rem;line-height:1.25}
-  .lines{list-style:none;margin:0;padding:0;display:grid;gap:.45rem;font-size:.88rem}
-  .lines li{display:flex;gap:.5rem;line-height:1.35}
-  .lines li::before{font-family:var(--mono);flex:none;font-size:.85rem}
-  .lines.y li::before{content:"+";color:var(--lime-ink)}
-  .lines.n li::before{content:"\2013";color:var(--tang-ink)}
-
-  /* ── station 5 · say hi ──────────────────── */
-  .mail{
-    display:inline-block;margin-top:1rem;font-family:var(--disp);font-weight:400;
-    font-size:clamp(1.3rem,5vw,3rem);letter-spacing:-.04em;color:var(--ink);
-    text-decoration:none;border-bottom:4px solid var(--chrome);line-height:1.1;
+  /* ── print: the page becomes a plain document, links spelled out ── */
+  @media print{
+    html,body{height:auto;overflow:visible;background:#fff}
+    #water,.bar,.console,.sharp,.skip,.hero .cue,.hero .actions,.tctl,.zenv,.nc,.elo,.flow,.chart svg,.chart .legend,.tip,#intro,.term{display:none!important}
+    #scroller{position:static;overflow:visible}
+    .hero{position:static;transform:none!important;opacity:1!important;visibility:visible!important;width:auto;padding:0 40px}
+    .hero::before{display:none}
+    .station{padding-top:28px}
+    .proj,.proof li,.now li,.sheet{background:none;box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+    .chart details{display:block}
+    .math-tog{display:none}
+    a[href^="http"]::after,a[href^="mailto"]::after{content:" (" attr(href) ")";font-size:.8em;color:#555}
+    .btn::after{content:none!important}
   }
-  .mail:hover{color:var(--tang-ink);border-bottom-color:var(--tang-ink)}
-  .fine{font-family:var(--mono);font-size:.62rem;color:var(--slate);margin:.5rem 0 0;letter-spacing:.06em}
-  .links{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.4rem;font-family:var(--mono);font-size:.74rem}
-  .links a{
-    color:var(--ink);text-decoration:none;padding:.55em .95em;border-radius:999px;
-    border:1.5px solid var(--hair);background:var(--scrim);
-    transition:background .18s,color .18s,border-color .18s;
-  }
-  .links a:hover{background:var(--ink);border-color:var(--ink);color:var(--pool)}
 
   /* ── console (collapsed by default) ──────── */
   .console{
-    position:fixed;z-index:5;left:clamp(12px,2vw,26px);
-    bottom:calc(clamp(12px,2vw,26px) + env(safe-area-inset-bottom,0px));
+    position:fixed;z-index:5;left:clamp(12px,2vw,26px);top:calc(100vh - 52px);
     font-family:var(--mono);width:min(252px,calc(100vw - 24px));
   }
   #poke{
@@ -233,7 +652,31 @@
   #poke i{font-style:normal;color:var(--aqua-ink);font-size:.9rem;line-height:1}
   #poke:hover i{color:var(--chrome)}
   #poke b{font-weight:400;opacity:.6;font-size:.62rem}
-  #panel{
+  /* collapsed, it's just the ≈: the words show on hover, focus or open */
+  .console{width:auto}
+  #poke{width:auto;min-height:40px;padding:.6em .85em}
+  #poke > span{display:flex;align-items:center;gap:.55em}
+  #poke .lbl,#poke b{display:none}
+  #poke:hover .lbl,#poke:focus-visible .lbl{display:inline}
+  #poke[aria-expanded="true"] .lbl,#poke[aria-expanded="true"] b{display:inline}
+  .console:has(#poke[aria-expanded="true"]){width:min(252px,calc(100vw - 24px))}
+  .dock{display:flex;gap:6px}
+  .console.up #panel{top:auto;bottom:calc(100% + 6px)}
+  #pause{
+    flex:none;width:40px;height:40px;border-radius:50%;cursor:pointer;
+    background:var(--paper);color:var(--ink);border:1.5px solid var(--hair);
+    font-size:.62rem;letter-spacing:-.1em;display:grid;place-items:center;
+    transition:background .18s,color .18s,border-color .18s;
+  }
+  #pause:hover{background:var(--ink);color:var(--pool);border-color:var(--ink)}
+  #pause[aria-pressed="true"]{background:var(--ink);color:var(--pool);border-color:var(--ink)}
+  /* drawn, not typed: two bars, or a triangle when paused */
+  #pause .ico{display:block;width:10px;height:11px;border-left:3px solid currentColor;border-right:3px solid currentColor;box-sizing:border-box}
+  #pause[aria-pressed="true"] .ico{width:0;height:0;border:0;border-left:9px solid currentColor;border-top:5.5px solid transparent;border-bottom:5.5px solid transparent;margin-left:3px}
+  #poke[aria-expanded="true"]{flex:1}
+  /* the panel opens away from the edge: up from the full-screen water,
+     down from the strip */
+  #panel{position:absolute;left:0;right:0;top:calc(100% + 6px);
     background:var(--paper);border:1.5px solid var(--hair);
     border-radius:14px;padding:.85rem;
   }
@@ -254,7 +697,7 @@
   .meter{margin:.15rem 0 0;font-size:.58rem;color:var(--slate);letter-spacing:.06em;font-variant-numeric:tabular-nums}
 
   @media (max-width:780px){
-    .console{width:calc(100vw - 24px);left:12px}
+    .console{left:12px}
   }
 </style>
 </head>
@@ -262,23 +705,268 @@
 
 <canvas id="water" aria-hidden="true"></canvas>
 
-<p class="hero" id="hero">I Write Code for monkeys</p>
-<div id="scroller" tabindex="-1">
-<div id="intro" aria-hidden="true"></div>
-<main id="site">
+<a class="skip" href="#site">Skip to content</a>
 
-  <section class="station" id="st-1" data-accent="14,42,140" aria-label="Projects">
-    <h2>Projects</h2>
+<nav class="bar" aria-label="Site">
+  <div class="pill"><a class="me" href="#top"><span class="t">~</span>john<span class="full"> mcgowan</span></a></div>
+  <div class="bar-r">
+    <div class="pill">
+      <a href="#experience" data-nav="experience">Experience</a>
+      <a href="#projects" data-nav="projects">Projects</a>
+      <a href="#about" data-nav="about">About</a>
+      <a href="#hello" data-nav="hello">Contact</a>
+    </div>
+    <div class="pill cv"><a href="john-mcgowan-resume.pdf" target="_blank" rel="noopener">R&eacute;sum&eacute;</a></div>
+  </div>
+</nav>
 
-    <article class="proj">
-      <h3>Zob</h3>
-      <p>How long could you give Zob $1000 and leave him at a baccarat table?</p>
-      <div class="term">
-          <div class="tbar">
-            <span>zob@dojo:~$ ./punto-banco --no-commission --bet banker</span>
-            <button type="button" id="bac-open" aria-expanded="false" aria-controls="zob-env">[ job ]</button>
+<header class="hero" id="hero">
+  <p class="who">John McGowan &middot; Software &amp; Automation &middot; New York</p>
+  <h1><span class="nw">The future is</span> <em class="nw">unknown.</em></h1>
+  <p class="sub">Hello, I write code. These are Saigo and Milo, fighting to determine all of our fate. Fate can be strange.</p>
+  <div class="actions">
+    <a class="btn" href="john-mcgowan-resume.pdf" target="_blank" rel="noopener">R&eacute;sum&eacute; <span class="arr">PDF</span></a>
+    <button type="button" class="btn ghost" data-copy>Copy email</button>
+  </div>
+  <p class="cue" aria-hidden="true"><i>&darr;</i> scroll, the match keeps going</p>
+</header>
+
+ <div id="scroller" tabindex="-1">
+<div id="intro" aria-hidden="true"><span id="top"></span></div>
+<main id="site" tabindex="-1">
+
+  <section class="station" id="summary" data-accent="255,90,31" aria-label="Summary">
+    <div class="wrap">
+      <p class="lede"><b>I build software that takes tedious work off people's plates.</b> At a wealth manager, that means trading operations building key efficiency tools. On my own time, it means apps for my friends and simulations nobody asked for.</p>
+      <ul class="proof">
+        <li><b>6<small>hrs</small></b><span>of manual reconciliation saved every morning for a trading operations team.</span><i>Meristead Wealth</i></li>
+        <li><b>Daily</b><span>Orion-to-Salesforce sync, replacing a weekly manual upload.</span><i>Meristead Wealth</i></li>
+        <li><b>$0</b><span>in license fees after replacing a paid data-loader subscription with an in-house tool.</span><i>Meristead Wealth</i></li>
+        <li><b>76.8%</b><span>accuracy predicting 90,434 college wrestling bouts the model never saw.</span><i>wrestlELO</i></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="station" id="experience" data-accent="18,198,192" aria-labelledby="xp-h">
+    <div class="wrap">
+      <p class="eyebrow">Experience</p>
+      <h2 id="xp-h">Software for people <em>who move money.</em></h2>
+
+      <div class="stack-list">
+        <article class="proj" aria-labelledby="mw-h">
+          <div class="proj-top">
+            <div>
+              <p class="meta"><span>June 2026 &ndash; now</span><span class="live">Current</span></p>
+              <h3 id="mw-h">Meristead Wealth</h3>
+              <p class="role">Trading Operations Analyst <span>&middot; New York</span></p>
+              <p class="body">I support daily trading operations at a $1.3B wealth manager, and build the tools the team runs on: a desktop app for the morning's recurring tasks, internal APIs, and the automation that keeps Salesforce in step with Orion, the firm's portfolio platform.</p>
+            </div>
+            <figure class="flow" aria-label="Diagram: every day, a Python job extracts records from Orion, reconciles them, maps their fields and upserts them into Salesforce.">
+              <div class="flow-row" aria-hidden="true">
+                <div class="node"><b>Orion</b><span>portfolio data</span></div>
+                <div class="wire"><i></i></div>
+                <div class="node mid"><b>Python sync</b><span>FastAPI &middot; Azure</span></div>
+                <div class="wire b"><i></i></div>
+                <div class="node"><b>Salesforce</b><span>CRM records</span></div>
+              </div>
+              <div class="steps" aria-hidden="true"><span>extract</span><span>reconcile</span><span>map fields</span><span>upsert</span></div>
+              <figcaption><span><b>Every day</b>, automatically</span><span>was: weekly, by hand</span></figcaption>
+            </figure>
           </div>
-          <div class="tgrid">
+
+          <ul class="facts three case">
+            <li><b>The morning checklist</b><span>A desktop app on internal FastAPI services now runs the 15 to 20 tasks the team did by hand.</span><span class="win">6 hours saved daily across the team.</span></li>
+            <li><b>Orion to Salesforce</b><span>A Python ETL replaced a weekly manual upload and a paid dataloader.io subscription.</span><span class="win">Records within a day, no license fee.</span></li>
+            <li><b>Flows that fire only when they should</b><span>Record-triggered Flows now tell a file upload from a saved note.</span><span class="win">Each fires only on a real attachment.</span></li>
+          </ul>
+          <p class="note">Underneath: Azure-hosted services in Docker with PostgreSQL, behind one set of internal APIs. Along the way I passed the <b>SIE exam</b>.</p>
+          <ul class="stack" aria-label="Built with"><li>Python</li><li>FastAPI</li><li>PostgreSQL</li><li>Docker</li><li>Azure</li><li>Salesforce Flows</li><li>Salesforce REST API</li><li>Orion APIs</li></ul>
+        </article>
+      </div>
+
+      <ul class="xp">
+        <li>
+          <p class="when">Summer 2025</p>
+          <div>
+            <h3>Mobius Emerging Opportunities Fund</h3>
+            <p class="r">Financial Analyst Intern &middot; Dubai, remote</p>
+            <p class="d">Built Python pipelines that ingest broker and custodian statements, reconcile positions and FX, and produce NAV and performance tables for weekly partner reviews. Built a dashboard of daily positions, and checked portfolio and transaction data every day so discrepancies were fixed before reports went out.</p>
+          </div>
+        </li>
+        <li>
+          <p class="when">Jan &ndash; May 2026</p>
+          <div>
+            <h3>Ratatoskr: Squirrel Nightmares <span class="badge">Judges' Choice</span></h3>
+            <p class="r">Software Engineering Lead &middot; Cornell Game Design Initiative</p>
+            <p class="d">Led five developers and four UI/UX artists building a Java desktop game on LibGDX with Box2D physics. It won Judges' Choice at the Cornell Game Design Showcase and is slated for Steam in Winter 2026.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="station" id="projects" data-accent="14,42,140" aria-labelledby="pj-h">
+    <div class="wrap">
+      <p class="eyebrow">Projects</p>
+      <h2 id="pj-h">For the Public</h2>
+
+      <div class="stack-list">
+
+        <!-- ── Ninth Circle ── -->
+        <article class="proj" id="ninth-circle" aria-labelledby="nc-h">
+          <div class="proj-top">
+            <div>
+              <p class="meta"><span class="n">01</span><span>Web app &middot; Aug 2025 &ndash; now</span><span class="live">Live</span></p>
+              <h3 id="nc-h">Ninth Circle</h3>
+              <p class="line">An album log for you and the people you follow.</p>
+              <p class="body">Pull a record from your Spotify or Apple Music history, rate it out of five in half stars, keep one favourite track, and see what your friends have been hearing. Mobile first, near-black, and the sleeve art is the only colour on the page.</p>
+              <div class="actions">
+                <a class="btn" href="https://ninthcircle.xyz" target="_blank" rel="noopener">Visit ninthcircle.xyz <span class="arr">&nearr;</span></a>
+              </div>
+            </div>
+
+            <figure class="nc" aria-label="A sketch of the Ninth Circle feed">
+              <div class="nc-top"><span class="nc-mark">ninth circle</span><span class="nc-tabs"><b>For you</b><span>Log</span><span>Library</span></span></div>
+              <p class="nc-day">TODAY</p>
+              <div class="nc-item">
+                <svg data-cover="0" viewBox="0 0 120 120" aria-hidden="true"></svg>
+                <div>
+                  <p class="nc-who"><b>You</b> &middot; rate it</p>
+                  <p class="nc-t">Salt Hours</p>
+                  <p class="nc-a">Low Tide Choir</p>
+                  <div class="nc-row">
+                    <span class="stars" id="rate" style="--r:7"><span class="lit"></span><input type="range" min="0" max="10" step="1" value="7" aria-label="Your rating for Salt Hours, in half stars" aria-valuetext="3.5 stars"></span>
+                    <span class="nc-val" id="rate-v" aria-hidden="true">3.5</span>
+                  </div>
+                </div>
+              </div>
+              <div class="nc-item">
+                <svg data-cover="1" viewBox="0 0 120 120" aria-hidden="true"></svg>
+                <div>
+                  <p class="nc-who">Maya logged</p>
+                  <p class="nc-t">Glass Orchard</p>
+                  <p class="nc-a">Fernhouse</p>
+                  <div class="nc-row"><span class="stars" style="--r:9" role="img" aria-label="4.5 stars"><span class="lit"></span></span><span class="nc-fav">Second Bloom</span></div>
+                </div>
+              </div>
+              <div class="nc-item">
+                <svg data-cover="2" viewBox="0 0 120 120" aria-hidden="true"></svg>
+                <div>
+                  <p class="nc-who">Theo logged</p>
+                  <p class="nc-t">Northbound Static</p>
+                  <p class="nc-a">Kilo Weather</p>
+                  <div class="nc-row"><span class="stars" style="--r:6" role="img" aria-label="3 stars"><span class="lit"></span></span><span class="nc-fav">Radio Mast</span></div>
+                </div>
+              </div>
+              <figcaption class="nc-cap">A sketch, not a screenshot. Drag the stars: it rates in halves.</figcaption>
+            </figure>
+          </div>
+
+          <ul class="facts">
+            <li><b>Two services, one interface.</b><span>Spotify, Apple Music and local data sit behind one provider contract, and ratings for the same album pool across services.</span></li>
+            <li><b>Careful with accounts.</b><span>OAuth 2.0 with PKCE and Sign in with Apple, tokens encrypted with AES-256-GCM, and no auto-linking on unverified emails, which blocks account takeover.</span></li>
+            <li><b>Self-hosted, properly.</b><span>A multi-stage Docker image running as non-root behind Caddy on a Hetzner VPS. GitHub Actions builds to GHCR and deploys over SSH.</span></li>
+            <li><b>Tested against a fake Spotify.</b><span>Sign-in runs end to end against a local Spotify stub, and every album gets generated SVG art in case its real cover fails to load.</span></li>
+          </ul>
+          <ul class="stack" aria-label="Built with"><li>Next.js</li><li>TypeScript</li><li>SQLite</li><li>Docker</li><li>Caddy</li><li>GitHub Actions</li><li>Spotify API</li><li>MusicKit</li></ul>
+        </article>
+
+        <!-- ── wrestlELO ── -->
+        <article class="proj" id="wrestlelo" aria-labelledby="we-h">
+          <div class="proj-top">
+            <div>
+              <p class="meta"><span class="n">02</span><span>Data science &middot; Sept 2026</span><span class="live">Live demo</span></p>
+              <h3 id="we-h">wrestlELO</h3>
+              <p class="line">Elo ratings for twelve seasons of college wrestling.</p>
+              <p class="body">It rebuilds every NCAA Division I bout from 2013/14 to 2024/25 out of a messy public scrape, rates each one with a tuned Elo model, and lets you browse any wrestler's career and the five bouts that mattered most.</p>
+              <div class="actions">
+                <a class="btn" href="wrestlelo/" target="_blank" rel="noopener">Browse the ratings <span class="arr">&nearr;</span></a>
+              </div>
+            </div>
+
+            <figure class="elo" id="elo" aria-labelledby="elo-cap">
+              <div class="elo-head"><span>Expected score</span><span>NCAA D1</span></div>
+              <div class="corner">
+                <span class="band" aria-hidden="true"></span>
+                <div><label for="elo-a">Red <span>&middot; rating</span></label><input id="elo-a" type="range" min="1200" max="2900" step="10" value="1720"></div>
+                <output for="elo-a" id="elo-av">1720</output>
+              </div>
+              <div class="corner g">
+                <span class="band" aria-hidden="true"></span>
+                <div><label for="elo-b">Green <span>&middot; rating</span></label><input id="elo-b" type="range" min="1200" max="2900" step="10" value="1560"></div>
+                <output for="elo-b" id="elo-bv">1560</output>
+              </div>
+              <div class="odds">
+                <div class="odds-bar" aria-hidden="true"><i id="elo-ra" style="flex-grow:72"></i><i id="elo-ga" style="flex-grow:28"></i></div>
+                <p class="odds-txt" aria-live="polite"><span>Red wins <b id="elo-rp">72%</b></span><span>Green wins <b id="elo-gp">28%</b></span></p>
+              </div>
+              <p class="formula" id="elo-f">E = 1 / (1 + 10<sup>(1560 &minus; 1720) / 400</sup>) = <b>0.72</b></p>
+              <figcaption id="elo-cap">The win-probability formula at wrestlELO's core. Drag either rating.</figcaption>
+            </figure>
+          </div>
+
+          <ul class="facts">
+            <li><b>Scored once, at the end.</b><span>Tuned on 2015&ndash;21, then tested on 2022&ndash;25: 76.8% accuracy over 90,434 bouts, and a log loss of 0.472 against 0.693 for a coin flip.</span></li>
+            <li><b>Honest probabilities.</b><span>Expected calibration error of 0.0167 on the test seasons. No probability bin is off by more than 2.5 points.</span></li>
+            <li><b>Brackets, rebuilt.</b><span>The raw rows ran backwards. Reversing them took &ldquo;the champion's last bout is against the runner-up&rdquo; from 1.7% to 89.7%.</span></li>
+            <li><b>What the tuning found.</b><span>No offseason reversion, margin-of-victory multipliers, and K factors far above the textbook (120 and 80, not 40 and 20).</span></li>
+          </ul>
+          <details class="math">
+            <summary>
+              <span class="math-head">
+                <h4>The math</h4>
+                <span class="math-lede">Every bout runs four lines of arithmetic. The values are the tuned ones, chosen on 2015&ndash;21 and only then scored on 2022&ndash;25.</span>
+              </span>
+              <span class="math-tog" aria-hidden="true"><i>Show</i><b>Hide</b></span>
+            </summary>
+            <ol class="eqs">
+              <li>
+                <p class="eq-k"><span>1</span>Predict</p>
+                <math display="block"><msub><mi>E</mi><mi>a</mi></msub><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mn>10</mn><mrow><mo stretchy="false">(</mo><msub><mi>R</mi><mi>b</mi></msub><mo>&minus;</mo><msub><mi>R</mi><mi>a</mi></msub><mo stretchy="false">)</mo><mo>/</mo><mn>400</mn></mrow></msup></mrow></mfrac></math>
+                <p>Wrestler <i>a</i>'s chance of beating <i>b</i>, from their ratings <i>R</i>. College wrestling has no draws, so this is a straight win probability. A 400-point edge is 10-to-1 odds.</p>
+              </li>
+              <li>
+                <p class="eq-k"><span>2</span>Weigh the result</p>
+                <math display="block"><msub><mi>K</mi><mi>a</mi></msub><mo>=</mo><mi>k</mi><mo stretchy="false">(</mo><msub><mi>n</mi><mi>a</mi></msub><mo stretchy="false">)</mo><mo>&middot;</mo><mi>M</mi><mo>&middot;</mo><mfrac><mn>2.2</mn><mrow><mn>0.001</mn><mspace width="0.1em"></mspace><mi mathvariant="normal">&Delta;</mi><mi>R</mi><mo>+</mo><mn>2.2</mn></mrow></mfrac></math>
+                <p>How far this bout moves the rating. <i>k</i> is 120 for a wrestler's first 8 bouts and 80 after. <i>M</i> rewards dominance: decision 1, overtime decision 0.7, major 1.33, tech fall 1.67, fall 2. The last factor, with &Delta;<i>R</i> = winner minus loser, damps a favourite's win and amplifies an upset, the same correction FiveThirtyEight's NFL Elo uses.</p>
+              </li>
+              <li>
+                <p class="eq-k"><span>3</span>Update</p>
+                <math display="block"><msubsup><mi>R</mi><mi>a</mi><mo>&prime;</mo></msubsup><mo>=</mo><msub><mi>R</mi><mi>a</mi></msub><mo>+</mo><msub><mi>K</mi><mi>a</mi></msub><mspace width="0.1em"></mspace><mo stretchy="false">(</mo><msub><mi>S</mi><mi>a</mi></msub><mo>&minus;</mo><msub><mi>E</mi><mi>a</mi></msub><mo stretchy="false">)</mo></math>
+                <p><i>S</i> is 1 for a win and 0 for a loss: you move by how surprising the result was. Each wrestler uses their own <i>K</i>, so a newcomer moves further than the veteran they beat.</p>
+                <p class="ex">From the scoreboard: if Red wins by <label class="sr" for="elo-m">result</label><select id="elo-m">
+                  <option value="1">decision</option><option value="0.7">overtime decision</option><option value="1.33">major decision</option><option value="1.67">tech fall</option><option value="2">fall</option>
+                </select>, Red gains <b id="elo-dr">+0</b> and Green loses <b id="elo-dg">0</b>, both past their first 8 bouts.</p>
+              </li>
+              <li>
+                <p class="eq-k"><span>4</span>Batch and carry over</p>
+                <math display="block"><mi>R</mi><mo stretchy="false">&larr;</mo><mi>&mu;</mi><mo>+</mo><mi>&lambda;</mi><mspace width="0.1em"></mspace><mo stretchy="false">(</mo><mi>R</mi><mo>&minus;</mo><mi>&mu;</mi><mo stretchy="false">)</mo></math>
+                <p>Between seasons, ratings can shrink toward the mean <i>&mu;</i> = 1500. Tuning chose <i>&lambda;</i> = 1, no shrinkage at all. Within a tournament round, every bout is predicted from the ratings as they stood before the round and the changes land together, so the order bouts were logged in can't matter.</p>
+              </li>
+            </ol>
+          </details>
+          <ul class="stack" aria-label="Built with"><li>Python</li><li>pandas</li><li>NumPy</li><li>pytest</li><li>React</li><li>Vite</li></ul>
+        </article>
+
+        <!-- ── Zob ── -->
+        <article class="proj" id="zob" aria-labelledby="zob-h">
+          <div class="proj-top">
+            <div>
+              <p class="meta"><span class="n">03</span><span>Simulation</span><span class="live">Running on this page</span></p>
+              <h3 id="zob-h">Zob</h3>
+              <p class="line">A fair casino, a random walk, and a judo match that keeps score.</p>
+              <p class="body">Zob has $1,000 and bets Banker at a baccarat table built to be exactly fair. Every hand moves the match at the top of this page: a Banker win pushes it right, a Player win pushes it left. With no edge either way it wanders, and when it finds its way back to the middle after 5,000 hands, they bow and start again. The idea for this was generally the most convoluted random walk model possible.</p>
+              <div class="actions">
+                <button type="button" class="btn ghost" id="to-match">Watch the match <span class="arr">&uarr;</span></button>
+              </div>
+            </div>
+
+          <div class="term">
+            <div class="tbar">
+              <span>zob@dojo:~$ ./punto-banco --no-commission --bet banker</span>
+              <button type="button" id="bac-open" aria-expanded="false" aria-controls="zob-env">[ chart ]</button>
+            </div>
+            <div class="tgrid">
 <pre class="zart" aria-hidden="true">    .--.
    ( oo )
     )--(
@@ -290,91 +978,174 @@
    |/  \|
   _/    \_
     ZOB</pre>
-            <div class="tc l" id="s-b"><span class="k">BANKER</span><span class="v big" id="b-tot">&ndash;</span><span class="v" id="b-cards">&nbsp;</span></div>
-            <div class="tc" id="s-p"><span class="k">PLAYER</span><span class="v big" id="p-tot">&ndash;</span><span class="v" id="p-cards">&nbsp;</span></div>
-            <div class="tc l"><span class="k">ROLLS</span><span class="v" id="n-rolls">0</span></div>
-            <div class="tc"><span class="k">BAL</span><span class="v" id="n-bal">$1,000.00</span></div>
-            <div class="tc l"><span class="k">DIST.</span><span class="v" id="n-dist">0</span></div>
-            <div class="tc"><span class="k">EST.</span><span class="v" id="n-est">0</span></div>
-            <div class="tc l end"><span class="k">BET</span><span class="v" id="b-stake">$1 on BANKER</span></div>
-            <div class="tc end"><span class="k">LAST</span><span class="v" id="z-last">&mdash;</span></div>
+              <div class="tc l" id="s-b"><span class="k">BANKER</span><span class="v big" id="b-tot">&ndash;</span><span class="v" id="b-cards">&nbsp;</span></div>
+              <div class="tc" id="s-p"><span class="k">PLAYER</span><span class="v big" id="p-tot">&ndash;</span><span class="v" id="p-cards">&nbsp;</span></div>
+              <div class="tc l"><span class="k">HANDS</span><span class="v" id="n-rolls">0</span></div>
+              <div class="tc"><span class="k">BALANCE</span><span class="v" id="n-bal">$1,000.00</span></div>
+              <div class="tc l"><span class="k">DIST.</span><span class="v" id="n-dist">0</span></div>
+              <div class="tc"><span class="k">EXPECTED</span><span class="v" id="n-est">0</span></div>
+              <div class="tc l end"><span class="k">BET</span><span class="v" id="b-stake">$1 on BANKER</span></div>
+              <div class="tc end"><span class="k">LAST</span><span class="v" id="z-last">&mdash;</span></div>
+            </div>
+            <div class="tctl">
+              <span role="group" aria-label="Speed"><span class="k">speed</span>
+                <button type="button" data-spd="1" aria-pressed="true">1&times;</button><button type="button" data-spd="10" aria-pressed="false">10&times;</button><button type="button" data-spd="100" aria-pressed="false">100&times;</button><button type="button" data-spd="1000" aria-pressed="false">1k&times;</button></span>
+              <span role="group" aria-label="Bet size"><span class="k">bet</span>
+                <button type="button" data-bet="100" aria-pressed="true">$1</button><button type="button" data-bet="500" aria-pressed="false">$5</button><button type="button" data-bet="2500" aria-pressed="false">$25</button><button type="button" data-bet="10000" aria-pressed="false">$100</button></span>
+            </div>
+            <div class="zenv" id="zob-env" hidden>
+              <p class="zh"><span>&gt; the run</span><span id="z-state">dealing</span></p>
+              <canvas id="z-chart" height="120" aria-label="Distance against the expected drift, over every hand so far" role="img"></canvas>
+              <p class="zkey">&mdash; DIST. where the match is &middot; - - EXPECTED where it should be: 0, the game is even</p>
+              <pre class="zlog" id="z-log" aria-live="off"></pre>
+            </div>
           </div>
-          <div class="tctl">
-            <span role="group" aria-label="Speed"><span class="k">speed</span>
-              <button type="button" data-spd="1" aria-pressed="true">1&times;</button><button type="button" data-spd="10" aria-pressed="false">10&times;</button><button type="button" data-spd="100" aria-pressed="false">100&times;</button><button type="button" data-spd="1000" aria-pressed="false">1k&times;</button></span>
-            <span role="group" aria-label="Bet size"><span class="k">bet</span>
-              <button type="button" data-bet="100" aria-pressed="true">$1</button><button type="button" data-bet="500" aria-pressed="false">$5</button><button type="button" data-bet="2500" aria-pressed="false">$25</button><button type="button" data-bet="10000" aria-pressed="false">$100</button></span>
           </div>
-          <div class="zenv" id="zob-env" hidden>
-            <p class="zh"><span>&gt; the job</span><span id="z-state">dealing</span></p>
-            <canvas id="z-chart" height="120" aria-label="Distance against the expected drift, over every hand so far" role="img"></canvas>
-            <p class="zkey">&mdash; DIST. where the bout is &middot; - - EST. where it should be: 0, the game is even</p>
-            <pre class="zlog" id="z-log" aria-live="off"></pre>
+
+          <ul class="facts">
+            <li><b>Real punto banco.</b><span>Eight decks, a burn card, a cut card and the full third-card rules, dealt from a shuffled shoe.</span></li>
+            <li><b>Provably even.</b><span>Banker pays 0.97307 to 1. Four million simulated hands averaged &minus;0.0002 bets a hand, well inside the noise.</span></li>
+            <li><b>Judoka from primitives.</b><span>About 34 ellipsoids, boxes and cylinders each, on a joint rig, raycast into characters every frame.</span></li>
+            <li><b>Real throws.</b><span>Harai goshi, seoi nage and o-soto-gari, keyed to real timing, with a little lag in the limbs.</span></li>
+          </ul>
+          <ul class="stack" aria-label="Built with"><li>JavaScript</li><li>Canvas 2D</li><li>No dependencies</li></ul>
+        </article>
+
+        <!-- ── small-data deep learning ── -->
+        <article class="proj" id="small-data" aria-labelledby="dl-h">
+          <div class="proj-top">
+            <div>
+              <p class="meta"><span class="n">04</span><span>Research &middot; Cornell Deep Learning &middot; Spring 2026</span></p>
+              <h3 id="dl-h">ResNet walked so CNNs could jog</h3>
+              <p class="line">How much model do you need when you barely have data?</p>
+              <p class="body">I reproduced Brigato &amp; Iocchi (2020), training plain CNNs at three levels of complexity and a ResNet-20 on class-balanced CIFAR-10 subsets from 10 to 1,280 images per class. Then I pushed further, into Fashion-MNIST, SVHN, EfficientNet-B0, and focal and label-smoothing losses.</p>
+              <div class="actions">
+                <a class="btn" href="https://github.com/xoss2400/small_learning" target="_blank" rel="noopener">Code and report <span class="arr">&nearr;</span></a>
+                <a class="btn ghost" href="https://arxiv.org/abs/2003.12843" target="_blank" rel="noopener">The original paper <span class="arr">&nearr;</span></a>
+              </div>
+            </div>
+
+            <figure class="chart" id="dl-chart" aria-labelledby="dl-ct">
+              <p class="chart-title" id="dl-ct">Best test accuracy on CIFAR-10</p>
+              <p class="chart-sub">by training images per class</p>
+              <ul class="legend">
+                <li style="--k:var(--c-cnn)"><i></i>CNN, high complexity</li>
+                <li style="--k:var(--c-res)"><i></i>ResNet-20</li>
+                <li style="--k:var(--c-mute)"><i></i>CNNs, low and medium</li>
+              </ul>
+              <svg id="dl-svg" viewBox="0 0 520 300" role="img" aria-label="Line chart. The high-complexity plain CNN leads at every size up to 640 images per class; ResNet-20 overtakes at 1,280, 75.7% to 70.5%."></svg>
+              <div class="tip" id="dl-tip" aria-hidden="true"></div>
+              <details>
+                <summary>See the numbers</summary>
+                <table id="dl-table"><caption class="sr">Best test accuracy by images per class</caption></table>
+              </details>
+            </figure>
           </div>
+
+          <ul class="facts three">
+            <li><b>Simple wins small.</b><span>The high-complexity plain CNN beat ResNet-20 at every size up to 640 images per class.</span></li>
+            <li><b>Depth wins big.</b><span>At 1,280 images per class, ResNet-20 pulled ahead, 75.7% to 70.5%.</span></li>
+            <li><b>Close to the paper.</b><span>Mean absolute gap from the published numbers: 2.7 to 3.7 points per model, one seed per configuration.</span></li>
+          </ul>
+          <ul class="stack" aria-label="Built with"><li>PyTorch</li><li>torchvision</li><li>pandas</li><li>matplotlib</li></ul>
+        </article>
+      </div>
+
+      <div class="more">
+        <h3>Also built</h3>
+        <ul class="rows">
+          <li><div class="row">
+            <span class="nm">Offline document analysis</span><span class="ds">Ask questions of 460 private PDFs without anything leaving the laptop: BGE embeddings, FAISS search and a locally hosted 3B language model.</span><span class="tk">Python &middot; FAISS</span><span class="go"></span></div></li>
+          <li><div class="row">
+            <span class="nm">ASCII art generator</span><span class="ds">Image to ASCII in C++. Sobel gradients pick <code>| - / \</code> along edges, and brightness picks the rest.</span><span class="tk">C++ &middot; OpenCV</span><span class="go"></span></div></li>
+          <li><div class="row">
+            <span class="nm">Crypto options pricer</span><span class="ds">Black-Scholes prices and Greeks for crypto options, with simulated price paths and payoff charts. Built with Kwabena Appiah.</span><span class="tk">Python &middot; Streamlit</span><span class="go"></span></div></li>
+          <li><div class="row">
+            <span class="nm">Poker-2-Go</span><span class="ds">A Texas Hold'em coach with AI opponents for two to nine players.</span><span class="tk">OCaml</span><span class="go"></span></div></li>
+          <li><button type="button" class="row" data-open-sharp aria-controls="sharp">
+            <span class="nm">Sharp<span class="try">Try it</span></span><span class="ds">A desktop widget that translates Chinese text to English and pinyin, built for learning Mandarin lazily. Click to open.</span><span class="tk">Electron &middot; Python</span><span class="go" aria-hidden="true">&#10697;</span></button></li>
+          <li><a class="row" href="https://github.com/xoss2400/xoss2400.github.io" target="_blank" rel="noopener">
+            <span class="nm">This site</span><span class="ds">One hand-written HTML file: ASCII water, raycast judo and a baccarat table.</span><span class="tk">JavaScript &middot; Canvas</span><span class="go" aria-hidden="true">&nearr;</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="station" id="about" data-accent="123,221,46" aria-labelledby="ab-h">
+    <div class="wrap">
+      <p class="eyebrow">About Me</p>
+      <h2 id="ab-h">I am tall and wear glasses.</h2>
+      <div class="about">
+        <div class="prose">
+          <p>I studied computer science at Cornell and kept drifting toward its mathematical end: 
+            <b>optimization, linear algebra, cryptography and financial engineering</b>. Now, 
+            I write software for a trading desk, and completed my SIE. Owning full stack end to end 
+            software is an incredible, incredible experience.</p>
+            <br></br>
+          <p>We are all animals and our nature is meant to be in the woods and near bodies of water. 
+            I live my life deeply aware of this. In my spare time I coach youth wrestling and
+            train Brazilian Jiu-Jitsu. I collect books in a similar manner to doomsday preppers,
+            it has often been to the detrement of my walletand free space. </p>
         </div>
-    </article>
-  </section>
-
-  <section class="station" id="st-2" data-accent="123,221,46" aria-label="As of late">
-    <h2>As of late</h2>
-    <!-- one <li> per item; swap the placeholders for the real ones -->
-    <div class="late">
-      <p class="lk">reading</p>
-      <ul class="ul">
-        <li><u>The Biggest Bluff</u>, Maria Konnikova</li>
-        <li><u>Thinking in Systems</u>, Donella Meadows</li>
-      </ul>
-      <p class="lk">up to</p>
-      <ul class="ul">
-        <li><u>Teaching Zob to throw</u></li>
-        <li><u>Something worth writing here</u></li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="station" id="st-3" data-accent="255,201,60" aria-label="Right now">
-    <h2>Right now</h2>
-    <div class="stack2">
-      <div class="sheet">
-        <h3 class="hd">status</h3>
-        <ul class="kv">
-          <li><small>shipping</small><strong>nmf &mdash; friend feeds, then half-stars on mobile</strong></li>
-          <li><small>keeping alive</small><strong>the casualty tracker, every five minutes</strong></li>
-          <li><small>learning</small><strong>Playwright, and how Actions lies about time</strong></li>
-          <li><small>stuck on</small><strong>naming things &mdash; still, always</strong></li>
-        </ul>
-      </div>
-      <div class="sheet b">
-        <h3 class="hd">open to</h3>
-        <ul class="lines y">
-          <li>Anyone who wants to log albums with me &mdash; nmf needs friends to work</li>
-          <li>Weird datasets, especially badly formatted ones</li>
-          <li>Being told my canvas maths is wrong, with receipts</li>
-          <li>Coffee, if you're nearby and patient</li>
-        </ul>
-        <p class="swap">// this level is the one to keep current</p>
+        <dl class="sheet">
+          <div><dt>Education</dt><dd>Cornell University, College of Engineering<small>B.S. Computer Science, May 2026</small></dd></div>
+          <div><dt>Coursework</dt><dd>Financial Engineering &middot; Analysis of Algorithms &middot; Deep Learning &middot; Linear Algebra &middot; Cryptography &middot; Machine Learning &middot; NLP</dd></div>
+          <div><dt>License</dt><dd>SIE (Securities Industry Essentials)</dd></div>
+          <div><dt>Awards</dt><dd>Judges' Choice, Cornell Game Design Showcase &middot; MGA Caddie Scholar </dd></div>
+          <div><dt>Toolbox</dt><dd>Python, TypeScript, SQL, Java, C/C++, Apex, Rust<small>FastAPI, Next.js, React, pandas, PyTorch, NumPy, OCaml  Docker, REST API, Postgres &middot; Agentic Software Engineering</small></dd></div>
+        </dl>
       </div>
     </div>
   </section>
 
-  <section class="station" id="st-4" data-accent="18,198,192" aria-label="Say hi">
-    <h2>I reply to almost everything</h2>
-    <p class="said">Cold emails welcome, the strange ones especially. Recruiters: curious, but hard to impress with a ping-pong table.</p>
-    <a class="mail" href="mailto:hi@example.com">hi@example.com</a>
-    <p class="fine">^ placeholder &mdash; swap in the real one before you show anybody</p>
-    <div class="links">
-      <a href="#">github</a><a href="#">bluesky</a><a href="#">itch.io</a><a href="#">rss</a>
+  <section class="station" id="now" data-accent="255,201,60" aria-labelledby="now-h">
+    <div class="wrap">
+      <p class="eyebrow">Now</p>
+      <h2 id="now-h">What I'm up to <em>this month.</em></h2>
+      <ul class="now">
+        <li style="--dot:var(--aqua)"><p class="k">At work</p><p>Automating trading operations and data reconciliation.</p></li>
+        <li style="--dot:var(--tang)"><p class="k">Building</p><p>Friend feeds and half-star ratings on mobile, for Ninth Circle.</p></li>
+        <li style="--dot:var(--lime)"><p class="k">Reading</p><p><em>The Door</em> by Magda Sźoba</p></li>
+        <li style="--dot:var(--chrome)"><p class="k">Stuck on</p><p>Naming things. Still. Always.</p></li>
+      </ul>
+      <p class="stamp">Updated October 2026</p>
+    </div>
+  </section>
+
+  <section class="station hello" id="hello" data-accent="124,92,255" aria-labelledby="hello-h">
+    <div class="wrap">
+      <div class="hello-row">
+        <div>
+          <p class="eyebrow">Contact</p>
+          <h2 id="hello-h">Say hello.</h2>
+          <p class="said">Questions, collaborations, or a spreadsheet that's ruining your week. I read everything, and the strange ones first.</p>
+        </div>
+        <div class="actions">
+          <a class="btn" href="#hello" data-mailto>Email me <span class="arr">&nearr;</span></a>
+          <button type="button" class="btn ghost" data-copy>Copy email</button>
+          <a class="btn ghost" href="john-mcgowan-resume.pdf" target="_blank" rel="noopener">R&eacute;sum&eacute; <span class="arr">PDF</span></a>
+          <a class="btn ghost" href="https://github.com/xoss2400" target="_blank" rel="noopener">GitHub <span class="arr">&nearr;</span></a>
+        </div>
+      </div>
+
+      <footer class="colo">
+        <p>The water is about a hundred thousand characters redrawn every frame, and the judoka are raycast into them. Poke it with the &asymp; button, bottom left, or stop it with the one beside it.</p>
+        <p>&copy; 2026 John McGowan</p>
+      </footer>
     </div>
   </section>
 
 </main>
 </div>
-
+<p class="sr-live" id="live" aria-live="polite"></p>
 
 <div class="console">
-  <button type="button" id="poke" aria-expanded="false" aria-controls="panel">
-    <span><i>&asymp;</i> poke the water</span><b>open</b>
+  <div class="dock">
+  <button type="button" id="pause" aria-pressed="false" aria-label="Pause the animation"><span class="ico" aria-hidden="true"></span></button>
+  <button type="button" id="poke" aria-expanded="false" aria-controls="panel" aria-label="Poke the water: change the ASCII field">
+    <span><i>&asymp;</i><span class="lbl">poke the water</span></span><b>close</b>
   </button>
+  </div>
   <div id="panel" hidden>
     <label class="fld" for="ramp">
       <span>characters</span>
@@ -402,6 +1173,24 @@
 </div>
 
 
+
+<section class="sharp" id="sharp" role="dialog" aria-labelledby="sharp-t" hidden>
+  <div class="sharp-bar" id="sharp-bar">
+    <span class="sharp-t" id="sharp-t">Sharp</span>
+    <div class="battle" id="sharp-battle" aria-hidden="true"></div>
+    <button type="button" class="sharp-x" id="sharp-x" aria-label="Close Sharp">&times;</button>
+  </div>
+  <div class="sharp-body">
+    <label class="sr" for="sharp-in">Chinese text to translate</label>
+    <input id="sharp-in" type="text" lang="zh" placeholder="Type Chinese characters&hellip;" autocomplete="off" spellcheck="false">
+    <div class="sharp-chips"><span>Try</span><button type="button" lang="zh">你好</button><button type="button" lang="zh">柔道</button><button type="button" lang="zh">摔跤</button><button type="button" lang="zh">加油</button></div>
+    <div class="sharp-out" aria-live="polite">
+      <div class="sharp-sec"><b>Pinyin</b><p id="sharp-py">&mdash;</p></div>
+      <div class="sharp-sec"><b>Meaning</b><p id="sharp-mn">&mdash;</p><small id="sharp-alt" hidden></small></div>
+    </div>
+    <p class="sharp-fine">Pinyin is worked out in your browser. Meanings come from <a href="https://mymemory.translated.net" target="_blank" rel="noopener">MyMemory</a>, so what you type is sent there. <a href="https://github.com/xoss2400/Sharp" target="_blank" rel="noopener">Source</a></p>
+  </div>
+</section>
 
 <script>
 (function () {
@@ -603,16 +1392,15 @@
   var HERO_H = 0.32;                     // the bout's share of the screen height on landing
   var PAD = 10;                          // px kept clear above and below the bout
 
-  /* on landing the camera sits on the canvas's centre and never pans. Two
-     things can make it pull back: the canvas getting shorter as the page
-     scrolls (the bout always fits its height, so that one is instant), and
-     the bout drifting from the start (each step widens the view by the
-     step times 1.25 so it stays in frame; that one eases). As the strip
-     shrinks the camera hands over to following the bout instead, so in
-     the strip the fight stays centred and the drift stops pulling back. */
-  function fitH(h) { return Math.max(0.05, (h - 2 * PAD) / ZH); }
-  function camGoal() {
-    return Math.min(cam.S0, (vw * 0.5) / (1.25 * (Math.abs(bout.cx) * (1 - stripP) + ZHW)));
+  /* the camera follows the bout everywhere, so the only thing that makes
+     it pull back is the canvas getting shorter as the page scrolls (the
+     bout always fits its height, so that one is instant) */
+  /* TOPI: on a phone the bar sits over the top of the strip, so the bout
+     fits in what's left under it */
+  var TOPI = 0;
+  function fitH(h) { return Math.max(0.05, (h - 2 * PAD - TOPI) / ZH); }
+  function camGoal() {      // the camera follows the bout, so drift needs no pull-back
+    return Math.min(cam.S0, (vw * 0.5) / (1.25 * ZHW));
   }
   function camFit() {
     cam.S0 = Math.min(HERO_H * vh / ZH, fitH(vh), (vw * 0.5) / (1.25 * ZHW));
@@ -861,8 +1649,10 @@
   var TECH = {
     harai: { kt: HARAI_K, t: HARAI_T, u: HARAI_U, swap: true,
              fly: { a: 1.10, b: 2.05, c1: [0, 250], c2: [115, 235], end: [150, 16], turn: 270, acc: 1.55 } },
+    /* tori is lower here than in harai goshi, so uke's arc is lower and
+       tighter too: he should roll over tori's back, not float above it */
     seoi:  { kt: HARAI_K, t: SEOI_T, u: HARAI_U, swap: true,
-             fly: { a: 1.10, b: 1.95, c1: [-10, 305], c2: [90, 285], end: [135, 16], turn: 270, acc: 1.7 } },
+             fly: { a: 1.10, b: 1.95, c1: [-10, 214], c2: [90, 199], end: [135, 16], turn: 270, acc: 1.7, lift: 0.05 } },
     osoto: { kt: [0, 0.40, 0.70, 0.95, 1.15, 1.30, 1.70, 2.30, 2.80, 3.20], t: OSOTO_T, u: OSOTO_U, swap: false,
              fly: { a: 0.95, b: 1.30, c1: [-50, 175], c2: [-100, 110], end: [-120, 16], turn: -90, acc: 1.4 } },
     block: { kt: [0, 0.45, 0.75, 1.0, 1.3, 1.75], t: BLOCK_T, u: BLOCK_U, swap: false, fly: null }
@@ -971,7 +1761,7 @@
     bout.th = {
       T: T0, name: name, t: 0, tori: tori, m: bout.side[tori],
       rate: (G.speed > 1 ? 2.6 : 1) * pace,
-      lift: 0.88 + Math.random() * 0.24,          // arc height
+      lift: 1 + (Math.random() - 0.5) * 2 * (T0.fly && T0.fly.lift || 0.12),   // arc height
       land: (Math.random() - 0.5) * 34,            // landing spot
       hard: 0.7 + Math.random() * 0.6,             // bounce off the mat
       lean: (Math.random() - 0.5) * 12,            // tori's follow-through
@@ -1170,14 +1960,18 @@
 
   }
   /* ── the mat ─────────────────────────────────────────────────────────
-     A red tatami slab under the bout, travelling with it. Every cell in
+     A yellow tatami slab with a blue border under the bout, travelling
+     with it. Its colours are fixed: no palette or section accent touches
+     them. Every cell in
      the rows it can reach fires the same orthographic ray as the judoka
      and asks where it meets the floor (y = 0): inside the mat that's a
      board ('='), a seam between boards ('|', fixed to the world, so the
      seams slide past as the bout drifts), or the border ('#'); just in
      front of it, the slab's edge facing the camera. ── */
   var MW = 560, MD = 150, MTH = 10, TATAMI = 96;   // half width, half depth, thickness, board length
-  var MAT_TOP = 0xff242cc4, MAT_SEAM = 0xff1a1e96, MAT_EDGE = 0xff141678, MAT_SIDE = 0xff10125f;
+  /* ABGR, as the tint image stores them: golden yellow boards, darker
+     gold seams, a blue border and a deeper blue front face */
+  var MAT_TOP = 0xff12aee3, MAT_SEAM = 0xff0086b8, MAT_EDGE = 0xffd04f1f, MAT_SIDE = 0xff8f3315;
   var MV = new Float64Array(12), mat = { r0: 0, r1: -1 };
   function matSetup() {
     inv(MV, VIEW);
@@ -1227,25 +2021,38 @@
      timer: the content starts a full screen down the page and the canvas
      gives up one pixel of height per pixel scrolled, so the content's top
      edge always sits right on the canvas's bottom edge. ── */
-  var viewH = 0, stripH = 0, introEl = document.getElementById('intro');
+  var viewH = 0, stripH = 0, introEl = document.getElementById('intro'), consoleEl = document.querySelector('.console');
   var scroller = document.getElementById('scroller'), heroEl = document.getElementById('hero');
-  /* AX, AY: where on screen the bout's middle sits. On landing that's
-     beside the line, a little low (the box in the mockup); by the time
-     the strip has shrunk it's the strip's centre, with the camera
-     following the bout. stripP is how far the shrink has got, 0 to 1. */
+  /* AX, AY: where on screen the bout's middle sits. Across, that's always
+     the middle; down, it starts a little low (below the words on a phone)
+     and eases to the strip's centre as the strip shrinks. stripP is how
+     far the shrink has got, 0 to 1. */
   var AX = 0, AY = 0, stripP = 0;
   function layout() {
     var d = vh - stripH, p = d > 0 ? Math.min(1, Math.max(0, scroller.scrollTop / d)) : 1;
     var h = Math.round(vh - p * d), narrow = vw < 720;
     stripP = p;
-    AX = vw * ((narrow ? 0.5 : 0.47) + (narrow ? 0 : 0.03) * p) - bout.cx * cam.S * p;
-    AY = vh * (narrow ? 0.58 : 0.53) * (1 - p) + h * 0.5 * p;
-    /* the line scrolls with the intro, pixel for pixel */
+    /* the bout stands in the middle of the screen, below the words on a
+       phone, and the camera follows it: drift shows as the mat's seams
+       sliding past, and the fighters never walk off the edge of the screen */
+    AX = vw * 0.5 - bout.cx * cam.S;
+    AY = vh * (narrow ? 0.77 : 0.58) * (1 - p) + (TOPI + (h - TOPI) * 0.5) * p;
+    /* mid-shrink, that easing can sit the bout lower than the visible water
+       allows, so keep all of it inside: the mat (its front face reaches
+       about 28 units below the floor) above the bottom edge first, then
+       the heads below the top */
+    var mBot = h - PAD - (ZCY + 28) * cam.S, mTop = TOPI + PAD + (ZH - ZCY) * cam.S;
+    AY = Math.min(Math.max(AY, mTop), mBot);
+    /* the words scroll with the intro, pixel for pixel, fading as they go */
     var st = scroller.scrollTop;
     heroEl.style.transform = 'translateY(' + (-st) + 'px)';
-    heroEl.style.visibility = st > vh ? 'hidden' : 'visible';
+    heroEl.style.opacity = Math.max(0, 1 - st / (vh * 0.55)).toFixed(3);
+    heroEl.style.visibility = st > vh * 0.55 ? 'hidden' : 'visible';
     if (h === viewH) return;
     viewH = h;
+    /* the water's controls ride its bottom-left corner, out of the text */
+    consoleEl.style.top = (h - 52) + 'px';
+    consoleEl.classList.toggle('up', h > vh * 0.5);
     canvas.style.clipPath = 'inset(0 0 ' + (vh - h) + 'px 0)';
     cam.S = Math.min(cam.D, fitH(viewH));
   }
@@ -1262,8 +2069,10 @@
        giving the contours their own characters */
     FSMIN = vw < 560 ? 4.8 : vw < 1000 ? 5.2 : 5.6;
     FS0 = vw < 560 ? 8 : 10;
-    stripH = Math.round(Math.max(113, Math.min(167, vh * 0.173)));
+    TOPI = vw < 720 ? 44 : 0;
+    stripH = Math.round(Math.max(113 + TOPI, Math.min(167 + TOPI, vh * 0.173)));
     introEl.style.height = vh + 'px';          // content starts a full screen down
+    document.documentElement.style.setProperty('--strip', stripH + 'px');
     viewH = -1; layout();
     camFit();
     grid(true);
@@ -1768,7 +2577,26 @@
   toggles('data-spd', function (v) { G.speed = v; G.acc = 0; });
   toggles('data-bet', function (v) { G.bet = v; });
 
+  /* ── pause: the ❚❚ button beside ≈ parks the loop (and the game with it)
+       and freezes the page's other little animations; the choice is
+       remembered where the browser allows ── */
+  var paused = false, parked = false, pauseBtn = document.getElementById('pause');
+  function setPaused(p) {
+    paused = p;
+    pauseBtn.setAttribute('aria-pressed', p ? 'true' : 'false');
+    pauseBtn.setAttribute('aria-label', p ? 'Play the animation' : 'Pause the animation');
+    document.documentElement.classList.toggle('still', p);
+    try { localStorage.setItem('zob-paused', p ? '1' : ''); } catch (e) {}
+    if (!p && parked) {
+      parked = false;
+      last = fpsAt = performance.now(); frames = 0;
+      requestAnimationFrame(frame);
+    }
+  }
+  pauseBtn.addEventListener('click', function () { setPaused(!paused); });
+
   function frame(now) {
+    if (paused) { parked = true; return; }
     /* clamped both ways: a long spell in a background tab must not arrive
        as one enormous step, and dt must never go negative */
     var dt = Math.min(0.05, Math.max(0, (now - last) / 1000 || 0));
@@ -1865,7 +2693,6 @@
     var open = panel.hidden;
     panel.hidden = !open;
     poke.setAttribute('aria-expanded', open ? 'true' : 'false');
-    poke.querySelector('b').textContent = open ? 'close' : 'open';
   });
   document.getElementById('ramp').addEventListener('input', function (e) {
     ramp = (e.target.value.length > 1 ? e.target.value : ' .:-=+*#%@').split('');
@@ -1897,6 +2724,7 @@
     /* no animation: the hands still play and the bout and camera jump
        straight to where each one leaves them — no throws, just the tally */
     setInterval(function () {
+      if (paused) return;
       if (G.done) { gameTick(HAND); if (G.done) return; }
       for (var k = 0; k < G.speed && !G.done; k++) hand();
       bout.cx = bout.tx; bout.next = null;
@@ -1909,9 +2737,388 @@
     fpsAt = performance.now(); last = fpsAt;
     requestAnimationFrame(frame);
   }
+  try { if (localStorage.getItem('zob-paused')) setPaused(true); } catch (e) {}
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () { resize(); draw(); });
   }
+})();
+</script>
+
+<script>
+/* ── the page around the water: the bar, copying the email, Ninth
+     Circle's sketch, the Elo scoreboard and the small-data chart ── */
+(function () {
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  var scroller = document.getElementById('scroller');
+  var live = document.getElementById('live');
+  function el(tag, at, parent) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in at) n.setAttribute(k, at[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+
+  /* ── the email address is put together here, at the moment it's used,
+     so it's never in the page as text for a scraper to find ── */
+  var mailAddr = function () { return ['jmcgowan5g', ['gmail', 'com'].join('.')].join(String.fromCharCode(64)); };
+  [].forEach.call(document.querySelectorAll('[data-mailto]'), function (a) {
+    a.addEventListener('click', function (e) { e.preventDefault(); location.href = 'mailto:' + mailAddr(); });
+  });
+  /* copy it: the button says so, and so does a live region */
+  [].forEach.call(document.querySelectorAll('[data-copy]'), function (b) {
+    var label = b.textContent;
+    b.addEventListener('click', function () {
+      var text = mailAddr();
+      var done = function () {
+        b.textContent = 'Copied'; b.setAttribute('data-copied', '');
+        live.textContent = 'Email address copied';
+        setTimeout(function () { b.textContent = label; b.removeAttribute('data-copied'); live.textContent = ''; }, 1800);
+      };
+      var fallback = function () {
+        var t = document.createElement('textarea');
+        t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0';
+        document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); done(); } catch (e) { location.href = 'mailto:' + text; }
+        document.body.removeChild(t);
+      };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
+      else fallback();
+    });
+  });
+
+  /* ── sleeve art in Ninth Circle's manner: a dark ground and one
+       geometric idea in two colours ── */
+  var COVERS = [
+    { g: '#14140a', a: '#d8cf3e', b: '#f2eec0', k: 'rings' },
+    { g: '#081614', a: '#12c6c0', b: '#ff8a4c', k: 'bars' },
+    { g: '#0f0c1c', a: '#8a7dff', b: '#ffc93c', k: 'grid' }
+  ];
+  function cover(svg, c) {
+    el('rect', { width: 120, height: 120, fill: c.g }, svg);
+    var i;
+    if (c.k === 'rings') {
+      el('circle', { cx: 56, cy: 80, r: 44, fill: c.a, opacity: 0.7 }, svg);
+      el('circle', { cx: 52, cy: 52, r: 40, fill: c.b, opacity: 0.55 }, svg);
+      el('circle', { cx: 56, cy: 80, r: 44, fill: 'none', stroke: c.b, 'stroke-width': 0.8 }, svg);
+    } else if (c.k === 'bars') {
+      for (i = 0; i < 9; i++) {
+        var h = 18 + 70 * Math.abs(Math.sin(i * 1.7 + 0.4));
+        el('rect', { x: 10 + i * 11.4, y: 104 - h, width: 6, height: h, fill: i === 5 ? c.b : c.a, opacity: i === 5 ? 1 : 0.8 }, svg);
+      }
+      el('rect', { x: 10, y: 106, width: 100, height: 1.2, fill: c.a, opacity: 0.6 }, svg);
+    } else {
+      for (var r = 0; r < 6; r++) for (i = 0; i < 6; i++) {
+        var on = (r * 7 + i * 3) % 5 === 0;
+        el('circle', { cx: 17 + i * 17.2, cy: 17 + r * 17.2, r: on ? 6.5 : 2.2, fill: on ? c.b : c.a, opacity: on ? 1 : 0.75 }, svg);
+      }
+    }
+  }
+  [].forEach.call(document.querySelectorAll('svg[data-cover]'), function (s) {
+    cover(s, COVERS[+s.getAttribute('data-cover')]);
+  });
+
+  /* the one rating you can change: ten half-star steps on a range input */
+  var rate = document.getElementById('rate'), rateV = document.getElementById('rate-v');
+  if (rate) {
+    var rin = rate.querySelector('input');
+    var showRate = function () {
+      var v = +rin.value, s = (v / 2).toFixed(1).replace('.0', '');
+      rate.style.setProperty('--r', v);
+      rateV.textContent = v ? s : '–';
+      rin.setAttribute('aria-valuetext', v ? s + (v === 2 ? ' star' : ' stars') : 'not rated');
+    };
+    rin.addEventListener('input', showRate);
+    showRate();
+  }
+
+  /* ── wrestlELO's expected score, live: E = 1 / (1 + 10^((Rb − Ra)/400)) ── */
+  var ea = document.getElementById('elo-a'), eb = document.getElementById('elo-b');
+  if (ea && eb) {
+    var showElo = function () {
+      var a = +ea.value, b = +eb.value, e = 1 / (1 + Math.pow(10, (b - a) / 400));
+      var rp = Math.round(e * 100);
+      document.getElementById('elo-av').textContent = a;
+      document.getElementById('elo-bv').textContent = b;
+      document.getElementById('elo-ra').style.flexGrow = Math.max(rp, 0.5);
+      document.getElementById('elo-ga').style.flexGrow = Math.max(100 - rp, 0.5);
+      document.getElementById('elo-rp').textContent = rp + '%';
+      document.getElementById('elo-gp').textContent = (100 - rp) + '%';
+      document.getElementById('elo-f').innerHTML = 'E = 1 / (1 + 10<sup>(' + b + ' − ' + a + ') / 400</sup>) = <b>' + e.toFixed(2) + '</b>';
+      /* the worked example under the math: Red wins, both established
+         (k = 80), K damped or amplified by the rating gap, as in the model */
+      var m = +document.getElementById('elo-m').value, d = 0.001 * (a - b) + 2.2;
+      var gain = 80 * m * 2.2 / (d > 0.05 ? d : 0.05) * (1 - e);
+      document.getElementById('elo-dr').textContent = '+' + gain.toFixed(1);
+      document.getElementById('elo-dg').textContent = gain.toFixed(1);
+    };
+    ea.addEventListener('input', showElo); eb.addEventListener('input', showElo);
+    document.getElementById('elo-m').addEventListener('change', showElo);
+    /* a printed page can't click, so the math prints open */
+    window.addEventListener('beforeprint', function () { document.querySelector('details.math').open = true; });
+    showElo();
+  }
+
+  /* ── the small-data study: best test accuracy by images per class.
+       Two lines carry the story in colour; the narrower CNNs stay grey. ── */
+  var svg = document.getElementById('dl-svg');
+  if (svg) {
+    var N = [10, 20, 40, 80, 160, 320, 640, 1280];
+    var S = [
+      { k: 'cnn_lc', name: 'CNN, low', col: 'var(--c-mute)', mute: true, v: [26.88, 34.10, 40.46, 43.50, 51.29, 54.50, 60.28, 64.52] },
+      { k: 'cnn_mc', name: 'CNN, medium', col: 'var(--c-mute)', mute: true, v: [26.81, 33.85, 41.23, 46.44, 52.85, 57.98, 63.74, 68.24] },
+      { k: 'res', name: 'ResNet-20', col: 'var(--c-res)', v: [27.31, 30.87, 37.41, 40.02, 49.43, 57.27, 64.29, 75.70] },
+      { k: 'cnn_hc', name: 'CNN, high', col: 'var(--c-cnn)', v: [29.03, 35.32, 41.42, 46.10, 54.12, 59.77, 64.91, 70.54] }
+    ];
+    var order = [S[3], S[2], S[1], S[0]], last = N.length - 1;
+    var W, H, L = 38, R, T = 14, B = 34, X, Y, xh, drawnW = 0;
+    /* drawn at the width it's shown, so the type stays type-sized; narrow,
+       the end labels and every other tick give way to the legend and the
+       tooltip */
+    var drawChart = function () {
+      var w = Math.round(svg.parentNode.clientWidth - 36) || 520;
+      if (w === drawnW) return;
+      drawnW = w; W = Math.max(260, w);
+      var narrow = W < 440;
+      H = narrow ? 230 : 300; R = narrow ? 12 : 100;
+      X = function (i) { return L + i * (W - L - R) / last; };
+      Y = function (v) { return T + (80 - v) / 60 * (H - T - B); };
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      var g = el('g', { class: 'grid' }, svg), ax = el('g', { class: 'ax' }, svg);
+      [20, 40, 60, 80].forEach(function (v) {
+        el('line', { x1: L, x2: W - R, y1: Y(v), y2: Y(v) }, g);
+        el('text', { x: L - 8, y: Y(v) + 3, 'text-anchor': 'end' }, ax).textContent = v + '%';
+      });
+      N.forEach(function (n, i) {
+        if (narrow && i % 2) return;
+        el('text', { x: X(i), y: H - B + 18, 'text-anchor': 'middle' }, ax).textContent = n.toLocaleString('en-US');
+      });
+      el('text', { x: (L + W - R) / 2, y: H - 2, 'text-anchor': 'middle' }, ax).textContent = 'images per class (log scale)';
+      S.forEach(function (s) {
+        var d = s.v.map(function (v, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' ');
+        var p = el('path', { d: d, class: 'ln' + (s.mute ? ' mute' : '') }, svg);
+        if (!s.mute) p.style.stroke = s.col;
+      });
+      [[S[2], -4], [S[3], 4]].forEach(function (o) {
+        var s = o[0], y = Y(s.v[last]);
+        el('circle', { cx: X(last), cy: y, r: 4, class: 'dot', fill: s.col }, svg);
+        if (!narrow) el('text', { x: X(last) + 10, y: y + o[1], class: 'lab' }, svg).textContent = s.name + ' ' + s.v[last].toFixed(1) + '%';
+      });
+      if (!narrow) el('text', { x: (X(6) + X(7)) / 2 - 6, y: Y(76), class: 'ann', 'text-anchor': 'end' }, svg).textContent = 'ResNet overtakes →';
+      xh = el('line', { class: 'xh', y1: T, y2: H - B, x1: -10, x2: -10, opacity: 0 }, svg);
+    };
+    drawChart();
+    var rz = 0;
+    addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(drawChart, 120); });
+
+    /* hover: a crosshair on the nearest size, with every model's value */
+    var tip = document.getElementById('dl-tip'), fig = document.getElementById('dl-chart');
+    var hide = function () { tip.classList.remove('on'); xh.setAttribute('opacity', 0); };
+    var show = function (clientX) {
+      var r = svg.getBoundingClientRect(), sx = (clientX - r.left) / r.width * W;
+      var i = Math.round((sx - L) / ((W - L - R) / last));
+      if (i < 0 || i > last) { hide(); return; }
+      xh.setAttribute('x1', X(i)); xh.setAttribute('x2', X(i)); xh.setAttribute('opacity', 1);
+      tip.innerHTML = '<b>' + N[i].toLocaleString('en-US') + ' images per class</b>' + order.map(function (s) {
+        return '<span style="--k:' + s.col + '"><i></i><em>' + s.name + '</em>' + s.v[i].toFixed(1) + '%</span>';
+      }).join('');
+      var fr = fig.getBoundingClientRect(), px = r.left - fr.left + X(i) / W * r.width;
+      tip.classList.add('on');
+      var tw = tip.offsetWidth, left = px + 12;
+      if (left + tw > fr.width - 8) left = px - tw - 12;
+      tip.style.left = Math.max(8, left) + 'px';
+      tip.style.top = (r.top - fr.top + 20) + 'px';
+    };
+    svg.addEventListener('pointermove', function (e) { show(e.clientX); });
+    svg.addEventListener('pointerdown', function (e) { show(e.clientX); });
+    svg.addEventListener('pointerleave', hide);
+
+    /* the same numbers as a table, for anyone who'd rather read them */
+    var tb = document.getElementById('dl-table');
+    var head = '<thead><tr><th scope="col">Images per class</th>' + order.map(function (s) { return '<th scope="col">' + s.name + '</th>'; }).join('') + '</tr></thead>';
+    tb.insertAdjacentHTML('beforeend', head + '<tbody>' + N.map(function (n, i) {
+      return '<tr><td>' + n.toLocaleString('en-US') + '</td>' + order.map(function (s) { return '<td>' + s.v[i].toFixed(1) + '%</td>'; }).join('') + '</tr>';
+    }).join('') + '</tbody>');
+  }
+
+  /* ── back up to the match: the top of the scroller, where the bout is full screen ── */
+  var toMatch = document.getElementById('to-match');
+  if (toMatch) toMatch.addEventListener('click', function () { scroller.scrollTo({ top: 0 }); });
+  [].forEach.call(document.querySelectorAll('a[href="#top"]'), function (a) {
+    a.addEventListener('click', function (e) { e.preventDefault(); scroller.scrollTo({ top: 0 }); });
+  });
+  /* the skip link lands on the content, not under the strip */
+  var skip = document.querySelector('.skip'), site = document.getElementById('site');
+  if (skip) skip.addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('summary').scrollIntoView();
+    site.focus({ preventScroll: true });
+  });
+
+  /* ── the bar marks whichever section holds the middle of the screen ── */
+  var links = document.querySelectorAll('[data-nav]');
+  var secs = ['experience', 'projects', 'about', 'now', 'hello'].map(function (id) { return document.getElementById(id); });
+  var cur;
+  function mark() {
+    var mid = innerHeight / 2, on = null;
+    secs.forEach(function (s) {
+      var r = s.getBoundingClientRect();
+      if (r.top <= mid && r.bottom > mid) on = s.id === 'now' ? 'about' : s.id;
+    });
+    if (on === cur) return;
+    cur = on;
+    [].forEach.call(links, function (a) {
+      if (a.getAttribute('data-nav') === on) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  scroller.addEventListener('scroll', mark, { passive: true });
+  addEventListener('resize', mark);
+  mark();
+
+  /* ── Sharp: the desktop widget, rebuilt for the page. The original is
+       Electron over a little Python API (pypinyin and a translator); here
+       pinyin comes from pinyin-pro, loaded the first time Sharp opens, and
+       meanings from MyMemory's free API, picking its best-rated match. ── */
+  var sharp = document.getElementById('sharp');
+  if (sharp) {
+    var sIn = document.getElementById('sharp-in'), sPy = document.getElementById('sharp-py');
+    var sMn = document.getElementById('sharp-mn'), sAlt = document.getElementById('sharp-alt');
+    var sBar = document.getElementById('sharp-bar'), sBattle = document.getElementById('sharp-battle');
+    var opener = null, pyLib = null, cache = {}, timer = 0, seq = 0, war = 0;
+    var still = matchMedia('(prefers-reduced-motion: reduce)');
+
+    var loadPinyin = function () {
+      if (pyLib) return pyLib;
+      pyLib = new Promise(function (ok, fail) {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js';
+        s.integrity = 'sha384-Mh/hPt6f6/FyxC9q47MC2CWfdGJGX0kxu06eJ5ApIsK7IccBAQZXUQCnOdqeAmY3';
+        s.crossOrigin = 'anonymous';
+        s.onload = function () { ok(window.pinyinPro); };
+        s.onerror = function () { pyLib = null; fail(); };
+        document.head.appendChild(s);
+      });
+      return pyLib;
+    };
+    /* MyMemory's top answer is sometimes a stranger's; its rated matches
+       are better. Rank by quality, then match, and keep two runners-up. */
+    var meaning = function (q) {
+      if (cache[q]) return Promise.resolve(cache[q]);
+      var url = 'https://api.mymemory.translated.net/get?langpair=zh-CN%7Cen&q=' + encodeURIComponent(q);
+      return fetch(url).then(function (r) { return r.json(); }).then(function (d) {
+        var seen = {}, list = (d.matches || []).map(function (m) {
+          return { t: String(m.translation || '').replace(/<[^>]*>/g, '').replace(/\s+\d+\s*$/, '').trim(),
+                   q: parseFloat(m.quality) || 0, m: +m.match || 0 };
+        }).filter(function (m) { return m.t && m.q >= 50; })
+          .sort(function (a, b) { return b.q - a.q || b.m - a.m; })
+          .filter(function (m) { var k = m.t.toLowerCase().replace(/[.!?]$/, ''); if (seen[k]) return false; seen[k] = 1; return true; });
+        var top = list.length ? list[0].t : (d.responseData && d.responseData.translatedText) || '';
+        var out = { top: top, alt: list.slice(1, 3).map(function (m) { return m.t; }) };
+        cache[q] = out;
+        return out;
+      });
+    };
+    var run = function () {
+      var q = sIn.value.trim(), my = ++seq;
+      if (!q) { sPy.textContent = '—'; sMn.textContent = '—'; sAlt.hidden = true; return; }
+      loadPinyin().then(function (P) {
+        if (my === seq) sPy.textContent = P.pinyin(q, { toneType: 'symbol' });
+      }, function () { if (my === seq) sPy.textContent = 'Couldn’t load the pinyin library.'; });
+      sMn.textContent = '…';
+      meaning(q).then(function (m) {
+        if (my !== seq) return;
+        sMn.textContent = m.top || 'No translation found.';
+        sAlt.hidden = !m.alt.length;
+        sAlt.textContent = m.alt.length ? 'also: ' + m.alt.join(' · ') : '';
+      }, function () { if (my === seq) { sMn.textContent = 'Couldn’t reach the translator. Try again in a moment.'; sAlt.hidden = true; } });
+    };
+    sIn.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(run, 500); });
+    [].forEach.call(sharp.querySelectorAll('.sharp-chips button'), function (b) {
+      b.addEventListener('click', function () { sIn.value = b.textContent; run(); sIn.focus(); });
+    });
+
+    /* the title-bar war: two squads of 2–4 march in, clash, some fall,
+       the side with more standing hops, then fresh squads. It only runs
+       while Sharp is open and motion is welcome. */
+    var squad = function (side) {
+      var g = document.createElement('div'), n = 2 + Math.floor(Math.random() * 3);
+      g.className = 'sq ' + side;
+      for (var i = 0; i <= n; i++) {
+        var p = document.createElement('i');
+        p.className = 'px' + (i === n ? ' flag' : '');
+        if (i === n) p.style.setProperty('--fc', ['#c8322b', '#ffc93c', '#12c6c0', '#ff8a4c'][Math.floor(Math.random() * 4)]);
+        g.appendChild(p);
+      }
+      return g;
+    };
+    var battle = function () {
+      clearTimeout(war);
+      sBattle.textContent = '';
+      var L = squad('l'), R = squad('r');
+      sBattle.appendChild(L); sBattle.appendChild(R);
+      if (still.matches || document.documentElement.classList.contains('still')) return;
+      var gap = sBattle.clientWidth / 2 - 4;
+      requestAnimationFrame(function () {
+        L.style.transform = 'translateX(' + (gap - L.offsetWidth) + 'px)';
+        R.style.transform = 'translateX(' + -(gap - R.offsetWidth) + 'px)';
+      });
+      war = setTimeout(function () {
+        var f = document.createElement('div'); f.className = 'flash'; sBattle.appendChild(f);
+        var fall = function (g) {
+          var men = g.querySelectorAll('.px:not(.flag)'), k = Math.floor(Math.random() * men.length);
+          for (var i = 0; i < k; i++) men[i].classList.add('down');
+          return men.length - k;
+        };
+        var a = fall(L), b = fall(R);
+        if (a !== b) (a > b ? L : R).classList.add('won');
+        war = setTimeout(battle, 2600);
+      }, 3300);
+    };
+
+    var openSharp = function (from) {
+      opener = from || document.activeElement;
+      sharp.hidden = false;
+      sIn.focus();
+      loadPinyin().catch(function () {});
+      battle();
+    };
+    var closeSharp = function () {
+      sharp.hidden = true; clearTimeout(war);
+      if (opener && opener.focus) opener.focus({ preventScroll: true });
+    };
+    [].forEach.call(document.querySelectorAll('[data-open-sharp]'), function (b) {
+      b.addEventListener('click', function () { if (sharp.hidden) openSharp(b); else sIn.focus(); });
+    });
+    document.getElementById('sharp-x').addEventListener('click', closeSharp);
+    sharp.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSharp(); });
+
+    /* drag it by the title bar, kept inside the window */
+    var dx = 0, dy = 0, dragging = false;
+    sBar.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('button')) return;
+      var r = sharp.getBoundingClientRect();
+      dragging = true; dx = e.clientX - r.left; dy = e.clientY - r.top;
+      sharp.style.right = 'auto'; sharp.style.bottom = 'auto';
+      sharp.style.left = r.left + 'px'; sharp.style.top = r.top + 'px'; sharp.style.width = r.width + 'px';
+      sBar.setPointerCapture(e.pointerId);
+    });
+    sBar.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var w = sharp.offsetWidth, h = sharp.offsetHeight;
+      sharp.style.left = Math.min(innerWidth - w - 4, Math.max(4, e.clientX - dx)) + 'px';
+      sharp.style.top = Math.min(innerHeight - h - 4, Math.max(4, e.clientY - dy)) + 'px';
+    });
+    var drop = function () { dragging = false; };
+    sBar.addEventListener('pointerup', drop); sBar.addEventListener('pointercancel', drop);
+  }
+
+  /* for whoever opens the console */
+  try {
+    console.log('%c~john', 'font:700 22px/1.4 "Instrument Serif",Georgia,serif;color:#ad3d00');
+    console.log('You opened the console, good instinct. This page is one hand-written file:\nhttps://github.com/xoss2400/xoss2400.github.io\nSay hi: ' + mailAddr());
+  } catch (e) {}
 })();
 </script>
 
